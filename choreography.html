@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Choreography — Democracy in Music</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        a#home-link {
+            position: fixed; top: 12px; left: 16px;
+            font-size: 11px; color: #333; text-decoration: none;
+            letter-spacing: 2px; z-index: 99; font-family: Georgia, serif;
+        }
+        #header { text-align: center; padding: 18px 20px 4px; }
+        #header h1 { font-size: 26px; letter-spacing: 8px; font-weight: 300; color: #fff; }
+        #header p { font-size: 13px; font-style: italic; color: #777; margin-top: 6px; }
+
+        #sound-mode { display: flex; gap: 0; margin: 10px 0 6px; }
+        .smode-btn {
+            padding: 6px 18px; background: none; border: 1px solid #333;
+            color: #555; font-family: 'Georgia', serif; font-size: 10px;
+            letter-spacing: 2px; cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+        }
+        .smode-btn:first-child { border-radius: 3px 0 0 3px; }
+        .smode-btn:last-child { border-radius: 0 3px 3px 0; }
+        .smode-btn:not(:first-child) { border-left: none; }
+        .smode-btn.active { background: #d25a6e; border-color: #d25a6e; color: #0a0a0a; }
+
+        #views {
+            display: flex; flex-direction: column; align-items: center;
+            width: 100%; max-width: 840px; padding: 4px 16px;
+        }
+        #stage-container { width: 100%; position: relative; }
+        #stage-container canvas {
+            width: 100% !important; height: 340px !important;
+            border-radius: 4px 4px 0 0; cursor: grab; touch-action: none;
+        }
+        #stage-container canvas:active { cursor: grabbing; }
+
+        #conduct-hint {
+            position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+            font-size: 9px; color: rgba(210, 90, 110, 0.35); letter-spacing: 2px;
+            text-transform: uppercase; pointer-events: none;
+            transition: opacity 1.5s;
+        }
+
+        #score-container { width: 100%; position: relative; }
+        #score-canvas {
+            width: 100%; height: 100px; display: block;
+            border-radius: 0 0 4px 4px;
+            border-top: 1px solid rgba(210, 90, 110, 0.15);
+        }
+        #score-label {
+            position: absolute; top: 4px; left: 8px;
+            font-size: 8px; color: rgba(210, 90, 110, 0.3);
+            letter-spacing: 2px; text-transform: uppercase;
+        }
+
+        #controls {
+            display: flex; align-items: flex-start; justify-content: center;
+            gap: 18px; padding: 8px 20px 4px; flex-wrap: wrap;
+        }
+        .control-group { display: flex; align-items: center; gap: 7px; }
+        .control-group label {
+            font-size: 10px; color: #555; letter-spacing: 2px; text-transform: uppercase;
+        }
+        .sync-wrapper { display: flex; flex-direction: column; align-items: center; }
+        .sync-labels { display: flex; justify-content: space-between; width: 140px; margin-top: 1px; }
+        .sync-labels span { font-size: 8px; color: #444; letter-spacing: 1px; text-transform: uppercase; }
+
+        input[type="range"] {
+            -webkit-appearance: none; appearance: none;
+            width: 100px; height: 3px; background: #1a1a2e; border-radius: 2px; outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 14px; height: 14px;
+            border-radius: 50%; background: #4a9eff; cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 14px; height: 14px; border-radius: 50%;
+            background: #4a9eff; cursor: pointer; border: none;
+        }
+        button.ctrl-btn {
+            padding: 7px 18px; background: none; border: 1px solid #4a9eff;
+            color: #4a9eff; font-family: 'Georgia', serif; font-size: 11px;
+            letter-spacing: 1px; cursor: pointer; border-radius: 3px; transition: all 0.2s;
+        }
+        button.ctrl-btn:hover { background: #4a9eff; color: #0a0a0a; }
+        button.ctrl-btn.active-btn { background: #4a9eff; color: #0a0a0a; }
+        #dancer-count { font-size: 11px; color: #555; letter-spacing: 1px; min-width: 20px; text-align: center; }
+
+        #status-bar {
+            display: flex; align-items: center; justify-content: center;
+            gap: 24px; padding: 2px 20px 4px; font-size: 10px; color: #333; letter-spacing: 1px;
+        }
+        .status-val { color: #d25a6e; }
+
+        #info {
+            text-align: center; padding: 4px 20px 24px; font-size: 11px;
+            color: #2a2a3a; line-height: 1.7; max-width: 560px;
+        }
+    </style>
+</head>
+<body>
+    <a id="home-link" href="index.html">&larr; Home</a>
+    <div id="header">
+        <h1>CHOREOGRAPHY</h1>
+        <p>The body as musical instrument</p>
+    </div>
+    <div id="sound-mode">
+        <button class="smode-btn active" data-mode="arpeggio">Arpeggio</button>
+        <button class="smode-btn" data-mode="phase">Phase</button>
+        <button class="smode-btn" data-mode="partials">Partials</button>
+    </div>
+    <div id="views">
+        <div id="stage-container">
+            <div id="conduct-hint">click a dancer to conduct</div>
+        </div>
+        <div id="score-container">
+            <canvas id="score-canvas" width="840" height="100"></canvas>
+            <div id="score-label">score</div>
+        </div>
+    </div>
+    <div id="controls">
+        <button class="ctrl-btn" id="playBtn">&#9654; Play</button>
+        <button class="ctrl-btn" id="removeDancer">&minus;</button>
+        <span id="dancer-count">4</span>
+        <button class="ctrl-btn" id="addDancer">+</button>
+        <div class="sync-wrapper">
+            <label style="font-size:10px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Sync</label>
+            <input type="range" id="syncSlider" min="0" max="100" value="85" style="width:140px;">
+            <div class="sync-labels"><span>Chaos</span><span>Unison</span></div>
+        </div>
+        <div class="control-group">
+            <label>Tempo</label>
+            <input type="range" id="tempoSlider" min="40" max="160" value="80">
+            <span style="font-size:10px;color:#444;min-width:24px;" id="tempoVal">80</span>
+        </div>
+    </div>
+    <div id="status-bar">
+        <span>pulse: <span class="status-val" id="pulseVal">&mdash;</span></span>
+        <span>harmony: <span class="status-val" id="harmonyVal">&mdash;</span></span>
+        <span>energy: <span class="status-val" id="energyVal">&mdash;</span></span>
+    </div>
+    <div id="info">
+        <span id="info-arpeggio">A shared arpeggio cascades through the dancers. In unison, one sparkling melody. In chaos, scattered bell-drops.</span>
+        <span id="info-phase" style="display:none;">Everyone plays the same melodic phrase. As sync drifts, copies offset in time — canons form and dissolve.</span>
+        <span id="info-partials" style="display:none;">Each dancer is a harmonic partial. In unison they fuse into one voice. Apart, they beat and separate.</span>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+    (function() {
+
+        var MAX_DANCERS = 10;
+        var HEAD_R = 0.11, TORSO = 0.55, NECK = 0.08;
+        var UPPER_ARM = 0.36, LOWER_ARM = 0.30;
+        var UPPER_LEG = 0.40, LOWER_LEG = 0.36;
+        var SHOULDER_W = 0.22, HIP_W = 0.12;
+        var HIP_HEIGHT = LOWER_LEG + UPPER_LEG;
+        var SHOULDER_HEIGHT = HIP_HEIGHT + TORSO;
+        var TEAL = 0xd25a6e, BLUE = 0x4a9eff;
+
+        var ARP_NOTES = [130.81, 196.00, 261.63, 349.23, 523.25, 349.23, 261.63, 196.00];
+        var PHASE_NOTES = [261.63, 293.66, 311.13, 349.23, 293.66, 261.63];
+
+        // Dancer colors for score (one per dancer)
+        var DANCER_COLORS = [
+            '#d25a6e', '#4a9eff', '#a78bfa', '#f0abfc',
+            '#34d399', '#fbbf24', '#fb923c', '#f87171',
+            '#38bdf8', '#c084fc'
+        ];
+
+        var CANON = {
+            bounce: 1.0, sway: 0.5,
+            armL: 1.0, armR: 1.0, elbowL: 2.0, elbowR: 2.0,
+            hipL: 0.5, hipR: 0.5, kneeL: 1.0, kneeR: 1.0
+        };
+
+        // ==========================================
+        // STATE
+        // ==========================================
+        var container = document.getElementById('stage-container');
+        var scoreCanvas = document.getElementById('score-canvas');
+        var scoreCtx = scoreCanvas.getContext('2d');
+        var conductHint = document.getElementById('conduct-hint');
+        var syncSlider = document.getElementById('syncSlider');
+        var tempoSlider = document.getElementById('tempoSlider');
+        var tempoValEl = document.getElementById('tempoVal');
+        var playBtn = document.getElementById('playBtn');
+        var addBtn = document.getElementById('addDancer');
+        var removeBtn = document.getElementById('removeDancer');
+        var countEl = document.getElementById('dancer-count');
+        var pulseValEl = document.getElementById('pulseVal');
+        var harmonyValEl = document.getElementById('harmonyVal');
+        var energyValEl = document.getElementById('energyVal');
+        var smodeBtns = document.querySelectorAll('.smode-btn');
+
+        var isPlaying = false;
+        var audioCtx = null;
+        var masterGain = null, masterFilter = null, compressor = null, reverbSend = null;
+        var soundMode = 'arpeggio';
+        var syncLevel = 0.85;
+        var tempo = 80;
+        var time = 0;
+        var lastFrameTime = 0;
+        var dancers = [];
+        var conductTarget = -1;
+        var conductScreenPos = { x: 0, y: 0 };
+        var dancerAudio = [];
+        var prevAvgBounce = 0;
+        var lastKickTime = 0, lastHatTime = 0;
+        var hintShown = true;
+        var scoreScrollX = 0;
+
+        var orbitTheta = 0.3, orbitPhi = 1.0, orbitDist = 6.5;
+        var isDragging = false, dragStart = { x: 0, y: 0 }, dragMode = 'orbit';
+
+        // ==========================================
+        // THREE.JS
+        // ==========================================
+        var W = 840, H = 340;
+        var scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a0a);
+        scene.fog = new THREE.FogExp2(0x0a0a0a, 0.035);
+
+        var camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 100);
+        updateCamera();
+
+        var renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(W, H);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        scene.add(new THREE.AmbientLight(TEAL, 0.25));
+
+        // Bright grid
+        var gridBig = new THREE.GridHelper(16, 24, 0xb84a5e, 0x6a2832);
+        gridBig.material.transparent = true; gridBig.material.opacity = 0.8;
+        scene.add(gridBig);
+        var gridSmall = new THREE.GridHelper(16, 72, 0x482028, 0x482028);
+        gridSmall.material.transparent = true; gridSmall.material.opacity = 0.4;
+        gridSmall.position.y = 0.002; scene.add(gridSmall);
+
+        var edgeMat = new THREE.LineBasicMaterial({ color: TEAL, transparent: true, opacity: 0.6 });
+        var pts = [[-8,0,-8],[8,0,-8],[8,0,-8],[8,0,8],[8,0,8],[-8,0,8],[-8,0,8],[-8,0,-8]];
+        var edgeGeo = new THREE.BufferGeometry().setFromPoints(pts.map(function(p){return new THREE.Vector3(p[0],p[1],p[2]);}));
+        scene.add(new THREE.LineSegments(edgeGeo, edgeMat));
+
+        var ground = new THREE.Mesh(
+            new THREE.PlaneGeometry(16, 16),
+            new THREE.MeshBasicMaterial({ color: TEAL, transparent: true, opacity: 0.025, side: THREE.DoubleSide })
+        );
+        ground.rotation.x = -Math.PI / 2; ground.position.y = -0.01; scene.add(ground);
+
+        function updateCamera() {
+            camera.position.x = orbitDist * Math.sin(orbitPhi) * Math.sin(orbitTheta);
+            camera.position.y = orbitDist * Math.cos(orbitPhi);
+            camera.position.z = orbitDist * Math.sin(orbitPhi) * Math.cos(orbitTheta);
+            camera.lookAt(0, HIP_HEIGHT * 0.6, 0);
+        }
+
+        // ==========================================
+        // DANCER MESH (40 segments)
+        // ==========================================
+        var NUM_SEGS = 40;
+        var dancerMeshes = [];
+
+        function createDancerMesh() {
+            var group = new THREE.Group();
+            var bodyPos = new Float32Array(NUM_SEGS * 6);
+            var bodyGeo = new THREE.BufferGeometry();
+            bodyGeo.setAttribute('position', new THREE.BufferAttribute(bodyPos, 3));
+            var bodyMat = new THREE.LineBasicMaterial({ color: TEAL, transparent: true, opacity: 0.7 });
+            group.add(new THREE.LineSegments(bodyGeo, bodyMat));
+
+            var headWire = new THREE.WireframeGeometry(new THREE.SphereGeometry(HEAD_R, 8, 5));
+            var headMat = new THREE.LineBasicMaterial({ color: TEAL, transparent: true, opacity: 0.6 });
+            var headMesh = new THREE.LineSegments(headWire, headMat);
+            group.add(headMesh);
+
+            var jointPos = new Float32Array(16 * 3);
+            var jointGeo = new THREE.BufferGeometry();
+            jointGeo.setAttribute('position', new THREE.BufferAttribute(jointPos, 3));
+            var jointMat = new THREE.PointsMaterial({ color: TEAL, size: 0.06, transparent: true, opacity: 0.85 });
+            group.add(new THREE.Points(jointGeo, jointMat));
+
+            // Spot ring on floor
+            var ringGeo = new THREE.RingGeometry(0.3, 0.35, 24);
+            var ringMat = new THREE.MeshBasicMaterial({ color: TEAL, transparent: true, opacity: 0.15, side: THREE.DoubleSide });
+            var ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.rotation.x = -Math.PI / 2; ring.position.y = 0.005;
+            group.add(ring);
+
+            scene.add(group);
+            return { group: group, bodyGeo: bodyGeo, bodyPos: bodyPos, bodyMat: bodyMat, headMesh: headMesh, headMat: headMat, jointGeo: jointGeo, jointPos: jointPos, jointMat: jointMat, ring: ring, ringMat: ringMat };
+        }
+
+        function limbPerp(x1, y1, x2, y2, w) {
+            var dx = x2 - x1, dy = y2 - y1, len = Math.sqrt(dx*dx+dy*dy)||1;
+            return { nx: -dy/len*w, ny: dx/len*w };
+        }
+
+        function updateDancerMesh(mesh, dancer) {
+            var j = dancer.joints, cx = dancer.x3d, cz = dancer.z3d;
+            var hipY = HIP_HEIGHT + j.bounce * 0.02;
+            var shoulderY = hipY + TORSO, neckY = shoulderY + NECK;
+            var headY = neckY + HEAD_R + 0.04;
+            var sw = j.sway * 0.01;
+
+            var sLx = cx+sw-SHOULDER_W, sRx = cx+sw+SHOULDER_W;
+            var hLx = cx-HIP_W, hRx = cx+HIP_W;
+
+            var eLx = cx+sw-SHOULDER_W+Math.sin(j.armL)*UPPER_ARM*-1;
+            var eLy = shoulderY+Math.abs(Math.cos(j.armL))*UPPER_ARM*0.3-UPPER_ARM*0.3;
+            var wLx = eLx+Math.sin(j.armL+j.elbowL)*LOWER_ARM*-0.6;
+            var wLy = eLy-Math.cos(j.armL+j.elbowL)*LOWER_ARM*0.4-LOWER_ARM*0.2;
+
+            var eRx = cx+sw+SHOULDER_W+Math.sin(j.armR)*UPPER_ARM;
+            var eRy = shoulderY+Math.abs(Math.cos(j.armR))*UPPER_ARM*0.3-UPPER_ARM*0.3;
+            var wRx = eRx+Math.sin(j.armR+j.elbowR)*LOWER_ARM*0.6;
+            var wRy = eRy-Math.cos(j.armR+j.elbowR)*LOWER_ARM*0.4-LOWER_ARM*0.2;
+
+            var kLx = cx-HIP_W+Math.sin(j.hipL)*UPPER_LEG*0.3;
+            var kLy = hipY-Math.cos(j.hipL)*UPPER_LEG;
+            var aLx = kLx+Math.sin(j.hipL+j.kneeL)*LOWER_LEG*0.3;
+            var aLy = kLy-Math.cos(j.hipL+j.kneeL)*LOWER_LEG;
+
+            var kRx = cx+HIP_W+Math.sin(j.hipR)*UPPER_LEG*0.3;
+            var kRy = hipY-Math.cos(j.hipR)*UPPER_LEG;
+            var aRx = kRx+Math.sin(j.hipR+j.kneeR)*LOWER_LEG*0.3;
+            var aRy = kRy-Math.cos(j.hipR+j.kneeR)*LOWER_LEG;
+
+            var midY = hipY+TORSO*0.5, midW = (SHOULDER_W+HIP_W)*0.5;
+            var rib1Y = shoulderY-TORSO*0.2, rib1W = SHOULDER_W*0.9;
+            var rib2Y = shoulderY-TORSO*0.45, rib2W = (SHOULDER_W+HIP_W*2)*0.45;
+            var rib3Y = shoulderY-TORSO*0.65, rib3W = (HIP_W*2+SHOULDER_W)*0.35;
+
+            var p = mesh.bodyPos, idx = 0;
+            function seg(x1,y1,z1,x2,y2,z2) { p[idx]=x1;p[idx+1]=y1;p[idx+2]=z1;p[idx+3]=x2;p[idx+4]=y2;p[idx+5]=z2;idx+=6; }
+            function seg2d(x1,y1,x2,y2) { seg(x1,y1,cz,x2,y2,cz); }
+
+            // Skeleton (6)
+            seg2d(cx+sw,neckY,cx,hipY);
+            seg2d(sLx,shoulderY,sRx,shoulderY);
+            seg2d(hLx,hipY,hRx,hipY);
+            seg2d(sLx,shoulderY,hRx,hipY);
+            seg2d(sRx,shoulderY,hLx,hipY);
+            seg2d(cx+sw-midW,midY,cx+sw+midW,midY);
+
+            // Ribcage (10)
+            seg2d(cx+sw-rib1W,rib1Y,cx+sw+rib1W,rib1Y);
+            seg2d(cx+sw-rib2W,rib2Y,cx+sw+rib2W,rib2Y);
+            seg2d(cx+sw-rib3W,rib3Y,cx+sw+rib3W,rib3Y);
+            seg2d(sLx,shoulderY,cx+sw-rib1W,rib1Y);
+            seg2d(sRx,shoulderY,cx+sw+rib1W,rib1Y);
+            seg2d(cx+sw-rib1W,rib1Y,cx+sw-rib2W,rib2Y);
+            seg2d(cx+sw+rib1W,rib1Y,cx+sw+rib2W,rib2Y);
+            seg2d(cx+sw-rib2W,rib2Y,cx+sw-rib3W,rib3Y);
+            seg2d(cx+sw+rib2W,rib2Y,cx+sw+rib3W,rib3Y);
+            seg2d(cx+sw-rib3W,rib3Y,hLx,hipY);
+
+            // Arms + legs (8)
+            seg2d(sLx,shoulderY,eLx,eLy); seg2d(eLx,eLy,wLx,wLy);
+            seg2d(sRx,shoulderY,eRx,eRy); seg2d(eRx,eRy,wRx,wRy);
+            seg2d(hLx,hipY,kLx,kLy); seg2d(kLx,kLy,aLx,aLy);
+            seg2d(hRx,hipY,kRx,kRy); seg2d(kRx,kRy,aRx,aRy);
+
+            // Limb mesh panels (16)
+            var mw = 0.04, lw = 0.05;
+            function panels(x1,y1,x2,y2,w) {
+                var pp = limbPerp(x1,y1,x2,y2,w);
+                seg2d(x1+pp.nx,y1+pp.ny,x2+pp.nx,y2+pp.ny);
+                seg2d(x1-pp.nx,y1-pp.ny,x2-pp.nx,y2-pp.ny);
+            }
+            panels(sLx,shoulderY,eLx,eLy,mw); panels(eLx,eLy,wLx,wLy,mw);
+            panels(sRx,shoulderY,eRx,eRy,mw); panels(eRx,eRy,wRx,wRy,mw);
+            panels(hLx,hipY,kLx,kLy,lw); panels(kLx,kLy,aLx,aLy,lw);
+            panels(hRx,hipY,kRx,kRy,lw); panels(kRx,kRy,aRx,aRy,lw);
+
+            while (idx < NUM_SEGS * 6) p[idx++] = 0;
+            mesh.bodyGeo.attributes.position.needsUpdate = true;
+            mesh.headMesh.position.set(cx+sw, headY, cz);
+            mesh.ring.position.set(cx, 0.005, cz);
+
+            // Joints (16)
+            var jp = mesh.jointPos, ji = 0;
+            function jpt(x,y) { jp[ji]=x;jp[ji+1]=y;jp[ji+2]=cz;ji+=3; }
+            jpt(cx+sw,neckY); jpt(sLx,shoulderY); jpt(sRx,shoulderY);
+            jpt(eLx,eLy); jpt(wLx,wLy); jpt(eRx,eRy); jpt(wRx,wRy);
+            jpt(hLx,hipY); jpt(hRx,hipY); jpt(kLx,kLy); jpt(kRx,kRy);
+            jpt(aLx,aLy); jpt(aRx,aRy);
+            jpt(cx+sw-rib1W,rib1Y); jpt(cx+sw+rib1W,rib1Y); jpt(cx,hipY);
+            mesh.jointGeo.attributes.position.needsUpdate = true;
+
+            var isCond = conductTarget === dancers.indexOf(dancer);
+            var col = isCond ? BLUE : TEAL;
+            mesh.bodyMat.opacity = isCond ? 0.9 : 0.7;
+            mesh.bodyMat.color.setHex(col);
+            mesh.headMat.opacity = isCond ? 0.8 : 0.6;
+            mesh.headMat.color.setHex(col);
+            mesh.jointMat.color.setHex(col);
+            mesh.ringMat.opacity = isCond ? 0.35 : 0.15;
+            mesh.ringMat.color.setHex(col);
+        }
+
+        // ==========================================
+        // DANCER STATE
+        // ==========================================
+        function createDancer(i) {
+            // Random position on stage plane
+            var angle = Math.random() * Math.PI * 2;
+            var radius = 0.5 + Math.random() * 2.5;
+            return {
+                x3d: Math.cos(angle) * radius,
+                z3d: Math.sin(angle) * radius,
+                phaseOffset: (Math.random() * 2 - 1) * Math.PI,
+                tempoMult: 0.6 + Math.random() * 0.8,
+                style: {
+                    bounce: CANON.bounce+(Math.random()-0.5)*0.5,
+                    sway: CANON.sway+(Math.random()-0.5)*0.3,
+                    armL: CANON.armL+(Math.random()-0.5)*0.3,
+                    armR: CANON.armR+(Math.random()-0.5)*0.3,
+                    elbowL: CANON.elbowL+(Math.random()-0.5)*0.5,
+                    elbowR: CANON.elbowR+(Math.random()-0.5)*0.5,
+                    hipL: CANON.hipL+(Math.random()-0.5)*0.2,
+                    hipR: CANON.hipR+(Math.random()-0.5)*0.2,
+                    kneeL: CANON.kneeL+(Math.random()-0.5)*0.3,
+                    kneeR: CANON.kneeR+(Math.random()-0.5)*0.3
+                },
+                joints: {},
+                arpStep: -1, phaseStep: -1,
+                lastArpStep: -1, lastPhaseStep: -1,
+                noteEvent: false // flag for score drawing
+            };
+        }
+
+        function initDancers(n) {
+            dancers = [];
+            for (var i = 0; i < n; i++) dancers.push(createDancer(i));
+            rebuildMeshes();
+        }
+
+        function rebuildMeshes() {
+            dancerMeshes.forEach(function(m) { scene.remove(m.group); });
+            dancerMeshes = [];
+            for (var i = 0; i < dancers.length; i++) dancerMeshes.push(createDancerMesh());
+        }
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        function computePose(dancer, gTime) {
+            var effectiveTempo = tempo * lerp(dancer.tempoMult, 1.0, syncLevel);
+            var baseFreq = (effectiveTempo / 60) * Math.PI * 2;
+            var phase = (1 - syncLevel) * dancer.phaseOffset;
+            var t = gTime * baseFreq + phase;
+
+            var s = {};
+            for (var key in CANON) s[key] = lerp(dancer.style[key], CANON[key], syncLevel);
+
+            var ci = 0, cNormX = 0, cNormY = 0;
+            if (conductTarget === dancers.indexOf(dancer)) {
+                ci = 0.7;
+                var proj = dancerScreenPos(dancer);
+                cNormX = Math.max(-1, Math.min(1, (conductScreenPos.x - proj.x) / 150));
+                cNormY = Math.max(-1, Math.min(1, (conductScreenPos.y - proj.y) / 120));
+            }
+            var ni = 1 - ci;
+
+            dancer.joints = {
+                bounce: ni*Math.sin(t*s.bounce)*14+ci*cNormY*-50,
+                sway: ni*Math.sin(t*s.sway)*6+ci*cNormX*30,
+                armL: ni*Math.sin(t*s.armL)*0.9+ci*(cNormX*-1.2+cNormY*-0.5),
+                armR: ni*Math.sin(t*s.armR+Math.PI)*0.9+ci*(cNormX*1.2+cNormY*-0.5),
+                elbowL: ni*(Math.sin(t*s.elbowL)*0.4+0.3)+ci*Math.max(0,-cNormY*0.6),
+                elbowR: ni*(Math.sin(t*s.elbowR+0.5)*0.4+0.3)+ci*Math.max(0,-cNormY*0.6),
+                hipL: ni*Math.sin(t*s.hipL)*0.2,
+                hipR: ni*Math.sin(t*s.hipR+Math.PI)*0.2,
+                kneeL: ni*Math.max(0,Math.sin(t*s.kneeL))*0.4,
+                kneeR: ni*Math.max(0,Math.sin(t*s.kneeR+Math.PI))*0.4
+            };
+
+            var beatPhase = (t / (Math.PI * 2)) % 1;
+            if (beatPhase < 0) beatPhase += 1;
+            dancer.arpStep = Math.floor(beatPhase * 8) % 8;
+            dancer.phaseStep = Math.floor(beatPhase * 6) % 6;
+        }
+
+        function dancerScreenPos(dancer) {
+            var v = new THREE.Vector3(dancer.x3d, SHOULDER_HEIGHT, dancer.z3d);
+            v.project(camera);
+            var rect = renderer.domElement.getBoundingClientRect();
+            return { x: (v.x*0.5+0.5)*rect.width+rect.left, y: (-v.y*0.5+0.5)*rect.height+rect.top };
+        }
+
+        // ==========================================
+        // SCROLLING SCORE
+        // ==========================================
+        function drawScore() {
+            var sw = scoreCanvas.width, sh = scoreCanvas.height;
+            var n = dancers.length;
+            if (n === 0) return;
+
+            // Shift image left by 2px
+            var imgData = scoreCtx.getImageData(2, 0, sw - 2, sh);
+            scoreCtx.fillStyle = '#0a0a0a';
+            scoreCtx.fillRect(0, 0, sw, sh);
+            scoreCtx.putImageData(imgData, 0, 0);
+
+            // Draw new column on right edge
+            var laneH = Math.min(sh / n, 14);
+            var topPad = (sh - laneH * n) / 2;
+
+            // Lane separators
+            scoreCtx.strokeStyle = 'rgba(210, 90, 110, 0.06)';
+            scoreCtx.lineWidth = 1;
+            for (var i = 0; i <= n; i++) {
+                var y = topPad + i * laneH;
+                scoreCtx.beginPath();
+                scoreCtx.moveTo(sw - 3, y);
+                scoreCtx.lineTo(sw, y);
+                scoreCtx.stroke();
+            }
+
+            // Note events
+            dancers.forEach(function(d, i) {
+                if (d.noteEvent) {
+                    var y = topPad + i * laneH + laneH * 0.5;
+                    var col = DANCER_COLORS[i % DANCER_COLORS.length];
+
+                    // Bright dot
+                    scoreCtx.fillStyle = col;
+                    scoreCtx.globalAlpha = 0.9;
+                    scoreCtx.fillRect(sw - 3, y - laneH * 0.3, 3, laneH * 0.6);
+                    scoreCtx.globalAlpha = 1.0;
+
+                    d.noteEvent = false;
+                }
+            });
+
+            // Partials mode: draw continuous amplitude bar
+            if (soundMode === 'partials' && isPlaying) {
+                dancers.forEach(function(d, i) {
+                    var y = topPad + i * laneH + laneH * 0.5;
+                    var col = DANCER_COLORS[i % DANCER_COLORS.length];
+                    var armE = (Math.abs(d.joints.armL) + Math.abs(d.joints.armR)) / 2;
+                    var h = laneH * 0.15 + armE * laneH * 0.3;
+                    scoreCtx.fillStyle = col;
+                    scoreCtx.globalAlpha = 0.25 + armE * 0.2;
+                    scoreCtx.fillRect(sw - 2, y - h, 2, h * 2);
+                    scoreCtx.globalAlpha = 1.0;
+                });
+            }
+
+            // Playhead line
+            scoreCtx.strokeStyle = 'rgba(210, 90, 110, 0.2)';
+            scoreCtx.lineWidth = 1;
+            scoreCtx.beginPath();
+            scoreCtx.moveTo(sw - 1, 0);
+            scoreCtx.lineTo(sw - 1, sh);
+            scoreCtx.stroke();
+        }
+
+        // ==========================================
+        // AUDIO ENGINE
+        // ==========================================
+        function buildAudio() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var ac = audioCtx;
+
+            compressor = ac.createDynamicsCompressor();
+            compressor.threshold.value = -18; compressor.ratio.value = 4;
+            compressor.connect(ac.destination);
+
+            masterFilter = ac.createBiquadFilter();
+            masterFilter.type = 'lowpass'; masterFilter.frequency.value = 3000; masterFilter.Q.value = 0.7;
+            masterFilter.connect(compressor);
+
+            masterGain = ac.createGain();
+            masterGain.gain.value = soundMode === 'partials' ? 0.35 : 0.5;
+            masterGain.connect(masterFilter);
+
+            reverbSend = ac.createGain(); reverbSend.gain.value = 0.3;
+            var revMix = ac.createGain(); revMix.gain.value = 0.25;
+            revMix.connect(masterFilter);
+            [0.041,0.083,0.127,0.173,0.211,0.269].forEach(function(dt) {
+                var d = ac.createDelay(1.0); d.delayTime.value = dt;
+                var g = ac.createGain(); g.gain.value = 0.12;
+                var f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 1800 - dt * 2000;
+                reverbSend.connect(d); d.connect(f); f.connect(g); g.connect(d); g.connect(revMix);
+            });
+
+            dancerAudio = [];
+            for (var i = 0; i < MAX_DANCERS; i++) {
+                if (soundMode === 'partials') {
+                    var partial = i + 1;
+                    var base = 82.41;
+                    var o1 = ac.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = base * partial;
+                    var o2 = ac.createOscillator(); o2.type = 'sawtooth'; o2.frequency.value = base * partial; o2.detune.value = 4;
+                    var g1 = ac.createGain(); g1.gain.value = 0;
+                    var g2 = ac.createGain(); g2.gain.value = 0;
+                    var ampMod = ac.createGain(); ampMod.gain.value = 1;
+                    var filt = ac.createBiquadFilter(); filt.type = 'lowpass'; filt.frequency.value = 1500; filt.Q.value = 1.0;
+                    o1.connect(g1); o2.connect(g2); g1.connect(ampMod); g2.connect(ampMod);
+                    ampMod.connect(filt); filt.connect(masterGain); filt.connect(reverbSend);
+                    o1.start(); o2.start();
+                    dancerAudio.push({ type: 'partial', osc: o1, osc2: o2, gain: g1, gain2: g2, ampMod: ampMod, filter: filt, partial: partial, baseFreq: base });
+                } else {
+                    dancerAudio.push({ type: 'note', lastArpStep: -1, lastPhaseStep: -1 });
+                }
+            }
+        }
+
+        // Arpeggio: bell/kalimba
+        function playArpNote(freq, vol) {
+            if (!audioCtx) return;
+            var ac = audioCtx, t = ac.currentTime, dur = 0.15;
+            [[1,vol],[2.76,vol*0.09],[4.07,vol*0.03]].forEach(function(rv) {
+                var o = ac.createOscillator(); o.type = 'sine'; o.frequency.value = freq * rv[0];
+                var g = ac.createGain();
+                g.gain.setValueAtTime(0,t);
+                g.gain.linearRampToValueAtTime(rv[1],t+0.004);
+                g.gain.exponentialRampToValueAtTime(rv[1]*0.12,t+0.05);
+                g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+                o.connect(g); g.connect(masterGain);
+                if (rv[0]===1){var rs=ac.createGain();rs.gain.value=0.08;g.connect(rs);rs.connect(reverbSend);}
+                o.start(t); o.stop(t+dur+0.05);
+            });
+        }
+
+        // Phase: Rhodes/EP
+        function playPhaseNote(freq, vol, dur) {
+            if (!audioCtx) return;
+            var ac = audioCtx, t = ac.currentTime;
+            var o1 = ac.createOscillator(); o1.type = 'sine'; o1.frequency.value = freq;
+            var o2 = ac.createOscillator(); o2.type = 'sine'; o2.frequency.value = freq * 2;
+            var o3 = ac.createOscillator(); o3.type = 'sine'; o3.frequency.value = freq * 7.1;
+            var g1 = ac.createGain(); g1.gain.value = vol * 0.7;
+            var g2 = ac.createGain(); g2.gain.value = vol * 0.25;
+            var g3 = ac.createGain(); g3.gain.value = vol * 0.04;
+            var env = ac.createGain();
+            env.gain.setValueAtTime(0,t);
+            env.gain.linearRampToValueAtTime(1,t+0.01);
+            env.gain.setValueAtTime(0.8,t+dur*0.15);
+            env.gain.exponentialRampToValueAtTime(0.001,t+dur);
+            o1.connect(g1);o2.connect(g2);o3.connect(g3);
+            g1.connect(env);g2.connect(env);g3.connect(env);
+            env.connect(masterGain);
+            var rs=ac.createGain();rs.gain.value=0.25;env.connect(rs);rs.connect(reverbSend);
+            o1.start(t);o2.start(t);o3.start(t);
+            o1.stop(t+dur+0.1);o2.stop(t+dur+0.1);o3.stop(t+dur+0.1);
+        }
+
+        function triggerKick(strength) {
+            if (!audioCtx) return;
+            var ac = audioCtx, t = ac.currentTime, vol = 0.12 * strength;
+            var o = ac.createOscillator(); o.type = 'sine';
+            o.frequency.setValueAtTime(80,t); o.frequency.exponentialRampToValueAtTime(28,t+0.2);
+            var g = ac.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.35);
+            var cl = ac.createOscillator(); cl.type = 'sine'; cl.frequency.value = 1100;
+            var cg = ac.createGain(); cg.gain.setValueAtTime(vol*0.2,t); cg.gain.exponentialRampToValueAtTime(0.001,t+0.012);
+            o.connect(g); g.connect(masterGain); cl.connect(cg); cg.connect(masterGain);
+            o.start(t); o.stop(t+0.4); cl.start(t); cl.stop(t+0.02);
+        }
+
+        function triggerHat(vol) {
+            if (!audioCtx) return;
+            var ac = audioCtx, t = ac.currentTime;
+            var len = ac.sampleRate * 0.03;
+            var buf = ac.createBuffer(1,len,ac.sampleRate);
+            var d = buf.getChannelData(0);
+            for (var i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/(len*0.12));
+            var src = ac.createBufferSource(); src.buffer = buf;
+            var f = ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 8000; f.Q.value = 1.2;
+            var g = ac.createGain(); g.gain.value = vol * 0.04;
+            src.connect(f); f.connect(g); g.connect(masterGain);
+            src.start(t);
+        }
+
+        function triggerSubPulse(strength) {
+            if (!audioCtx) return;
+            var ac = audioCtx, t = ac.currentTime;
+            var o = ac.createOscillator(); o.type = 'sine'; o.frequency.value = 55;
+            var g = ac.createGain();
+            g.gain.setValueAtTime(0.08*strength,t);
+            g.gain.exponentialRampToValueAtTime(0.001,t+0.5);
+            o.connect(g); g.connect(masterGain);
+            o.start(t); o.stop(t+0.55);
+        }
+
+        function updateAudio() {
+            if (!audioCtx || !isPlaying) return;
+            var ac = audioCtx, t = ac.currentTime, n = dancers.length;
+            if (n === 0) return;
+
+            masterFilter.frequency.setTargetAtTime(800 + syncLevel * 5000, t, 0.1);
+
+            var avgBounce = 0, totalArmE = 0;
+
+            dancers.forEach(function(d, i) {
+                avgBounce += d.joints.bounce;
+                var armE = (Math.abs(d.joints.armL)+Math.abs(d.joints.armR))/2;
+                totalArmE += armE;
+                if (i >= n || i >= dancerAudio.length) return;
+                var da = dancerAudio[i];
+
+                if (soundMode === 'partials') {
+                    var drift = (1-syncLevel)*d.phaseOffset*16;
+                    var freq = (da.baseFreq+drift)*da.partial;
+                    da.osc.frequency.setTargetAtTime(freq,t,0.03);
+                    da.osc2.frequency.setTargetAtTime(freq*1.003,t,0.03);
+                    var vol = (0.02+armE*0.015)/Math.sqrt(da.partial);
+                    da.gain.gain.setTargetAtTime(vol,t,0.04);
+                    da.gain2.gain.setTargetAtTime(vol*0.12,t,0.04);
+                    da.ampMod.gain.setTargetAtTime(0.4+0.6*Math.max(0,(d.joints.bounce+14)/28),t,0.02);
+                    da.filter.frequency.setTargetAtTime(300+syncLevel*4000+armE*500,t,0.04);
+
+                } else if (soundMode === 'arpeggio') {
+                    if (d.arpStep !== da.lastArpStep) {
+                        da.lastArpStep = d.arpStep;
+                        playArpNote(ARP_NOTES[d.arpStep], 0.07+armE*0.02);
+                        d.noteEvent = true;
+                    }
+                } else {
+                    if (d.phaseStep !== da.lastPhaseStep) {
+                        da.lastPhaseStep = d.phaseStep;
+                        var beatDur = 60.0/tempo;
+                        playPhaseNote(PHASE_NOTES[d.phaseStep], 0.06+armE*0.015, beatDur*0.55);
+                        d.noteEvent = true;
+                    }
+                }
+            });
+
+            if (soundMode === 'partials') {
+                for (var i = n; i < dancerAudio.length; i++) {
+                    if (dancerAudio[i].type === 'partial') {
+                        dancerAudio[i].gain.gain.setTargetAtTime(0,t,0.04);
+                        dancerAudio[i].gain2.gain.setTargetAtTime(0,t,0.04);
+                    }
+                }
+            }
+
+            avgBounce /= n;
+            totalArmE /= n;
+
+            // Mode-specific percussion
+            var now = performance.now();
+            if (soundMode === 'arpeggio') {
+                // Tight kick + hat
+                if (prevAvgBounce >= 0 && avgBounce < 0 && now-lastKickTime > 180) {
+                    triggerKick(0.5+syncLevel*0.5); lastKickTime = now;
+                }
+                if (prevAvgBounce <= 0 && avgBounce > 0 && syncLevel > 0.3 && now-lastHatTime > 150) {
+                    triggerHat(syncLevel); lastHatTime = now;
+                }
+            } else if (soundMode === 'partials') {
+                // Sub pulse
+                if (prevAvgBounce >= 0 && avgBounce < 0 && now-lastKickTime > 200) {
+                    triggerSubPulse(0.4+syncLevel*0.6); lastKickTime = now;
+                }
+            }
+            // Phase: no percussion — let the Rhodes breathe
+            prevAvgBounce = avgBounce;
+
+            var bounceSync = 1;
+            if (n > 1) {
+                var variance = 0;
+                dancers.forEach(function(d){var diff=d.joints.bounce-avgBounce;variance+=diff*diff;});
+                bounceSync = Math.max(0, 1-Math.sqrt(variance/n)/14);
+            }
+            pulseValEl.textContent = Math.round(bounceSync*100)+'%';
+            harmonyValEl.textContent = Math.round(syncLevel*100)+'%';
+            energyValEl.textContent = Math.round(totalArmE*60)+'%';
+        }
+
+        // ==========================================
+        // ORBIT + CONDUCT
+        // ==========================================
+        function getMousePos(e) {
+            var cx = e.touches?e.touches[0].clientX:e.clientX;
+            var cy = e.touches?e.touches[0].clientY:e.clientY;
+            return {x:cx,y:cy};
+        }
+        function findNearestDancer(sx,sy) {
+            var best=-1, bestD=50;
+            dancers.forEach(function(d,i){
+                var sp=dancerScreenPos(d);
+                var dist=Math.sqrt((sp.x-sx)*(sp.x-sx)+(sp.y-sy)*(sp.y-sy));
+                if(dist<bestD){bestD=dist;best=i;}
+            });
+            return best;
+        }
+        function onPointerDown(e) {
+            var p=getMousePos(e);
+            var near=findNearestDancer(p.x,p.y);
+            if(near>=0){dragMode='conduct';conductTarget=near;conductScreenPos=p;
+                if(hintShown){conductHint.style.opacity='0';hintShown=false;}
+            }else{dragMode='orbit';}
+            isDragging=true; dragStart=p;
+        }
+        function onPointerMove(e) {
+            if(!isDragging)return;
+            var p=getMousePos(e);
+            if(dragMode==='conduct'){conductScreenPos=p;}
+            else{
+                orbitTheta-=(p.x-dragStart.x)*0.005;
+                orbitPhi=Math.max(0.3,Math.min(Math.PI*0.48,orbitPhi+(p.y-dragStart.y)*0.005));
+                updateCamera(); dragStart=p;
+            }
+        }
+        function onPointerUp(){isDragging=false;conductTarget=-1;dragMode='orbit';}
+
+        var el=renderer.domElement;
+        el.addEventListener('mousedown',onPointerDown);
+        window.addEventListener('mousemove',onPointerMove);
+        window.addEventListener('mouseup',onPointerUp);
+        el.addEventListener('touchstart',function(e){e.preventDefault();onPointerDown(e);},{passive:false});
+        window.addEventListener('touchmove',function(e){if(isDragging){e.preventDefault();onPointerMove(e);}},{passive:false});
+        window.addEventListener('touchend',onPointerUp);
+        el.addEventListener('wheel',function(e){
+            e.preventDefault();
+            orbitDist=Math.max(3,Math.min(14,orbitDist+e.deltaY*0.005));
+            updateCamera();
+        },{passive:false});
+
+        // ==========================================
+        // CONTROLS
+        // ==========================================
+        playBtn.addEventListener('click',function(){
+            if(isPlaying){
+                isPlaying=false;playBtn.textContent='\u25B6 Play';playBtn.classList.remove('active-btn');
+                if(audioCtx){audioCtx.close().catch(function(){});audioCtx=null;}
+            }else{
+                buildAudio();
+                var start=function(){isPlaying=true;playBtn.textContent='\u25A0 Stop';playBtn.classList.add('active-btn');};
+                if(audioCtx.state==='suspended')audioCtx.resume().then(start);else start();
+            }
+        });
+
+        smodeBtns.forEach(function(btn){
+            btn.addEventListener('click',function(){
+                var m=btn.getAttribute('data-mode');
+                if(m===soundMode)return;
+                soundMode=m;
+                smodeBtns.forEach(function(b){b.classList.remove('active');});
+                btn.classList.add('active');
+                document.getElementById('info-arpeggio').style.display=m==='arpeggio'?'':'none';
+                document.getElementById('info-phase').style.display=m==='phase'?'':'none';
+                document.getElementById('info-partials').style.display=m==='partials'?'':'none';
+                dancers.forEach(function(d){d.lastArpStep=-1;d.lastPhaseStep=-1;});
+                // Clear score
+                scoreCtx.fillStyle='#0a0a0a';scoreCtx.fillRect(0,0,scoreCanvas.width,scoreCanvas.height);
+                if(isPlaying){
+                    if(audioCtx)audioCtx.close().catch(function(){});
+                    buildAudio();audioCtx.resume();
+                }
+            });
+        });
+
+        syncSlider.addEventListener('input',function(){syncLevel=parseInt(this.value)/100;});
+        tempoSlider.addEventListener('input',function(){tempo=parseInt(this.value);tempoValEl.textContent=tempo;});
+
+        addBtn.addEventListener('click',function(){
+            if(dancers.length<MAX_DANCERS){
+                dancers.push(createDancer(dancers.length));rebuildMeshes();
+                countEl.textContent=dancers.length;
+            }
+        });
+        removeBtn.addEventListener('click',function(){
+            if(dancers.length>1){
+                dancers.pop();rebuildMeshes();
+                countEl.textContent=dancers.length;
+                if(conductTarget>=dancers.length)conductTarget=-1;
+            }
+        });
+
+        // ==========================================
+        // MAIN LOOP
+        // ==========================================
+        function animate(ts) {
+            requestAnimationFrame(animate);
+            if(!lastFrameTime)lastFrameTime=ts;
+            var dt=(ts-lastFrameTime)/1000;
+            lastFrameTime=ts;
+            if(isPlaying) time+=dt;
+
+            dancers.forEach(function(d){computePose(d,time);});
+            dancers.forEach(function(d,i){
+                if(i<dancerMeshes.length){dancerMeshes[i].group.visible=true;updateDancerMesh(dancerMeshes[i],d);}
+            });
+            for(var i=dancers.length;i<dancerMeshes.length;i++)dancerMeshes[i].group.visible=false;
+            if(isPlaying){updateAudio();drawScore();}
+            renderer.render(scene,camera);
+        }
+
+        // Init score background
+        scoreCtx.fillStyle='#0a0a0a';
+        scoreCtx.fillRect(0,0,scoreCanvas.width,scoreCanvas.height);
+
+        initDancers(4);
+        animate(0);
+    })();
+    </script>
+</body>
+</html>

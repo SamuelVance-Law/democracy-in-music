@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Epoch — Democracy in Music</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        a#home-link {
+            position: fixed; top: 12px; left: 16px;
+            font-size: 11px; text-decoration: none;
+            letter-spacing: 2px; z-index: 99; font-family: Georgia, serif;
+        }
+
+        #header { text-align: center; padding: 24px 20px 6px; }
+        #header h1 {
+            font-size: 28px; letter-spacing: 10px; font-weight: 300; color: #fff;
+        }
+        #header p {
+            font-size: 13px; font-style: italic; color: #aaa; margin-top: 6px;
+        }
+
+        /* Community buttons */
+        #community-toggle {
+            display: flex; gap: 0; margin: 14px 0 10px; flex-wrap: wrap;
+            justify-content: center;
+        }
+        .comm-btn {
+            padding: 7px 14px; background: none; border: 1px solid #444;
+            color: #bbb; font-family: 'Georgia', serif; font-size: 10px;
+            letter-spacing: 1px; cursor: pointer; transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .comm-btn:first-child { border-radius: 3px 0 0 3px; }
+        .comm-btn:last-child { border-radius: 0 3px 3px 0; }
+        .comm-btn:not(:first-child) { border-left: none; }
+
+        /* Prompt overlay */
+        #prompt-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            background: rgba(5, 5, 10, 0.7);
+            z-index: 10; cursor: crosshair;
+            transition: opacity 0.8s;
+        }
+        #prompt-overlay.hidden { opacity: 0; pointer-events: none; }
+        .prompt-text {
+            font-size: 14px; letter-spacing: 4px;
+            text-transform: uppercase; margin-bottom: 6px;
+        }
+        .prompt-sub {
+            font-size: 11px; color: #999; font-style: italic;
+            letter-spacing: 1px;
+        }
+
+        /* Canvas area */
+        #canvas-wrapper {
+            position: relative; width: 100%; max-width: 720px;
+            padding: 0 16px; margin-top: 6px;
+        }
+        #epochCanvas {
+            width: 100%; height: 380px; display: block;
+            border-radius: 4px;
+            cursor: crosshair; touch-action: none;
+        }
+
+        /* Scan line indicator */
+        #scan-info {
+            width: 100%; max-width: 720px; padding: 0 16px;
+        }
+        #scan-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 4px 14px;
+            font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+            color: #666;
+            border-left: 1px solid rgba(255,255,255,0.08);
+            border-right: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* Ownership bar */
+        #ownership-bar {
+            width: 100%; max-width: 720px; padding: 0 16px;
+        }
+        #ownership-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 1px solid rgba(255,255,255,0.08);
+            border-right: 1px solid rgba(255,255,255,0.08);
+        }
+        #ownership-label {
+            font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+            color: #999;
+        }
+        #ownership-val {
+            font-size: 16px; letter-spacing: 1px;
+            font-variant-numeric: tabular-nums;
+        }
+        #ownership-note {
+            font-size: 9px; color: #777; font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        /* Narrator — minimal */
+        #narrator {
+            width: 100%; max-width: 720px; padding: 0 16px;
+            text-align: center; min-height: 32px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #narrator-text {
+            font-size: 11px; color: #999; letter-spacing: 1px;
+            transition: opacity 0.5s;
+        }
+        #narrator-text.fade { opacity: 0; }
+
+        /* 3D terrain */
+        #terrain-container {
+            width: 100%; max-width: 900px; padding: 0 16px;
+        }
+        #terrain-container canvas {
+            width: 100% !important; height: 500px !important;
+            border-radius: 4px;
+            cursor: grab; touch-action: none;
+        }
+        #terrain-container canvas:active { cursor: grabbing; }
+
+        /* Timeline */
+        #timeline-area {
+            width: 100%; max-width: 720px; padding: 10px 16px 0;
+        }
+        #timeline-labels {
+            display: flex; justify-content: space-between;
+            font-size: 9px; color: #999; letter-spacing: 1px;
+            margin-bottom: 4px; padding: 0 2px;
+        }
+        #timeline-slider {
+            -webkit-appearance: none; appearance: none;
+            width: 100%; height: 4px; background: #1a1a1a;
+            border-radius: 2px; outline: none;
+        }
+        #timeline-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 14px; height: 14px; border-radius: 50%;
+            cursor: pointer;
+        }
+        #timeline-slider::-moz-range-thumb {
+            width: 14px; height: 14px; border-radius: 50%;
+            cursor: pointer; border: none;
+        }
+
+        /* Transport */
+        #transport {
+            display: flex; align-items: center; justify-content: center;
+            gap: 14px; padding: 10px 20px; flex-wrap: wrap;
+        }
+        button.transport-btn {
+            padding: 8px 22px; background: none;
+            font-family: 'Georgia', serif; font-size: 11px;
+            letter-spacing: 1px; cursor: pointer; border-radius: 3px;
+            transition: all 0.2s; min-width: 76px;
+        }
+        button.transport-btn:disabled { opacity: 0.3; cursor: default; }
+
+        /* Info */
+        #info {
+            text-align: center; font-size: 11px; color: #777;
+            padding: 10px 20px 24px; letter-spacing: 0.5px;
+            max-width: 560px; line-height: 1.7;
+        }
+    </style>
+</head>
+<body>
+    <a id="home-link" href="index.html">&larr; HOME</a>
+
+    <div id="header">
+        <h1>EPOCH</h1>
+        <p>Communal ownership from years to generations</p>
+    </div>
+
+    <div id="community-toggle">
+        <button class="comm-btn active" data-comm="neighborhood">Neighborhood</button>
+        <button class="comm-btn" data-comm="digital">Digital Community</button>
+        <button class="comm-btn" data-comm="lineage">Lineage</button>
+        <button class="comm-btn" data-comm="city">City</button>
+    </div>
+
+    <div id="canvas-wrapper">
+        <canvas id="epochCanvas" width="1440" height="680"></canvas>
+        <div id="prompt-overlay">
+            <div class="prompt-text">Touch once</div>
+            <div class="prompt-sub">This is permanent</div>
+        </div>
+    </div>
+
+    <div id="scan-info">
+        <div id="scan-inner">
+            <span>Low pitch &larr;</span>
+            <span>X position = frequency</span>
+            <span>&rarr; High pitch</span>
+        </div>
+    </div>
+
+    <div id="ownership-bar">
+        <div id="ownership-inner">
+            <span id="ownership-label">Your ownership</span>
+            <span id="ownership-val">&mdash;</span>
+            <span id="ownership-note"></span>
+        </div>
+    </div>
+
+    <div id="narrator">
+        <span id="narrator-text"></span>
+    </div>
+
+    <div id="terrain-container"></div>
+
+    <div id="timeline-area">
+        <div id="timeline-labels">
+            <span id="tl-start">Start</span>
+            <span id="tl-end">10 Years</span>
+        </div>
+        <input type="range" id="timeline-slider" min="0" max="1000" value="0" disabled>
+    </div>
+
+    <div id="transport">
+        <button class="transport-btn" id="playBtn" disabled>&#9654; Play</button>
+        <button class="transport-btn" id="resetBtn">Reset</button>
+    </div>
+
+    <div id="info">
+        One touch per person. Position shapes the sound. Density shapes the volume.<br>
+        The canvas is the score. The work belongs to everyone who makes it.
+    </div>
+
+    <script>
+    (function() {
+        var GRID_COLS = 72, GRID_ROWS = 34, TOUCH_RADIUS = 4;
+        var canvas = document.getElementById('epochCanvas');
+        var ctx = canvas.getContext('2d');
+        var W = canvas.width, H = canvas.height;
+        var cellW = W / GRID_COLS, cellH = H / GRID_ROWS;
+
+        // ==========================================
+        // COMMUNITY COLORS & CONFIG
+        // ==========================================
+        var COMM_COLORS = {
+            neighborhood: { accent: [106, 168, 96],  hex: '#6aa860', css: 'rgba(106,168,96,', name: 'sage' },
+            digital:      { accent: [90, 160, 220],   hex: '#5aa0dc', css: 'rgba(90,160,220,', name: 'blue' },
+            lineage:      { accent: [196, 154, 92],   hex: '#c49a5c', css: 'rgba(196,154,92,', name: 'gold' },
+            city:         { accent: [210, 110, 120],  hex: '#d26e78', css: 'rgba(210,110,120,', name: 'coral' }
+        };
+
+        // Touch intensity calibrated so all communities reach similar visual
+        // density at completion. Larger communities = lighter individual touches.
+        var COMMUNITIES = {
+            neighborhood: {
+                totalVoices: 2000, years: 10, durationMs: 25000,
+                pattern: 'organic', touchIntensity: 0.04,
+                events: [
+                    { t: 0.1, text: 'Month 6' },
+                    { t: 0.3, text: 'Year 3' },
+                    { t: 0.6, text: 'Year 6' },
+                    { t: 1.0, text: 'Year 10 · 2,000 voices' }
+                ]
+            },
+            digital: {
+                totalVoices: 50000, years: 2, durationMs: 25000,
+                pattern: 'viral', touchIntensity: 0.002,
+                events: [
+                    { t: 0.05, text: 'Week 2' },
+                    { t: 0.2, text: 'Month 3' },
+                    { t: 0.4, text: 'Month 10 · first wave' },
+                    { t: 0.65, text: 'Month 16 · second wave' },
+                    { t: 1.0, text: 'Year 2 · 50,000 voices' }
+                ]
+            },
+            lineage: {
+                totalVoices: 500, years: 200, durationMs: 35000,
+                pattern: 'generational', touchIntensity: 0.12,
+                events: [
+                    { t: 0.05, text: 'Year 5' },
+                    { t: 0.15, text: 'Year 30' },
+                    { t: 0.35, text: 'Year 70' },
+                    { t: 0.6, text: 'Year 120' },
+                    { t: 1.0, text: 'Year 200 · 500 voices' }
+                ]
+            },
+            city: {
+                totalVoices: 500000, years: 50, durationMs: 35000,
+                pattern: 'metropolitan', touchIntensity: 0.0002,
+                events: [
+                    { t: 0.05, text: 'Year 1' },
+                    { t: 0.2, text: 'Year 10' },
+                    { t: 0.5, text: 'Year 25' },
+                    { t: 0.8, text: 'Year 40' },
+                    { t: 1.0, text: 'Year 50 · 500,000 voices' }
+                ]
+            }
+        };
+
+        // Display normalization: fixed reference rather than chasing maxIntensity.
+        // Use sqrt curve so early growth is visible and late growth doesn't saturate.
+        var displayCeiling = 4.0; // soft ceiling for normalization
+
+        var currentComm = 'neighborhood';
+        var grid = new Float32Array(GRID_COLS * GRID_ROWS);
+        var maxIntensity = 0;
+        var userTouch = null, hasPlaced = false;
+        var isPlaying = false, playProgress = 0, playStartTime = 0, animFrame = null, currentEventIdx = 0;
+        var allTouches = [], displayedUpTo = 0;
+
+        // Audio
+        var audioCtx = null, masterGain = null, reverbNode = null, compressor = null;
+        var spectrumOscs = []; // oscillators mapped to canvas columns
+        var lastSonifyTime = 0;
+        var droneUpdateInterval = null;
+
+        // DOM
+        var overlay = document.getElementById('prompt-overlay');
+        var narratorEl = document.getElementById('narrator-text');
+        var playBtn = document.getElementById('playBtn');
+        var resetBtn = document.getElementById('resetBtn');
+        var timelineSlider = document.getElementById('timeline-slider');
+        var ownershipVal = document.getElementById('ownership-val');
+        var ownershipNote = document.getElementById('ownership-note');
+        var tlEndEl = document.getElementById('tl-end');
+        var commBtns = document.querySelectorAll('.comm-btn');
+        var terrainDiv = document.getElementById('terrain-container');
+        var homeLink = document.getElementById('home-link');
+
+        // ==========================================
+        // THEMING
+        // ==========================================
+        function applyTheme(commKey) {
+            var col = COMM_COLORS[commKey];
+            var hex = col.hex;
+
+            // CSS custom property approach via direct style
+            document.querySelectorAll('.comm-btn').forEach(function(b) {
+                b.style.borderColor = '#444';
+                b.style.color = '#bbb';
+                b.style.background = 'none';
+            });
+            var activeBtn = document.querySelector('.comm-btn.active');
+            if (activeBtn) {
+                activeBtn.style.background = hex;
+                activeBtn.style.borderColor = hex;
+                activeBtn.style.color = '#0a0a0a';
+            }
+
+            homeLink.style.color = hex;
+            document.querySelector('.prompt-text').style.color = hex;
+            ownershipVal.style.color = hex;
+            canvas.style.border = '1px solid ' + col.css + '0.3)';
+
+            // Transport buttons
+            document.querySelectorAll('.transport-btn').forEach(function(b) {
+                b.style.borderColor = hex; b.style.color = hex;
+            });
+
+            // Slider thumb
+            var thumbStyle = 'input[type=range]::-webkit-slider-thumb{background:' + hex + '!important}';
+            thumbStyle += 'input[type=range]::-moz-range-thumb{background:' + hex + '!important}';
+            var existing = document.getElementById('theme-style');
+            if (existing) existing.remove();
+            var s = document.createElement('style');
+            s.id = 'theme-style';
+            s.textContent = thumbStyle;
+            document.head.appendChild(s);
+        }
+
+        // ==========================================
+        // 2D CANVAS
+        // ==========================================
+        // Offscreen grid canvas for smooth interpolation
+        var gridCanvas = document.createElement('canvas');
+        gridCanvas.width = GRID_COLS;
+        gridCanvas.height = GRID_ROWS;
+        var gridCtx = gridCanvas.getContext('2d');
+
+        // Static noise grain — generated once, blended in subtly
+        var noiseCanvas = document.createElement('canvas');
+        noiseCanvas.width = W; noiseCanvas.height = H;
+        var noiseCtx = noiseCanvas.getContext('2d');
+        (function generateNoise() {
+            var img = noiseCtx.createImageData(W, H);
+            var d = img.data;
+            for (var i = 0; i < d.length; i += 4) {
+                var v = Math.floor(Math.random() * 12);
+                d[i] = v; d[i+1] = v; d[i+2] = v; d[i+3] = 255;
+            }
+            noiseCtx.putImageData(img, 0, 0);
+        })();
+
+        function render2D() {
+            var col = COMM_COLORS[currentComm].accent;
+            var imgData = gridCtx.createImageData(GRID_COLS, GRID_ROWS);
+            var data = imgData.data;
+
+            for (var r = 0; r < GRID_ROWS; r++) {
+                for (var c = 0; c < GRID_COLS; c++) {
+                    var val = grid[r * GRID_COLS + c];
+                    var norm = Math.min(1, Math.sqrt(val / displayCeiling));
+                    var idx = (r * GRID_COLS + c) * 4;
+                    data[idx]   = Math.floor(10 + norm * (col[0] - 10));
+                    data[idx+1] = Math.floor(12 + norm * (col[1] - 12));
+                    data[idx+2] = Math.floor(18 + norm * (col[2] - 18));
+                    data[idx+3] = 255;
+                }
+            }
+            gridCtx.putImageData(imgData, 0, 0);
+
+            // Draw smoothly scaled to main canvas
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(gridCanvas, 0, 0, W, H);
+
+            // Blend grain — very subtle, gives darkness texture
+            ctx.globalAlpha = 0.15;
+            ctx.drawImage(noiseCanvas, 0, 0);
+            ctx.globalAlpha = 1.0;
+
+            // User touch — subtle dot, not a showy ring
+            if (userTouch) {
+                var ux = (userTouch.col + 0.5) / GRID_COLS * W;
+                var uy = (userTouch.row + 0.5) / GRID_ROWS * H;
+                ctx.beginPath(); ctx.arc(ux, uy, 4, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.fill();
+            }
+        }
+
+        // ==========================================
+        // 3D TERRAIN
+        // ==========================================
+        var scene = new THREE.Scene();
+        var cam3 = new THREE.PerspectiveCamera(50, 900/500, 0.1, 100);
+        var ren3 = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        ren3.setSize(900, 500); ren3.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        ren3.setClearColor(0x0a0a0a, 1); terrainDiv.appendChild(ren3.domElement);
+
+        var plW = 12, plD = 5;
+        var geo = new THREE.PlaneGeometry(plW, plD, GRID_COLS-1, GRID_ROWS-1);
+        geo.rotateX(-Math.PI/2);
+        var wmat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.6, vertexColors: true });
+        var vc = geo.attributes.position.count;
+        var ca = new Float32Array(vc * 3);
+        for (var i = 0; i < vc; i++) { ca[i*3]=0.5; ca[i*3+1]=0.5; ca[i*3+2]=0.5; }
+        geo.setAttribute('color', new THREE.BufferAttribute(ca, 3));
+        scene.add(new THREE.Mesh(geo, wmat));
+
+        var isDr3 = false, pr3 = {x:0,y:0}, sph = {theta:0.3, phi:0.85, radius:14};
+        function camUp() {
+            cam3.position.x = sph.radius*Math.sin(sph.phi)*Math.sin(sph.theta);
+            cam3.position.y = sph.radius*Math.cos(sph.phi);
+            cam3.position.z = sph.radius*Math.sin(sph.phi)*Math.cos(sph.theta);
+            cam3.lookAt(0,0,0);
+        }
+        camUp();
+
+        ren3.domElement.addEventListener('mousedown', function(e){ isDr3=true; pr3.x=e.clientX; pr3.y=e.clientY; });
+        window.addEventListener('mousemove', function(e){
+            if(!isDr3) return;
+            sph.theta += (e.clientX-pr3.x)*0.005;
+            sph.phi = Math.max(0.2, Math.min(Math.PI*0.48, sph.phi+(e.clientY-pr3.y)*0.005));
+            camUp(); pr3.x=e.clientX; pr3.y=e.clientY;
+        });
+        window.addEventListener('mouseup', function(){ isDr3=false; });
+        ren3.domElement.addEventListener('touchstart', function(e){ if(e.touches.length===1){ isDr3=true; pr3.x=e.touches[0].clientX; pr3.y=e.touches[0].clientY; }}, {passive:true});
+        ren3.domElement.addEventListener('touchmove', function(e){
+            if(!isDr3||e.touches.length!==1) return;
+            sph.theta += (e.touches[0].clientX-pr3.x)*0.005;
+            sph.phi = Math.max(0.2, Math.min(Math.PI*0.48, sph.phi+(e.touches[0].clientY-pr3.y)*0.005));
+            camUp(); pr3.x=e.touches[0].clientX; pr3.y=e.touches[0].clientY;
+        }, {passive:true});
+        ren3.domElement.addEventListener('touchend', function(){ isDr3=false; }, {passive:true});
+
+        function updateTerrain() {
+            var pos = geo.attributes.position, colAttr = geo.attributes.color, hs = 4.0;
+            var ac = COMM_COLORS[currentComm].accent;
+            var cr = ac[0]/255, cg = ac[1]/255, cb = ac[2]/255;
+            for (var r = 0; r < GRID_ROWS; r++) {
+                for (var c = 0; c < GRID_COLS; c++) {
+                    var vi = r*GRID_COLS+c;
+                    var norm = Math.min(1, Math.sqrt(grid[vi] / displayCeiling));
+                    pos.setY(vi, norm*hs);
+                    var b = 0.2+0.8*norm;
+                    colAttr.setXYZ(vi, cr*b, cg*b, cb*b);
+                }
+            }
+            pos.needsUpdate = true; colAttr.needsUpdate = true;
+        }
+        (function anim(){ requestAnimationFrame(anim); ren3.render(scene, cam3); })();
+
+        // ==========================================
+        // TOUCH PATTERNS
+        // ==========================================
+        function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+        function generateTouches(commKey) {
+            var cfg = COMMUNITIES[commKey], total = cfg.totalVoices, touches = [];
+
+            if (cfg.pattern === 'organic') {
+                var cx = GRID_COLS*0.5+(Math.random()-0.5)*10;
+                var cy = GRID_ROWS*0.5+(Math.random()-0.5)*6;
+                for (var i=0; i<total; i++) {
+                    // Quadratic time curve: slow start, accelerating arrival rate
+                    var t=i/total;
+                    var spread = 2 + Math.pow(t, 0.7) * 16; // starts tight, opens gradually
+                    var col=cx+(Math.random()-0.5)*spread+(Math.random()-0.5)*spread*0.5;
+                    var row=cy+(Math.random()-0.5)*spread*0.4+(Math.random()-0.5)*spread*0.3;
+                    if (Math.random()<0.05+t*0.06) { col=Math.random()*GRID_COLS; row=Math.random()*GRID_ROWS; }
+                    touches.push({col:clamp(Math.round(col),0,GRID_COLS-1), row:clamp(Math.round(row),0,GRID_ROWS-1), t:t});
+                }
+            }
+            else if (cfg.pattern === 'viral') {
+                var hs=[];
+                for (var h=0;h<6;h++) hs.push({col:Math.random()*GRID_COLS, row:Math.random()*GRID_ROWS});
+                // Sort touches to create gradual buildup with wave-like surges
+                var rawTouches = [];
+                for (var i=0;i<total;i++) {
+                    var spot=hs[Math.floor(Math.random()*hs.length)];
+                    var sp=8+Math.random()*12;
+                    var col=spot.col+(Math.random()-0.5)*sp*2;
+                    var row=spot.row+(Math.random()-0.5)*sp;
+                    if(Math.random()<0.2){ col=Math.random()*GRID_COLS; row=Math.random()*GRID_ROWS; }
+                    // Assign time with rising density: slow start, gentle waves
+                    // Base: quadratic rise (slow start, accelerating)
+                    var baseT = Math.sqrt(i / total);
+                    // Add wave perturbation: touches cluster around wave peaks
+                    var wave1 = 0.05 * Math.exp(-Math.pow((baseT - 0.4) * 6, 2));
+                    var wave2 = 0.07 * Math.exp(-Math.pow((baseT - 0.7) * 5, 2));
+                    var t = Math.min(1, Math.max(0, baseT - wave1 - wave2));
+                    rawTouches.push({col:clamp(Math.round(col),0,GRID_COLS-1), row:clamp(Math.round(row),0,GRID_ROWS-1), t:t});
+                }
+                // Sort by time so playback order reflects gradual buildup
+                rawTouches.sort(function(a,b){ return a.t - b.t; });
+                touches = rawTouches;
+            }
+            else if (cfg.pattern === 'generational') {
+                var fams=[], nf=5+Math.floor(Math.random()*4);
+                for (var f=0;f<nf;f++) fams.push({col:8+Math.random()*(GRID_COLS-16), row:4+Math.random()*(GRID_ROWS-8)});
+                if (userTouch) fams[0]={col:userTouch.col, row:userTouch.row};
+                for (var i=0;i<total;i++) {
+                    var t=i/total;
+                    var fi=Math.floor(t*nf*0.8+Math.random()*nf*0.4)%nf;
+                    var fam=fams[fi], drift=t*6;
+                    var col=fam.col+(Math.random()-0.5)*drift+(Math.random()-0.5)*3;
+                    var row=fam.row+(Math.random()-0.5)*drift*0.5+(Math.random()-0.5)*2;
+                    touches.push({col:clamp(Math.round(col),0,GRID_COLS-1), row:clamp(Math.round(row),0,GRID_ROWS-1), t:t});
+                }
+            }
+            else if (cfg.pattern === 'metropolitan') {
+                var dists=[], nd=15+Math.floor(Math.random()*8);
+                for (var d=0;d<nd;d++) dists.push({
+                    col:Math.random()*GRID_COLS, row:Math.random()*GRID_ROWS,
+                    size:0.3+Math.random()*0.7,
+                    birthTime: d / nd * 0.6  // districts activate progressively
+                });
+                for (var i=0;i<total;i++) {
+                    var t=i/total;
+                    // Only pick from districts that have been "born"
+                    var available = [];
+                    for (var d=0;d<nd;d++) { if (t >= dists[d].birthTime) available.push(dists[d]); }
+                    if (available.length === 0) available.push(dists[0]);
+                    var dist = available[Math.floor(Math.random()*available.length)];
+                    // Spread grows with district age
+                    var age = t - dist.birthTime;
+                    var sp = 2 + age * 8 * dist.size;
+                    var col = dist.col+(Math.random()+Math.random()-1)*sp;
+                    var row = dist.row+(Math.random()+Math.random()-1)*sp*0.5;
+                    if(Math.random()<0.06){ col=Math.random()*GRID_COLS; row=Math.random()*GRID_ROWS; }
+                    touches.push({col:clamp(Math.round(col),0,GRID_COLS-1), row:clamp(Math.round(row),0,GRID_ROWS-1), t:t});
+                }
+            }
+            return touches;
+        }
+
+        function applyTouch(col, row, intensity) {
+            for (var dy=-TOUCH_RADIUS; dy<=TOUCH_RADIUS; dy++) {
+                for (var dx=-TOUCH_RADIUS; dx<=TOUCH_RADIUS; dx++) {
+                    var c=col+dx, r=row+dy;
+                    if (c<0||c>=GRID_COLS||r<0||r>=GRID_ROWS) continue;
+                    var d=Math.sqrt(dx*dx+dy*dy);
+                    if (d>TOUCH_RADIUS) continue;
+                    var idx=r*GRID_COLS+c;
+                    grid[idx] += intensity*Math.exp(-(d*d)/(TOUCH_RADIUS*0.6));
+                    if (grid[idx]>maxIntensity) maxIntensity=grid[idx];
+                }
+            }
+        }
+
+        // ==========================================
+        // AUDIO ENGINE — canvas-driven spectrum
+        // ==========================================
+        var NUM_SPEC_BANDS = 12; // groups of columns → oscillators
+        var specOscs = [];
+        var specGains = [];
+
+        function ensureAudio() {
+            if (audioCtx) return;
+            audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+            compressor = audioCtx.createDynamicsCompressor();
+            compressor.threshold.value=-20; compressor.ratio.value=6; compressor.knee.value=10;
+            compressor.connect(audioCtx.destination);
+            masterGain = audioCtx.createGain(); masterGain.gain.value=0.3;
+            masterGain.connect(compressor);
+
+            // Reverb
+            var len=audioCtx.sampleRate*3;
+            var buf=audioCtx.createBuffer(2,len,audioCtx.sampleRate);
+            for(var ch=0;ch<2;ch++){ var d=buf.getChannelData(ch); for(var i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.5); }
+            reverbNode=audioCtx.createConvolver(); reverbNode.buffer=buf;
+            var reverbGain=audioCtx.createGain(); reverbGain.gain.value=0.35;
+            reverbNode.connect(reverbGain); reverbGain.connect(masterGain);
+        }
+
+        function buildSpectrum() {
+            // Create oscillators mapped to canvas columns
+            killSpectrum();
+            if (!audioCtx) return;
+            var t = audioCtx.currentTime;
+
+            // Frequency range: 50 Hz to 900 Hz — warm register
+            var minF = 50, maxF = 900;
+
+            for (var i = 0; i < NUM_SPEC_BANDS; i++) {
+                var frac = i / (NUM_SPEC_BANDS - 1);
+                // Exponential frequency mapping
+                var freq = minF * Math.pow(maxF / minF, frac);
+
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
+                var filt = audioCtx.createBiquadFilter();
+
+                // All sine for warmth, slight detune for richness
+                osc.type = 'sine';
+                osc.frequency.value = freq + (Math.random() - 0.5) * 1.5;
+
+                filt.type = 'lowpass';
+                filt.frequency.value = freq * 2.5;
+                filt.Q.value = 0.3;
+
+                gain.gain.setValueAtTime(0, t);
+
+                osc.connect(filt);
+                filt.connect(gain);
+                gain.connect(masterGain);
+                gain.connect(reverbNode);
+
+                osc.start(t);
+                specOscs.push(osc);
+                specGains.push(gain);
+            }
+        }
+
+        function killSpectrum() {
+            if (!audioCtx) return;
+            var t = audioCtx.currentTime;
+            specOscs.forEach(function(o) { try { o.stop(t + 0.1); } catch(e) {} });
+            specOscs = []; specGains = [];
+        }
+
+        function updateSpectrumFromGrid() {
+            // Sum each column band and map to oscillator volume
+            if (specGains.length === 0 || !audioCtx) return;
+            var t = audioCtx.currentTime;
+            var colsPerBand = Math.floor(GRID_COLS / NUM_SPEC_BANDS);
+
+            for (var b = 0; b < NUM_SPEC_BANDS; b++) {
+                var startCol = b * colsPerBand;
+                var endCol = Math.min(startCol + colsPerBand, GRID_COLS);
+                var sum = 0;
+                for (var c = startCol; c < endCol; c++) {
+                    for (var r = 0; r < GRID_ROWS; r++) {
+                        sum += grid[r * GRID_COLS + c];
+                    }
+                }
+                // Normalize against display ceiling
+                var maxPossible = (endCol - startCol) * GRID_ROWS * displayCeiling;
+                var norm = maxPossible > 0 ? sum / maxPossible : 0;
+                norm = Math.sqrt(norm); // perceptual curve
+
+                // Volume: steep rolloff on upper bands keeps it warm
+                var bandVol = norm * 0.08 / Math.pow(1 + b * 0.15, 1.5);
+                specGains[b].gain.linearRampToValueAtTime(Math.max(0, bandVol), t + 0.15);
+            }
+        }
+
+        // Bell tone for individual touches
+        function sonifyTouch(col, row) {
+            if (!audioCtx) return;
+            var now = audioCtx.currentTime;
+            if (now - lastSonifyTime < 0.03) return; lastSonifyTime = now;
+
+            var freq = 50 * Math.pow(900/50, col/GRID_COLS);
+            var bright = 1 - (row / GRID_ROWS);
+
+            var osc = audioCtx.createOscillator();
+            var gain = audioCtx.createGain();
+            osc.type = 'sine'; osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.04 * (0.5 + bright * 0.5), now + 0.008);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+            osc.connect(gain); gain.connect(masterGain); gain.connect(reverbNode);
+            osc.start(now); osc.stop(now + 0.6);
+        }
+
+        // ==========================================
+        // USER TOUCH
+        // ==========================================
+        function handleTouch(e) {
+            if (hasPlaced) return; e.preventDefault();
+            var rect = canvas.getBoundingClientRect(), x, y;
+            if (e.touches) { x = e.touches[0].clientX - rect.left; y = e.touches[0].clientY - rect.top; }
+            else { x = e.clientX - rect.left; y = e.clientY - rect.top; }
+            var col = Math.floor(x * (W / rect.width) / cellW);
+            var row = Math.floor(y * (H / rect.height) / cellH);
+            col = clamp(col, 0, GRID_COLS - 1); row = clamp(row, 0, GRID_ROWS - 1);
+
+            userTouch = { col: col, row: row }; hasPlaced = true;
+            ensureAudio(); if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            applyTouch(col, row, COMMUNITIES[currentComm].touchIntensity); render2D(); updateTerrain();
+
+            // User touch tone — mapped to position
+            var freq = 50 * Math.pow(900/50, col/GRID_COLS);
+            var now = audioCtx.currentTime;
+            var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.type = 'sine'; o.frequency.value = freq;
+            g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(0.12, now + 0.04);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 2);
+            o.connect(g); g.connect(masterGain); g.connect(reverbNode);
+            o.start(now); o.stop(now + 2.5);
+
+            overlay.classList.add('hidden'); canvas.style.cursor = 'default';
+            playBtn.disabled = false;
+            ownershipVal.textContent = '1 / 1';
+            ownershipNote.textContent = 'sole author';
+
+            // Prime: show what's about to unfold
+            var cfg = COMMUNITIES[currentComm];
+            setNarrator(cfg.totalVoices.toLocaleString() + ' people · ' + cfg.years + ' years');
+        }
+
+        canvas.addEventListener('mousedown', handleTouch);
+        canvas.addEventListener('touchstart', handleTouch, { passive: false });
+        overlay.addEventListener('mousedown', handleTouch);
+        overlay.addEventListener('touchstart', handleTouch, { passive: false });
+
+        // ==========================================
+        // OWNERSHIP
+        // ==========================================
+        function updateOwnership(voiceCount) {
+            var total = voiceCount + 1;
+            ownershipVal.textContent = '1 / ' + total.toLocaleString();
+            ownershipNote.textContent = total <= 1 ? 'sole author' : '';
+        }
+
+        // ==========================================
+        // NARRATOR
+        // ==========================================
+        function setNarrator(text) {
+            narratorEl.classList.add('fade');
+            setTimeout(function() { narratorEl.textContent = text; narratorEl.classList.remove('fade'); }, 350);
+        }
+
+        // ==========================================
+        // PLAYBACK
+        // ==========================================
+        function startPlayback() {
+            if (!hasPlaced || isPlaying) return;
+            isPlaying = true; playBtn.textContent = '❚❚ Pause';
+            timelineSlider.disabled = false;
+
+            allTouches = generateTouches(currentComm);
+            displayedUpTo = 0; currentEventIdx = 0;
+            grid = new Float32Array(GRID_COLS * GRID_ROWS); maxIntensity = 0;
+            applyTouch(userTouch.col, userTouch.row, COMMUNITIES[currentComm].touchIntensity);
+
+            playStartTime = performance.now(); playProgress = 0;
+
+            buildSpectrum();
+            tick();
+        }
+
+        function pausePlayback() {
+            isPlaying = false; playBtn.textContent = '▶ Play';
+            if (animFrame) cancelAnimationFrame(animFrame);
+            killSpectrum();
+        }
+
+        function tick() {
+            if (!isPlaying) return;
+            var cfg = COMMUNITIES[currentComm];
+            var elapsed = performance.now() - playStartTime;
+            playProgress = Math.min(1, elapsed / cfg.durationMs);
+
+            var targetIdx = Math.floor(playProgress * allTouches.length);
+            var maxPer = Math.max(1, Math.ceil(allTouches.length / (cfg.durationMs / 16)));
+            var count = 0;
+            while (displayedUpTo < targetIdx && count < maxPer) {
+                var touch = allTouches[displayedUpTo];
+                applyTouch(touch.col, touch.row, cfg.touchIntensity);
+                if (displayedUpTo % Math.max(1, Math.floor(cfg.totalVoices / 120)) === 0) {
+                    sonifyTouch(touch.col, touch.row);
+                }
+                displayedUpTo++; count++;
+            }
+
+            // Update continuous spectrum from canvas
+            updateSpectrumFromGrid();
+
+            // Events
+            var events = cfg.events;
+            for (var ei = currentEventIdx; ei < events.length; ei++) {
+                if (playProgress >= events[ei].t) { setNarrator(events[ei].text); currentEventIdx = ei + 1; }
+            }
+
+            timelineSlider.value = Math.floor(playProgress * 1000);
+            updateOwnership(displayedUpTo);
+            render2D(); updateTerrain();
+
+            if (playProgress >= 1) {
+                isPlaying = false; playBtn.textContent = '▶ Replay';
+                // Brief fade then kill
+                if (audioCtx) {
+                    var t = audioCtx.currentTime;
+                    specGains.forEach(function(g) {
+                        g.gain.linearRampToValueAtTime(0, t + 0.8);
+                    });
+                    setTimeout(function() { if (!isPlaying) killSpectrum(); }, 1000);
+                }
+                return;
+            }
+            animFrame = requestAnimationFrame(tick);
+        }
+
+        timelineSlider.addEventListener('input', function() {
+            if (allTouches.length === 0) return;
+            if (isPlaying) pausePlayback();
+            var tp = parseInt(timelineSlider.value) / 1000;
+            grid = new Float32Array(GRID_COLS * GRID_ROWS); maxIntensity = 0;
+            if (userTouch) applyTouch(userTouch.col, userTouch.row, COMMUNITIES[currentComm].touchIntensity);
+            var ti = Math.floor(tp * allTouches.length);
+            var scrubIntensity = COMMUNITIES[currentComm].touchIntensity;
+            for (var i = 0; i < ti; i++) applyTouch(allTouches[i].col, allTouches[i].row, scrubIntensity);
+            displayedUpTo = ti; playProgress = tp;
+            updateOwnership(displayedUpTo); render2D(); updateTerrain();
+        });
+
+        // ==========================================
+        // CONTROLS
+        // ==========================================
+        playBtn.addEventListener('click', function() {
+            if (isPlaying) pausePlayback();
+            else {
+                if (playProgress >= 1) {
+                    playProgress = 0; displayedUpTo = 0;
+                    grid = new Float32Array(GRID_COLS * GRID_ROWS); maxIntensity = 0;
+                    if (userTouch) applyTouch(userTouch.col, userTouch.row, COMMUNITIES[currentComm].touchIntensity);
+                    render2D(); updateTerrain();
+                }
+                startPlayback();
+            }
+        });
+
+        resetBtn.addEventListener('click', function() {
+            if (isPlaying) pausePlayback();
+            grid = new Float32Array(GRID_COLS * GRID_ROWS); maxIntensity = 0;
+            userTouch = null; hasPlaced = false;
+            allTouches = []; displayedUpTo = 0; playProgress = 0; currentEventIdx = 0;
+            overlay.classList.remove('hidden'); canvas.style.cursor = 'crosshair';
+            playBtn.disabled = true; playBtn.textContent = '▶ Play';
+            timelineSlider.disabled = true; timelineSlider.value = 0;
+            ownershipVal.innerHTML = '&mdash;'; ownershipNote.textContent = '';
+            narratorEl.textContent = '';
+            killSpectrum();
+            render2D(); updateTerrain();
+        });
+
+        commBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var key = btn.dataset.comm;
+                if (key === currentComm) return;
+                commBtns.forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active'); currentComm = key;
+                applyTheme(key);
+
+                var cfg = COMMUNITIES[key];
+                tlEndEl.textContent = cfg.years + (cfg.years === 1 ? ' Year' : ' Years');
+
+                if (allTouches.length > 0 || isPlaying) {
+                    if (isPlaying) pausePlayback();
+                    allTouches = []; displayedUpTo = 0; playProgress = 0;
+                    timelineSlider.value = 0;
+                    grid = new Float32Array(GRID_COLS * GRID_ROWS); maxIntensity = 0;
+                    if (userTouch) applyTouch(userTouch.col, userTouch.row, COMMUNITIES[currentComm].touchIntensity);
+                    playBtn.textContent = '▶ Play';
+                    ownershipVal.textContent = '1 / 1'; ownershipNote.textContent = 'sole author';
+                    narratorEl.textContent = '';
+                    render2D(); updateTerrain();
+                }
+            });
+        });
+
+        // ==========================================
+        // INIT
+        // ==========================================
+        applyTheme(currentComm);
+        tlEndEl.textContent = COMMUNITIES[currentComm].years + ' Years';
+        render2D(); updateTerrain();
+    })();
+    </script>
+</body>
+</html>

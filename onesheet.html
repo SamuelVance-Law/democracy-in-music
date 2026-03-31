@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Democracy in Music — One Sheet</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --text: #c8c8c8;
+            --text-dim: #777;
+            --text-bright: #efefef;
+            --bg: #0a0a0a;
+            --border: rgba(255,255,255,0.06);
+            --piano: #d4a842;
+            --miro: #46d2d2;
+            --assembly: #a78bfa;
+            --parliament: #e07a3a;
+            --choreo: #d25a6e;
+            --epoch: #6aa860;
+            --meanmode: #d4a842;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'EB Garamond', Georgia, serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 17px;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Grain */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.07;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-size: 200px 200px;
+        }
+
+        /* ===== LAYOUT ===== */
+        .page {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            padding: 80px 0 60px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-label {
+            font-size: 10px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            font-size: clamp(36px, 6vw, 54px);
+            font-weight: 400;
+            letter-spacing: 0.12em;
+            color: var(--text-bright);
+            text-transform: uppercase;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .header .tagline {
+            font-size: clamp(17px, 2.5vw, 21px);
+            font-style: italic;
+            color: var(--text-dim);
+            max-width: 440px;
+            margin: 0 auto;
+            line-height: 1.55;
+        }
+
+        /* ===== PITCH ===== */
+        .pitch {
+            padding: 52px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pitch p {
+            max-width: 620px;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .pitch .accent {
+            color: var(--text-bright);
+            font-weight: 500;
+        }
+
+        /* ===== PROTOTYPES GRID ===== */
+        .prototypes {
+            padding: 56px 0 48px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-label {
+            font-size: 10px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .proto-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .proto-item {
+            padding: 28px 32px;
+            border: 1px solid var(--border);
+            margin: -0.5px;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        .proto-item:hover {
+            background: rgba(255,255,255,0.015);
+        }
+
+        .proto-num {
+            font-size: 9px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .proto-name {
+            font-size: 22px;
+            font-weight: 400;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+
+        .proto-method {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .proto-desc {
+            font-size: 15px;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .proto-link {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: opacity 0.3s;
+            opacity: 0.5;
+        }
+
+        .proto-link:hover {
+            opacity: 1;
+        }
+
+        /* Colors */
+        .proto-piano .proto-num,
+        .proto-piano .proto-name,
+        .proto-piano .proto-method,
+        .proto-piano .proto-link { color: var(--piano); }
+
+        .proto-miro .proto-num,
+        .proto-miro .proto-name,
+        .proto-miro .proto-method,
+        .proto-miro .proto-link { color: var(--miro); }
+
+        .proto-assembly .proto-num,
+        .proto-assembly .proto-name,
+        .proto-assembly .proto-method,
+        .proto-assembly .proto-link { color: var(--assembly); }
+
+        .proto-parliament .proto-num,
+        .proto-parliament .proto-name,
+        .proto-parliament .proto-method,
+        .proto-parliament .proto-link { color: var(--parliament); }
+
+        .proto-choreo .proto-num,
+        .proto-choreo .proto-name,
+        .proto-choreo .proto-method,
+        .proto-choreo .proto-link { color: var(--choreo); }
+
+        .proto-epoch .proto-num,
+        .proto-epoch .proto-name,
+        .proto-epoch .proto-method,
+        .proto-epoch .proto-link { color: var(--epoch); }
+
+        .proto-meanmode .proto-num,
+        .proto-meanmode .proto-name,
+        .proto-meanmode .proto-method,
+        .proto-meanmode .proto-link { color: var(--meanmode); }
+
+        /* ===== VISION ===== */
+        .vision {
+            padding: 56px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .vision-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+        }
+
+        .vision h3 {
+            font-size: 10px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .vision p {
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        .vision ul {
+            list-style: none;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        .vision ul li {
+            padding-left: 18px;
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+        .vision ul li::before {
+            content: '—';
+            position: absolute;
+            left: 0;
+            color: var(--text-dim);
+        }
+
+        /* ===== LINKS ===== */
+        .links-bar {
+            padding: 40px 0;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .links-bar a {
+            display: inline-block;
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            text-decoration: none;
+            margin: 0 20px;
+            transition: color 0.3s;
+        }
+
+        .links-bar a:hover {
+            color: var(--text-bright);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            padding: 48px 0 64px;
+            text-align: center;
+        }
+
+        .footer-title {
+            font-size: 13px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        .footer-contact {
+            font-size: 15px;
+            color: var(--text);
+            font-style: italic;
+        }
+
+        .footer-year {
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: #444;
+            margin-top: 24px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .page { padding: 0 24px; }
+            .header { padding: 56px 0 44px; }
+            .proto-list { grid-template-columns: 1fr; }
+            .vision-columns { grid-template-columns: 1fr; gap: 32px; }
+            .links-bar a { display: block; margin: 0 0 10px; }
+        }
+
+        /* ===== FADE IN ===== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(16px);
+            animation: fadeUp 0.8s ease forwards;
+        }
+
+        .fade-in:nth-child(2) { animation-delay: 0.1s; }
+        .fade-in:nth-child(3) { animation-delay: 0.2s; }
+        .fade-in:nth-child(4) { animation-delay: 0.3s; }
+        .fade-in:nth-child(5) { animation-delay: 0.4s; }
+        .fade-in:nth-child(6) { animation-delay: 0.5s; }
+        .fade-in:nth-child(7) { animation-delay: 0.6s; }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <!-- HEADER -->
+    <div class="header fade-in">
+        <div class="header-label">Project Overview · 2026</div>
+        <h1>Democracy<br>in Music</h1>
+        <p class="tagline">
+            Models for how large groups of people might create and own music together using democratic decision-making.
+        </p>
+    </div>
+
+    <!-- PITCH -->
+    <div class="pitch fade-in">
+        <p>
+            What follows is a set of working prototypes for <span class="accent">communal composition</span>. Each explores a different democratic mechanism — averaging, spatial voting, quadratic voting, electoral systems, embodied movement, generational ownership — applied to the creation of music. They run in a browser. You can play them. None are finished pieces of music. They are <span class="accent">instruments waiting for you</span> to pick them up.
+        </p>
+    </div>
+
+    <!-- PROTOTYPES -->
+    <div class="prototypes fade-in">
+        <div class="section-label">Seven Prototypes</div>
+
+        <div class="proto-list">
+            <div class="proto-item proto-piano">
+                <div class="proto-num">I</div>
+                <div class="proto-name">Piano</div>
+                <div class="proto-method">Mean &amp; Mode</div>
+                <div class="proto-desc">
+                    30,000 people sit at a piano. Each plays a note. The output is the statistical result of every choice. The simplest model is pure democratic averaging applied to pitch. Chords allow you to create harmony from proportional representation.
+                </div>
+                <a class="proto-link" href="piano.html">Play →</a>
+            </div>
+
+            <div class="proto-item proto-meanmode">
+                <div class="proto-num">I-b</div>
+                <div class="proto-name">Mean Mode</div>
+                <div class="proto-method">Continuous Pitch</div>
+                <div class="proto-desc">
+                    From discrete notes to a continuous frequency space. Thousands of votes cluster into a visible distribution. Switch between mean, mode, and chord to hear how the same votes produce different music depending on the aggregation method.
+                </div>
+                <a class="proto-link" href="meanmode.html">Play →</a>
+            </div>
+
+            <div class="proto-item proto-miro">
+                <div class="proto-num">II</div>
+                <div class="proto-name">Miro</div>
+                <div class="proto-method">Spatial Voting</div>
+                <div class="proto-desc">
+                    A shared canvas where each touch becomes a vote. Overlapping choices form peaks in a 3D landscape. The topography is sonified becoming sound. Inspired by Miró's <em>Bleu II</em>.
+                </div>
+                <a class="proto-link" href="miro.html">Play →</a>
+            </div>
+
+            <div class="proto-item proto-assembly">
+                <div class="proto-num">III</div>
+                <div class="proto-name">Assembly</div>
+                <div class="proto-method">Quadratic Voting</div>
+                <div class="proto-desc">
+                    Five layers of pre-composed musical blocks. Participants spend voice credits to vote on which blocks to play. Concentrating votes costs quadratically more, so the output reflects not just majority preference but intensity of feeling.
+                </div>
+                <a class="proto-link" href="assembly.html">Play →</a>
+            </div>
+
+            <div class="proto-item proto-parliament">
+                <div class="proto-num">IV</div>
+                <div class="proto-name">Parliament</div>
+                <div class="proto-method">Electoral Systems</div>
+                <div class="proto-desc">
+                    Vote for one of seven parties alongside 300 simulated citizens. Toggle between first past the post, proportional representation, and coalition. The votes stay the same. The system changes.
+                </div>
+                <a class="proto-link" href="parliament.html">Play →</a>
+            </div>
+
+            <div class="proto-item proto-choreo">
+                <div class="proto-num">V</div>
+                <div class="proto-name">Choreography</div>
+                <div class="proto-method">Body as Instrument</div>
+                <div class="proto-desc">
+                    Democracy as representation, as being seen, translated, on the record. Cameras track dancers' movements and transcribe them into sound in real time. The tension between abandonment and structure is lived out not in response to an external score, but to the other people on stage.
+                </div>
+                <a class="proto-link" href="choreography.html">Play →</a>
+            </div>
+
+            <div class="proto-item proto-epoch">
+                <div class="proto-num">VI</div>
+                <div class="proto-name">Epoch</div>
+                <div class="proto-method">Generational Ownership</div>
+                <div class="proto-desc">
+                    A composition that accumulates over days, months, generations. A neighbourhood builds a shared piece over a decade. A digital community of 50,000 whose work arrives in viral waves. A city of half a million over half a century. The literal ownership of cultural history.
+                </div>
+                <a class="proto-link" href="epoch.html">Play →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISION -->
+    <div class="vision fade-in">
+        <div class="vision-columns">
+            <div class="vision-col">
+                <h3>Core Idea</h3>
+                <p>
+                    Music has always been communal but its creation and ownership rarely are. These prototypes explore what happens when democratic governance is applied directly to the act of making music. The process of creation becomes as democratic as the outcome.
+                </p>
+            </div>
+            <div class="vision-col">
+                <h3>Next Steps</h3>
+                <ul>
+                    <li>Real communities, real networks</li>
+                    <li>Neighbourhood touchscreens in public squares</li>
+                    <li>Camera-tracked dance performances</li>
+                    <li>Orchestras whose audiences vote on what comes next</li>
+                    <li>Onchain provenance tying every touch to its creators</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- LINKS -->
+    <div class="links-bar fade-in">
+        <a href="epk.html">Full Document</a>
+        <a href="index.html">All Prototypes</a>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer fade-in">
+        <div class="footer-title">Contact</div>
+        <div class="footer-contact"><a href="mailto:samuelvancelaw@gmail.com" style="color: var(--text); text-decoration: none;">samuelvancelaw@gmail.com</a></div>
+        <div class="footer-contact" style="margin-top: 4px;"><a href="https://samvancelaw.com" target="_blank" style="color: var(--text); text-decoration: none;">samvancelaw.com</a></div>
+        <div class="footer-year">Democracy in Music · 2026</div>
+    </div>
+
+</div>
+
+</body>
+</html>

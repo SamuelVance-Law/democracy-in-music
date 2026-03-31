@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mean Mode — Democracy in Music</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'EB Garamond', Georgia, serif;
+            background: #0a0a12;
+            color: #c8c4bc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        #grain {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; z-index: 9999; opacity: 0.03;
+        }
+
+        a.home-link {
+            position: fixed; top: 12px; left: 16px;
+            font-size: 12px; color: #887a60; text-decoration: none;
+            letter-spacing: 2px; z-index: 99;
+        }
+        a.home-link:hover { color: #d4a842; }
+
+        #header { text-align: center; padding: 28px 20px 10px; }
+        #header h1 {
+            font-size: 30px; letter-spacing: 10px;
+            font-weight: 400; color: #ede8df;
+        }
+        #header p {
+            font-size: 14px; font-style: italic;
+            color: #a09888; margin-top: 6px;
+        }
+
+        #canvas-wrap {
+            position: relative; width: 100%; max-width: 780px;
+            padding: 0 16px; margin-top: 8px;
+        }
+        #mainCanvas {
+            width: 100%; height: auto; display: block;
+            border: 1px solid rgba(212,168,66,0.12);
+            border-radius: 3px;
+            cursor: crosshair; touch-action: none;
+        }
+
+        #start-overlay {
+            position: absolute; top: 0; left: 16px; right: 16px; bottom: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            background: rgba(10,10,18,0.88);
+            border-radius: 3px; cursor: pointer;
+            transition: opacity 0.8s;
+            z-index: 5;
+        }
+        #start-overlay.hidden { opacity: 0; pointer-events: none; }
+        .overlay-text {
+            font-size: 22px; letter-spacing: 6px;
+            text-transform: uppercase; color: #d4a842;
+            margin-bottom: 12px;
+        }
+        .overlay-sub {
+            font-size: 15px; color: #c8c4bc; font-style: italic;
+            max-width: 320px; text-align: center; line-height: 1.6;
+        }
+
+        #status {
+            text-align: center; padding: 8px 20px 4px;
+            font-size: 13px; color: #887a60; letter-spacing: 0.5px;
+            min-height: 24px;
+        }
+        #status .note { color: #d4a842; font-weight: 500; }
+        #status .freq { color: #a09888; font-size: 12px; }
+        #status .user-note { color: #7ab0e8; }
+        #status .consensus { color: #c8c4bc; }
+
+        #controls {
+            display: flex; align-items: center; justify-content: center;
+            gap: 22px; padding: 8px 20px; flex-wrap: wrap;
+        }
+
+        #mode-toggle { display: flex; gap: 0; }
+        .mode-btn {
+            padding: 7px 22px; background: none;
+            border: 1px solid #3a3528; color: #a09888;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 12px; letter-spacing: 2px;
+            cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+        }
+        .mode-btn:first-child { border-radius: 3px 0 0 3px; }
+        .mode-btn:last-child { border-radius: 0 3px 3px 0; border-left: none; }
+        .mode-btn:not(:first-child) { border-left: none; }
+        .mode-btn.active {
+            background: #d4a842; border-color: #d4a842; color: #0a0a12;
+        }
+
+        .ctrl-group { display: flex; align-items: center; gap: 7px; }
+        .ctrl-group label {
+            font-size: 11px; color: #c8c4bc; letter-spacing: 2px; text-transform: uppercase;
+        }
+        .ctrl-group .val {
+            font-size: 11px; color: #d4a842; min-width: 36px; text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none; appearance: none;
+            width: 100px; height: 3px; background: #1e1c24;
+            border-radius: 2px; outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 14px; height: 14px;
+            border-radius: 50%; background: #d4a842; cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 14px; height: 14px; border-radius: 50%;
+            background: #d4a842; cursor: pointer; border: none;
+        }
+
+        #info {
+            text-align: center; padding: 10px 24px 32px;
+            font-size: 13px; color: #887a60; line-height: 1.8;
+            max-width: 540px;
+        }
+        #info strong { color: #c8c4bc; }
+
+        .ctrl-btn {
+            padding: 7px 18px; background: none;
+            border: 1px solid #3a3528; color: #a09888;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 12px; letter-spacing: 2px;
+            cursor: pointer; border-radius: 3px;
+            transition: all 0.2s; text-transform: uppercase;
+        }
+        .ctrl-btn:hover { border-color: #d4a842; color: #d4a842; }
+    </style>
+</head>
+<body>
+    <canvas id="grain"></canvas>
+    <a class="home-link" href="index.html">&larr; Home</a>
+
+    <div id="header">
+        <h1>MEAN MODE</h1>
+        <p>Different kinds of average</p>
+    </div>
+
+    <div id="canvas-wrap">
+        <canvas id="mainCanvas" width="780" height="440"></canvas>
+        <div id="start-overlay">
+            <div class="overlay-text">Click to listen</div>
+            <div class="overlay-sub">Add your vote and drag to change it. Or let go and just listen.</div>
+        </div>
+    </div>
+
+    <div id="status">&nbsp;</div>
+
+    <div id="controls">
+        <button class="ctrl-btn" id="play-stop">Stop</button>
+        <button class="ctrl-btn" id="clear-btn">Clear</button>
+        <div id="mode-toggle">
+            <button class="mode-btn active" data-mode="mean">Mean</button>
+            <button class="mode-btn" data-mode="mode">Mode</button>
+            <button class="mode-btn" data-mode="chord">Chord</button>
+        </div>
+        <div class="ctrl-group">
+            <label>Voices</label>
+            <input type="range" id="voterSlider" min="2" max="30000" value="200">
+            <span class="val" id="voterVal">200</span>
+        </div>
+    </div>
+
+    <div id="info">
+        A continuous tone shaped by collective will.
+        <strong>Mean</strong>: every voice pulls the pitch.
+        <strong>Mode</strong>: the majority note wins.
+        <strong>Chord</strong>: the top choices form a chord.
+    </div>
+
+    <script>
+    (function() {
+        // ==========================================
+        // CONFIGURATION
+        // ==========================================
+        var MIN_FREQ = 110;   // A2
+        var MAX_FREQ = 880;   // A5
+        var SCORE_PPS = 18;   // score pixels per second
+        var W = 780, H = 440;
+        var LABEL_W = 44;
+        var DIST_W = 90;
+        var SCORE_X = LABEL_W;
+        var SCORE_W = W - LABEL_W - DIST_W - 10;
+        var DIST_X = W - DIST_W - 5;
+        var MARGIN_TOP = 18, MARGIN_BOT = 18;
+
+        // All chromatic notes from A2 to A5
+        var NOTE_NAMES = [
+            'A','B\u266D','B','C','C\u266F','D','E\u266D','E','F','F\u266F','G','A\u266D'
+        ];
+        var NOTES = [];
+        (function buildNotes() {
+            for (var midi = 45; midi <= 81; midi++) { // A2=45 to A5=81
+                var freq = 440 * Math.pow(2, (midi - 69) / 12);
+                var octave = Math.floor((midi - 12) / 12);
+                var noteIdx = (midi - 21) % 12;
+                var name = NOTE_NAMES[noteIdx] + octave;
+                var isWhite = [0,2,3,5,7,8,10].indexOf(noteIdx) >= 0;
+                NOTES.push({ freq: freq, name: name, midi: midi, isWhite: isWhite, noteIdx: noteIdx });
+            }
+        })();
+
+        // ==========================================
+        // STATE
+        // ==========================================
+        var canvas = document.getElementById('mainCanvas');
+        var ctx = canvas.getContext('2d');
+        var overlay = document.getElementById('start-overlay');
+        var statusEl = document.getElementById('status');
+        var voterSlider = document.getElementById('voterSlider');
+        var voterValEl = document.getElementById('voterVal');
+        var modeBtns = document.querySelectorAll('.mode-btn');
+
+        var started = false;
+        var playing = true;
+        var demoMode = 'mean';
+        var numVoters = 200;
+        var voters = [];
+        var userFreq = null;
+        var collectiveFreq = 330; // initial
+        var currentSpread = 0.3;
+
+        // Audio
+        var audioCtx = null;
+        var mainOscs = [], mainGains = [];
+        var dissOscs = [], dissGains = [];
+        var chordOscs = [], chordGains = []; // for chord mode 2nd and 3rd voices
+        var masterGain = null, mainFilter = null;
+        var reverbGain = null;
+
+        // Chord frequencies
+        var chordFreqs = [330, 330, 330]; // top 3 notes
+        var chordWeights = [1, 0, 0];    // relative strengths
+
+        // Score history
+        var history = [];
+        var MAX_HISTORY = Math.ceil(SCORE_W);
+        var scoreAccum = 0;
+
+        var lastTime = 0;
+        var isPointerDown = false;
+
+        // ==========================================
+        // GRAIN
+        // ==========================================
+        (function() {
+            var gc = document.getElementById('grain');
+            gc.width = window.innerWidth; gc.height = window.innerHeight;
+            var gctx = gc.getContext('2d');
+            var gi = gctx.createImageData(gc.width, gc.height);
+            var gd = gi.data;
+            for (var i = 0; i < gd.length; i += 4) {
+                var v = Math.floor(Math.random() * 255);
+                gd[i] = gd[i+1] = gd[i+2] = v; gd[i+3] = 255;
+            }
+            gctx.putImageData(gi, 0, 0);
+        })();
+
+        // ==========================================
+        // FREQUENCY HELPERS
+        // ==========================================
+        var LOG_MIN = Math.log2(MIN_FREQ);
+        var LOG_MAX = Math.log2(MAX_FREQ);
+        var LOG_RANGE = LOG_MAX - LOG_MIN;
+
+        function freqToY(freq) {
+            var norm = (Math.log2(freq) - LOG_MIN) / LOG_RANGE;
+            return MARGIN_TOP + (1 - norm) * (H - MARGIN_TOP - MARGIN_BOT);
+        }
+
+        function yToFreq(y) {
+            var norm = 1 - (y - MARGIN_TOP) / (H - MARGIN_TOP - MARGIN_BOT);
+            norm = Math.max(0, Math.min(1, norm));
+            return Math.pow(2, LOG_MIN + norm * LOG_RANGE);
+        }
+
+        function nearestNote(freq) {
+            var best = NOTES[0], bestDist = Infinity;
+            for (var i = 0; i < NOTES.length; i++) {
+                var d = Math.abs(Math.log2(freq / NOTES[i].freq));
+                if (d < bestDist) { bestDist = d; best = NOTES[i]; }
+            }
+            return best;
+        }
+
+        // ==========================================
+        // VOTERS
+        // ==========================================
+        var clusters = [];
+
+        function initClusters() {
+            var numClusters = 2 + Math.floor(Math.random() * 3);
+            clusters = [];
+            for (var c = 0; c < numClusters; c++) {
+                // Spread evenly across range with some jitter
+                var base = LOG_MIN + 0.3 + (c / numClusters) * (LOG_RANGE - 0.6);
+                var jitter = (Math.random() - 0.5) * (LOG_RANGE / numClusters) * 0.6;
+                clusters.push({
+                    center: base + jitter,
+                    drift: (Math.random() - 0.5) * 0.03,
+                    weight: 0.5 + Math.random() * 1.5,
+                });
+            }
+        }
+
+        function initVoters() {
+            voters = [];
+            initClusters();
+            for (var i = 0; i < numVoters; i++) {
+                var cl = clusters[Math.floor(Math.random() * clusters.length)];
+                var logF = cl.center + (Math.random() + Math.random() - 1) * 0.4;
+                logF = Math.max(LOG_MIN + 0.15, Math.min(LOG_MAX - 0.15, logF));
+                voters.push({
+                    freq: Math.pow(2, logF),
+                    cluster: Math.floor(Math.random() * clusters.length),
+                    localDrift: (Math.random() - 0.5) * 0.005,
+                    conviction: 0.3 + Math.random() * 0.7
+                });
+            }
+        }
+
+        function driftVoters(dt) {
+            // Drift cluster centers — sticky to notes, with occasional jumps
+            for (var c = 0; c < clusters.length; c++) {
+                var cl = clusters[c];
+
+                // Find nearest note to current cluster center
+                var nearNote = nearestNote(Math.pow(2, cl.center));
+                var noteLog = Math.log2(nearNote.freq);
+
+                // Pull toward nearest note (makes clusters sticky)
+                var notePull = (noteLog - cl.center) * 0.08 * dt * 60;
+                cl.center += notePull;
+
+                // Apply any ongoing drift (from kicks)
+                cl.center += cl.drift * dt * 60;
+
+                // Heavy damping on drift — movement decays quickly after a kick
+                cl.drift *= Math.pow(0.96, dt * 60);
+
+                // Edge repulsion
+                var edgeMargin = 0.4;
+                if (cl.center < LOG_MIN + edgeMargin) {
+                    cl.drift += (LOG_MIN + edgeMargin - cl.center) * 0.01 * dt * 60;
+                }
+                if (cl.center > LOG_MAX - edgeMargin) {
+                    cl.drift += (LOG_MAX - edgeMargin - cl.center) * 0.01 * dt * 60;
+                }
+                cl.drift = Math.max(-0.06, Math.min(0.06, cl.drift));
+                cl.center = Math.max(LOG_MIN + 0.2, Math.min(LOG_MAX - 0.2, cl.center));
+            }
+
+            // Occasional jump: kick a cluster hard enough to escape current note
+            // This creates the "hold... hold... SHIFT" pattern
+            if (Math.random() < 0.008 * dt * 60) {
+                var ci = Math.floor(Math.random() * clusters.length);
+                // Jump 2-7 semitones in a random direction
+                var semitones = (2 + Math.floor(Math.random() * 6)) * (Math.random() < 0.5 ? -1 : 1);
+                clusters[ci].drift = (semitones / 12) * 0.15;
+            }
+
+            // Rarer large realignment: cluster teleports to a new region
+            if (Math.random() < 0.001 * dt * 60) {
+                var ci = Math.floor(Math.random() * clusters.length);
+                clusters[ci].center = LOG_MIN + 0.4 + Math.random() * (LOG_RANGE - 0.8);
+                clusters[ci].drift = 0;
+            }
+
+            // Drift individual voters — pulled toward their cluster center
+            for (var i = 0; i < voters.length; i++) {
+                var v = voters[i];
+                var cl = clusters[v.cluster % clusters.length];
+                var logF = Math.log2(v.freq);
+
+                // Pull toward cluster center (mean reversion)
+                var pull = (cl.center - logF) * 0.02 * dt * 60;
+                logF += pull;
+
+                // Small local wander
+                v.localDrift += (Math.random() - 0.5) * 0.0015 * dt * 60;
+                v.localDrift *= Math.pow(0.99, dt * 60);
+                logF += v.localDrift * dt * 60 * (1 - v.conviction * 0.5);
+
+                // Hard clamp
+                logF = Math.max(LOG_MIN + 0.1, Math.min(LOG_MAX - 0.1, logF));
+                v.freq = Math.pow(2, logF);
+            }
+
+            // Occasionally a voter switches allegiance
+            if (Math.random() < 0.002 * dt * 60) {
+                var vi = Math.floor(Math.random() * voters.length);
+                voters[vi].cluster = Math.floor(Math.random() * clusters.length);
+            }
+        }
+
+        function ensureVoterCount() {
+            // Reinit clusters if needed
+            if (clusters.length === 0) initClusters();
+            while (voters.length < numVoters) {
+                var cl = Math.floor(Math.random() * clusters.length);
+                var logF = clusters[cl].center + (Math.random() + Math.random() - 1) * 0.4;
+                logF = Math.max(LOG_MIN + 0.15, Math.min(LOG_MAX - 0.15, logF));
+                voters.push({ freq: Math.pow(2, logF), cluster: cl, localDrift: (Math.random() - 0.5) * 0.005, conviction: 0.3 + Math.random() * 0.7 });
+            }
+            while (voters.length > numVoters) voters.pop();
+        }
+
+        // ==========================================
+        // COMPUTATION
+        // ==========================================
+        function computeCollective() {
+            var allLogFreqs = [];
+            for (var i = 0; i < voters.length; i++) allLogFreqs.push(Math.log2(voters[i].freq));
+            if (userFreq !== null) allLogFreqs.push(Math.log2(userFreq));
+
+            var n = allLogFreqs.length;
+            if (n === 0) return;
+
+            // Always compute note counts (needed for mode and chord)
+            var counts = {};
+            for (var i = 0; i < NOTES.length; i++) counts[NOTES[i].midi] = 0;
+            for (var i = 0; i < n; i++) {
+                var f = Math.pow(2, allLogFreqs[i]);
+                var best = nearestNote(f);
+                counts[best.midi]++;
+            }
+
+            // Sort notes by vote count descending
+            var sorted = [];
+            for (var key in counts) {
+                if (counts[key] > 0) sorted.push({ midi: parseInt(key), count: counts[key] });
+            }
+            sorted.sort(function(a, b) { return b.count - a.count; });
+
+            if (demoMode === 'mean') {
+                var sum = 0;
+                for (var i = 0; i < n; i++) sum += allLogFreqs[i];
+                collectiveFreq = Math.pow(2, sum / n);
+            } else if (demoMode === 'mode') {
+                // Winner takes all
+                if (sorted.length > 0) {
+                    for (var i = 0; i < NOTES.length; i++) {
+                        if (NOTES[i].midi === sorted[0].midi) { collectiveFreq = NOTES[i].freq; break; }
+                    }
+                }
+            } else {
+                // Chord: primary freq is top note
+                if (sorted.length > 0) {
+                    for (var i = 0; i < NOTES.length; i++) {
+                        if (NOTES[i].midi === sorted[0].midi) { collectiveFreq = NOTES[i].freq; break; }
+                    }
+                }
+            }
+
+            // Compute chord frequencies and weights (top 3)
+            var totalTop = 0;
+            for (var i = 0; i < Math.min(3, sorted.length); i++) totalTop += sorted[i].count;
+            for (var i = 0; i < 3; i++) {
+                if (i < sorted.length && sorted[i].count > 0) {
+                    for (var j = 0; j < NOTES.length; j++) {
+                        if (NOTES[j].midi === sorted[i].midi) { chordFreqs[i] = NOTES[j].freq; break; }
+                    }
+                    chordWeights[i] = totalTop > 0 ? sorted[i].count / totalTop : 0;
+                } else {
+                    chordFreqs[i] = collectiveFreq;
+                    chordWeights[i] = 0;
+                }
+            }
+
+            // Spread (std dev in octaves)
+            var logCol = Math.log2(collectiveFreq);
+            var variance = 0;
+            for (var i = 0; i < n; i++) {
+                var diff = allLogFreqs[i] - logCol;
+                variance += diff * diff;
+            }
+            currentSpread = Math.sqrt(variance / n);
+        }
+
+        // ==========================================
+        // AUDIO
+        // ==========================================
+        function buildAudio() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            var comp = audioCtx.createDynamicsCompressor();
+            comp.threshold.value = -18; comp.ratio.value = 5; comp.knee.value = 8;
+            comp.connect(audioCtx.destination);
+
+            masterGain = audioCtx.createGain();
+            masterGain.gain.value = 0.18;
+            masterGain.connect(comp);
+
+            // Reverb
+            var len = audioCtx.sampleRate * 3.5;
+            var buf = audioCtx.createBuffer(2, len, audioCtx.sampleRate);
+            for (var ch = 0; ch < 2; ch++) {
+                var d = buf.getChannelData(ch);
+                for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.8);
+            }
+            var convolver = audioCtx.createConvolver();
+            convolver.buffer = buf;
+            reverbGain = audioCtx.createGain();
+            reverbGain.gain.value = 0.3;
+            convolver.connect(reverbGain);
+            reverbGain.connect(masterGain);
+
+            // Main filter
+            mainFilter = audioCtx.createBiquadFilter();
+            mainFilter.type = 'lowpass';
+            mainFilter.frequency.value = 2400;
+            mainFilter.Q.value = 0.4;
+            mainFilter.connect(masterGain);
+            mainFilter.connect(convolver);
+
+            // Main oscillators: fundamental, +detune, sub octave
+            var types = ['sine', 'triangle', 'sine'];
+            var detunes = [0, 3, 0];
+            var freqMults = [1, 1, 0.5];
+            var volumes = [0.5, 0.12, 0.18];
+            for (var i = 0; i < 3; i++) {
+                var osc = audioCtx.createOscillator();
+                osc.type = types[i];
+                osc.frequency.value = collectiveFreq * freqMults[i];
+                osc.detune.value = detunes[i];
+                var g = audioCtx.createGain();
+                g.gain.value = volumes[i];
+                osc.connect(g);
+                g.connect(mainFilter);
+                osc.start();
+                mainOscs.push(osc);
+                mainGains.push(g);
+            }
+
+            // Dissonance oscillators (spread above and below collective)
+            for (var i = 0; i < 2; i++) {
+                var osc = audioCtx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = collectiveFreq;
+                var g = audioCtx.createGain();
+                g.gain.value = 0;
+                osc.connect(g);
+                g.connect(mainFilter);
+                osc.start();
+                dissOscs.push(osc);
+                dissGains.push(g);
+            }
+
+            // Chord oscillators: 2 additional voices (voice 0 reuses mainOscs)
+            for (var i = 0; i < 2; i++) {
+                var osc = audioCtx.createOscillator();
+                osc.type = i === 0 ? 'sine' : 'triangle';
+                osc.frequency.value = collectiveFreq;
+                var g = audioCtx.createGain();
+                g.gain.value = 0;
+                osc.connect(g);
+                g.connect(mainFilter);
+                osc.start();
+                chordOscs.push(osc);
+                chordGains.push(g);
+            }
+        }
+
+        function updateAudio() {
+            if (!audioCtx) return;
+            var t = audioCtx.currentTime;
+            var ramp = demoMode === 'mean' ? 0.12 : 0.04;
+
+            // Main oscillators always track collectiveFreq (= primary note in all modes)
+            mainOscs[0].frequency.linearRampToValueAtTime(collectiveFreq, t + ramp);
+            mainOscs[1].frequency.linearRampToValueAtTime(collectiveFreq, t + ramp);
+            mainOscs[2].frequency.linearRampToValueAtTime(collectiveFreq * 0.5, t + ramp);
+
+            if (demoMode === 'chord') {
+                // Chord: 2nd and 3rd voices at their weighted volumes
+                for (var i = 0; i < 2; i++) {
+                    chordOscs[i].frequency.linearRampToValueAtTime(chordFreqs[i + 1], t + ramp);
+                    var vol = chordWeights[i + 1] * 0.35;
+                    chordGains[i].gain.linearRampToValueAtTime(vol, t + 0.1);
+                }
+                // Scale main voice to its weight
+                mainGains[0].gain.linearRampToValueAtTime(chordWeights[0] * 0.5, t + 0.1);
+                mainGains[1].gain.linearRampToValueAtTime(chordWeights[0] * 0.12, t + 0.1);
+                // Reduce dissonance in chord mode
+                dissGains[0].gain.linearRampToValueAtTime(0, t + 0.15);
+                dissGains[1].gain.linearRampToValueAtTime(0, t + 0.15);
+            } else {
+                // Mean/Mode: silence chord voices, restore main volumes
+                for (var i = 0; i < 2; i++) {
+                    chordGains[i].gain.linearRampToValueAtTime(0, t + 0.1);
+                }
+                mainGains[0].gain.linearRampToValueAtTime(0.5, t + 0.1);
+                mainGains[1].gain.linearRampToValueAtTime(0.12, t + 0.1);
+
+                // Dissonance: spread oscillators above and below
+                var spreadHz = collectiveFreq * (Math.pow(2, currentSpread * 0.7) - 1);
+                dissOscs[0].frequency.linearRampToValueAtTime(collectiveFreq + spreadHz * 0.5, t + 0.15);
+                dissOscs[1].frequency.linearRampToValueAtTime(collectiveFreq - spreadHz * 0.5, t + 0.15);
+                var dissVol = Math.min(0.08, currentSpread * 0.15);
+                dissGains[0].gain.linearRampToValueAtTime(dissVol, t + 0.15);
+                dissGains[1].gain.linearRampToValueAtTime(dissVol, t + 0.15);
+            }
+
+            // Filter opens with consensus
+            var consensus = Math.exp(-currentSpread * 3);
+            var filterFreq = 600 + consensus * 3200;
+            mainFilter.frequency.linearRampToValueAtTime(filterFreq, t + 0.2);
+        }
+
+        function playTouchTone(freq) {
+            if (!audioCtx) return;
+            var t = audioCtx.currentTime;
+            var osc = audioCtx.createOscillator();
+            osc.type = 'sine'; osc.frequency.value = freq;
+            var g = audioCtx.createGain();
+            g.gain.setValueAtTime(0, t);
+            g.gain.linearRampToValueAtTime(0.12, t + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+            osc.connect(g); g.connect(masterGain);
+            if (reverbGain) { var rg = audioCtx.createGain(); rg.gain.value = 0.4; osc.connect(rg); rg.connect(reverbGain); }
+            osc.start(t); osc.stop(t + 2);
+        }
+
+        // ==========================================
+        // RENDERING
+        // ==========================================
+        function render() {
+            ctx.fillStyle = '#0a0a12';
+            ctx.fillRect(0, 0, W, H);
+
+            drawGridLines();
+            drawScoreTrace();
+            drawDistribution();
+            drawNowIndicators();
+            drawNoteLabels();
+        }
+
+        function drawGridLines() {
+            for (var i = 0; i < NOTES.length; i++) {
+                var n = NOTES[i];
+                var y = freqToY(n.freq);
+                if (n.noteIdx === 0) {
+                    // A notes: brighter, act as octave markers
+                    ctx.strokeStyle = 'rgba(212,168,66,0.1)';
+                    ctx.lineWidth = 0.8;
+                } else if (n.isWhite) {
+                    ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+                    ctx.lineWidth = 0.5;
+                } else {
+                    continue; // skip accidentals for gridlines
+                }
+                ctx.beginPath();
+                ctx.moveTo(SCORE_X, y);
+                ctx.lineTo(SCORE_X + SCORE_W, y);
+                ctx.stroke();
+            }
+        }
+
+        function drawNoteLabels() {
+            ctx.font = '9px "EB Garamond", Georgia, serif';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            for (var i = 0; i < NOTES.length; i++) {
+                var n = NOTES[i];
+                if (n.noteIdx !== 0) continue; // only label A notes
+                var y = freqToY(n.freq);
+                ctx.fillStyle = '#685e4e';
+                ctx.fillText(n.name, LABEL_W - 6, y);
+            }
+        }
+
+        function drawScoreTrace() {
+            if (history.length < 2) return;
+            var len = history.length;
+            var xScale = SCORE_W / MAX_HISTORY;
+
+            // Pass 1: River (spread band) — consensus width
+            ctx.beginPath();
+            for (var i = 0; i < len; i++) {
+                var x = SCORE_X + (MAX_HISTORY - len + i) * xScale;
+                var cy = freqToY(history[i].collective);
+                var spreadPx = history[i].spread * (H - MARGIN_TOP - MARGIN_BOT) * 0.45;
+                spreadPx = Math.max(2, Math.min(120, spreadPx));
+                if (i === 0) ctx.moveTo(x, cy - spreadPx);
+                else ctx.lineTo(x, cy - spreadPx);
+            }
+            for (var i = len - 1; i >= 0; i--) {
+                var x = SCORE_X + (MAX_HISTORY - len + i) * xScale;
+                var cy = freqToY(history[i].collective);
+                var spreadPx = history[i].spread * (H - MARGIN_TOP - MARGIN_BOT) * 0.45;
+                spreadPx = Math.max(2, Math.min(120, spreadPx));
+                ctx.lineTo(x, cy + spreadPx);
+            }
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(212,168,66,0.04)';
+            ctx.fill();
+
+            // Pass 2: Inner river (tighter)
+            ctx.beginPath();
+            for (var i = 0; i < len; i++) {
+                var x = SCORE_X + (MAX_HISTORY - len + i) * xScale;
+                var cy = freqToY(history[i].collective);
+                var spreadPx = history[i].spread * (H - MARGIN_TOP - MARGIN_BOT) * 0.15;
+                spreadPx = Math.max(1, Math.min(50, spreadPx));
+                if (i === 0) ctx.moveTo(x, cy - spreadPx);
+                else ctx.lineTo(x, cy - spreadPx);
+            }
+            for (var i = len - 1; i >= 0; i--) {
+                var x = SCORE_X + (MAX_HISTORY - len + i) * xScale;
+                var cy = freqToY(history[i].collective);
+                var spreadPx = history[i].spread * (H - MARGIN_TOP - MARGIN_BOT) * 0.15;
+                spreadPx = Math.max(1, Math.min(50, spreadPx));
+                ctx.lineTo(x, cy + spreadPx);
+            }
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(212,168,66,0.08)';
+            ctx.fill();
+
+            // Pass 3: Glow line
+            ctx.beginPath();
+            for (var i = 0; i < len; i++) {
+                var x = SCORE_X + (MAX_HISTORY - len + i) * xScale;
+                var y = freqToY(history[i].collective);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = 'rgba(212,168,66,0.2)';
+            ctx.lineWidth = 5;
+            ctx.stroke();
+
+            // Pass 4: Core line
+            ctx.beginPath();
+            for (var i = 0; i < len; i++) {
+                var x = SCORE_X + (MAX_HISTORY - len + i) * xScale;
+                var y = freqToY(history[i].collective);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = '#d4a842';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Pass 4b: Chord voices (2nd and 3rd notes, amber variants)
+            var chordColors = ['rgba(212,168,66,0.35)', 'rgba(212,168,66,0.2)'];
+            for (var cv = 1; cv <= 2; cv++) {
+                var inChord = false;
+                ctx.beginPath();
+                ctx.strokeStyle = chordColors[cv - 1];
+                ctx.lineWidth = 1;
+                for (var i = 0; i < len; i++) {
+                    var h = history[i];
+                    if (h.mode !== 'chord' || !h.chord || h.chordW[cv] < 0.01) {
+                        inChord = false; continue;
+                    }
+                    var x = SCORE_X + (MAX_HISTORY - len + i) * xScale;
+                    var y = freqToY(h.chord[cv]);
+                    if (!inChord) { ctx.moveTo(x, y); inChord = true; }
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+
+            // Pass 5: User trace (blue, thinner)
+            var inSegment = false;
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(122,176,232,0.5)';
+            ctx.lineWidth = 1;
+            for (var i = 0; i < len; i++) {
+                if (history[i].user === null) { inSegment = false; continue; }
+                var x = SCORE_X + (MAX_HISTORY - len + i) * xScale;
+                var y = freqToY(history[i].user);
+                if (!inSegment) { ctx.moveTo(x, y); inSegment = true; }
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+
+        function drawDistribution() {
+            var numBins = 60;
+            var bins = new Array(numBins).fill(0);
+            var usableH = H - MARGIN_TOP - MARGIN_BOT;
+
+            for (var i = 0; i < voters.length; i++) {
+                var y = freqToY(voters[i].freq);
+                var bin = Math.floor((y - MARGIN_TOP) / usableH * numBins);
+                bin = Math.max(0, Math.min(numBins - 1, bin));
+                bins[bin]++;
+            }
+
+            var maxBin = 0;
+            for (var i = 0; i < numBins; i++) { if (bins[i] > maxBin) maxBin = bins[i]; }
+            if (maxBin === 0) return;
+
+            var binH = usableH / numBins;
+            for (var i = 0; i < numBins; i++) {
+                if (bins[i] === 0) continue;
+                var norm = bins[i] / maxBin;
+                var barW = norm * (DIST_W - 10);
+                var y = MARGIN_TOP + i * binH;
+                ctx.fillStyle = 'rgba(212,168,66,' + (0.06 + norm * 0.25) + ')';
+                ctx.fillRect(DIST_X + 5, y, barW, binH - 1);
+            }
+
+            // Label
+            ctx.save();
+            ctx.font = '8px "EB Garamond", Georgia, serif';
+            ctx.fillStyle = '#4a4538';
+            ctx.textAlign = 'center';
+            ctx.translate(DIST_X + DIST_W * 0.5, MARGIN_TOP - 7);
+            ctx.fillText('DISTRIBUTION', 0, 0);
+            ctx.restore();
+        }
+
+        function drawNowIndicators() {
+            // Now line
+            var nowX = SCORE_X + SCORE_W;
+            ctx.strokeStyle = 'rgba(212,168,66,0.08)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(nowX, MARGIN_TOP);
+            ctx.lineTo(nowX, H - MARGIN_BOT);
+            ctx.stroke();
+
+            // Collective frequency marker
+            var colY = freqToY(collectiveFreq);
+            ctx.fillStyle = '#d4a842';
+            ctx.beginPath();
+            ctx.arc(nowX + 4, colY, 4, 0, Math.PI * 2);
+            ctx.fill();
+            // Small connecting line
+            ctx.strokeStyle = 'rgba(212,168,66,0.3)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(nowX, colY);
+            ctx.lineTo(nowX + 4, colY);
+            ctx.stroke();
+
+            // Chord voice markers (2nd and 3rd)
+            if (demoMode === 'chord') {
+                var chordAlphas = [0.5, 0.3];
+                for (var ci = 1; ci <= 2; ci++) {
+                    if (chordWeights[ci] > 0.05) {
+                        var cy = freqToY(chordFreqs[ci]);
+                        ctx.fillStyle = 'rgba(212,168,66,' + chordAlphas[ci - 1] + ')';
+                        ctx.beginPath();
+                        ctx.arc(nowX + 4, cy, 3, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+
+            // User frequency marker
+            if (userFreq !== null) {
+                var userY = freqToY(userFreq);
+                ctx.fillStyle = '#7ab0e8';
+                ctx.beginPath();
+                ctx.arc(nowX + 4, userY, 3, 0, Math.PI * 2);
+                ctx.fill();
+                // Horizontal guide line across the score
+                ctx.strokeStyle = 'rgba(122,176,232,0.08)';
+                ctx.lineWidth = 0.5;
+                ctx.setLineDash([3, 6]);
+                ctx.beginPath();
+                ctx.moveTo(SCORE_X, userY);
+                ctx.lineTo(SCORE_X + SCORE_W, userY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // Separator line between score and distribution
+            ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(DIST_X, MARGIN_TOP);
+            ctx.lineTo(DIST_X, H - MARGIN_BOT);
+            ctx.stroke();
+        }
+
+        // ==========================================
+        // STATUS
+        // ==========================================
+        function updateStatus() {
+            if (!started) return;
+            var colNote = nearestNote(collectiveFreq);
+            var consensus = Math.round(Math.exp(-currentSpread * 3) * 100);
+
+            var parts = [];
+            if (demoMode === 'chord') {
+                var names = [];
+                for (var i = 0; i < 3; i++) {
+                    if (chordWeights[i] > 0.05) {
+                        var n = nearestNote(chordFreqs[i]);
+                        names.push(n.name);
+                    }
+                }
+                parts.push('<span class="note">' + names.join(' · ') + '</span>');
+            } else {
+                parts.push('<span class="note">' + colNote.name + '</span>');
+                parts.push('<span class="freq">(' + Math.round(collectiveFreq) + ' Hz)</span>');
+            }
+            parts.push('&middot; <span class="consensus">consensus: ' + consensus + '%</span>');
+            if (userFreq !== null) {
+                var userNote = nearestNote(userFreq);
+                parts.push('&middot; you: <span class="user-note">' + userNote.name + '</span>');
+            }
+            statusEl.innerHTML = parts.join(' ');
+        }
+
+        // ==========================================
+        // INTERACTION
+        // ==========================================
+        function handleCanvasInput(e) {
+            if (!started) return;
+            e.preventDefault();
+            var rect = canvas.getBoundingClientRect();
+            var y;
+            if (e.touches && e.touches.length > 0) {
+                y = e.touches[0].clientY - rect.top;
+            } else {
+                y = e.clientY - rect.top;
+            }
+            // Scale to canvas coordinates
+            y = y * (H / rect.height);
+            var freq = yToFreq(y);
+            freq = Math.max(MIN_FREQ, Math.min(MAX_FREQ, freq));
+
+            if (userFreq === null) {
+                playTouchTone(freq);
+            }
+            userFreq = freq;
+        }
+
+        canvas.addEventListener('mousedown', function(e) {
+            isPointerDown = true;
+            handleCanvasInput(e);
+        });
+        canvas.addEventListener('mousemove', function(e) {
+            if (isPointerDown) handleCanvasInput(e);
+        });
+        window.addEventListener('mouseup', function() { isPointerDown = false; });
+
+        canvas.addEventListener('touchstart', function(e) {
+            isPointerDown = true;
+            handleCanvasInput(e);
+        }, { passive: false });
+        canvas.addEventListener('touchmove', function(e) {
+            if (isPointerDown) handleCanvasInput(e);
+        }, { passive: false });
+        canvas.addEventListener('touchend', function() { isPointerDown = false; });
+
+        // Start
+        overlay.addEventListener('click', function() {
+            if (started) return;
+            started = true;
+            overlay.classList.add('hidden');
+            initVoters();
+            buildAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            lastTime = performance.now();
+            tick(lastTime);
+        });
+        overlay.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            overlay.click();
+        }, { passive: false });
+
+        // Mode toggle
+        modeBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var m = btn.getAttribute('data-mode');
+                if (m === demoMode) return;
+                demoMode = m;
+                modeBtns.forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+            });
+        });
+
+        // Voter slider (logarithmic)
+        function sliderToCount(val) {
+            var minLog = Math.log(2), maxLog = Math.log(30000);
+            var scale = (val - 2) / (30000 - 2);
+            return Math.round(Math.exp(minLog + scale * (maxLog - minLog)));
+        }
+        voterSlider.addEventListener('input', function() {
+            numVoters = sliderToCount(parseInt(this.value));
+            if (numVoters >= 1000) {
+                voterValEl.textContent = (numVoters / 1000).toFixed(numVoters >= 10000 ? 0 : 1) + 'k';
+            } else {
+                voterValEl.textContent = numVoters;
+            }
+            if (started) ensureVoterCount();
+        });
+
+        // Play/Stop
+        var playStopBtn = document.getElementById('play-stop');
+        playStopBtn.addEventListener('click', function() {
+            if (!started) return;
+            playing = !playing;
+            playStopBtn.textContent = playing ? 'Stop' : 'Play';
+            if (audioCtx) {
+                if (playing) {
+                    audioCtx.resume();
+                } else {
+                    // Fade master to zero
+                    var t = audioCtx.currentTime;
+                    masterGain.gain.linearRampToValueAtTime(0, t + 0.3);
+                }
+            }
+        });
+
+        // Clear
+        document.getElementById('clear-btn').addEventListener('click', function() {
+            if (!started) return;
+            history = [];
+            scoreAccum = 0;
+            userFreq = null;
+            initClusters();
+            initVoters();
+            render();
+            updateStatus();
+        });
+
+        // ==========================================
+        // MAIN LOOP
+        // ==========================================
+        function tick(ts) {
+            if (!started) return;
+            var dt = Math.min(0.1, (ts - lastTime) / 1000);
+            lastTime = ts;
+
+            if (playing) {
+                // Update voters
+                driftVoters(dt);
+
+                // Compute collective
+                computeCollective();
+
+                // Update audio
+                if (masterGain.gain.value < 0.18) {
+                    masterGain.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + 0.2);
+                }
+                updateAudio();
+
+                // Advance score
+                scoreAccum += dt * SCORE_PPS;
+                while (scoreAccum >= 1) {
+                    scoreAccum -= 1;
+                    history.push({
+                        collective: collectiveFreq,
+                        user: userFreq,
+                        spread: currentSpread,
+                        mode: demoMode,
+                        chord: [chordFreqs[0], chordFreqs[1], chordFreqs[2]],
+                        chordW: [chordWeights[0], chordWeights[1], chordWeights[2]],
+                    });
+                    if (history.length > MAX_HISTORY) history.shift();
+                }
+
+                // Update status
+                updateStatus();
+            }
+
+            // Always render (score stays visible)
+            render();
+
+            requestAnimationFrame(tick);
+        }
+
+        // Initial render (before start)
+        render();
+
+    })();
+    </script>
+</body>
+</html>

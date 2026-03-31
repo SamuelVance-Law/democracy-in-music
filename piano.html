@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Piano — Democracy in Music</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'EB Garamond', 'Georgia', serif;
+            background: #0a0a12;
+            color: #c8c4bc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        a.home-link {
+            position: fixed; top: 12px; left: 16px;
+            font-size: 12px; color: #887a60; text-decoration: none;
+            letter-spacing: 2px; z-index: 99; font-family: 'EB Garamond', Georgia, serif;
+        }
+        a.home-link:hover { color: #d4a842; }
+
+        #header {
+            text-align: center;
+            padding: 28px 20px 8px;
+        }
+        #header h1 {
+            font-size: 30px;
+            letter-spacing: 10px;
+            font-weight: 400;
+            color: #ede8df;
+        }
+        #header p {
+            font-size: 14px;
+            font-style: italic;
+            color: #a09888;
+            margin-top: 6px;
+        }
+
+        /* ===== SETUP PANEL ===== */
+        #setup-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin: 18px 0 10px;
+            flex-wrap: wrap;
+        }
+        .setup-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .setup-group label {
+            font-size: 12px;
+            color: #c8c4bc;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .setup-group .val {
+            font-size: 12px;
+            color: #d4a842;
+            min-width: 44px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ===== MODE TOGGLE ===== */
+        #mode-toggle {
+            display: flex;
+            gap: 0;
+        }
+        .mode-btn {
+            padding: 7px 24px;
+            background: none;
+            border: 1px solid #3a3528;
+            color: #a09888;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 12px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        .mode-btn:first-child { border-radius: 3px 0 0 3px; }
+        .mode-btn:last-child { border-radius: 0 3px 3px 0; border-left: none; }
+        .mode-btn.active {
+            background: #d4a842;
+            border-color: #d4a842;
+            color: #0a0a12;
+        }
+
+        /* ===== STATUS ===== */
+        #status {
+            text-align: center;
+            font-size: 14px;
+            color: #c8c4bc;
+            letter-spacing: 1px;
+            margin: 12px 0 8px;
+            min-height: 22px;
+        }
+        #status .note-name { color: #d4a842; font-weight: 500; }
+        #status .round-num { color: #ede8df; }
+
+        /* ===== RESULT DISPLAY ===== */
+        #result-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 10px;
+            min-height: 48px;
+        }
+        .result-box { text-align: center; }
+        .result-box .label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #a09888;
+            margin-bottom: 4px;
+        }
+        .result-box .value {
+            font-size: 20px;
+            font-weight: 400;
+            color: #d4a842;
+            letter-spacing: 1px;
+            min-width: 50px;
+        }
+        .result-box .value.your { color: #7ab0e8; }
+        .result-arrow { color: #4a4538; font-size: 18px; }
+
+        /* ===== PIANO ===== */
+        #piano-container {
+            position: relative;
+            width: 100%;
+            max-width: 720px;
+            padding: 0 16px;
+            margin-bottom: 6px;
+        }
+        #piano {
+            position: relative;
+            height: 160px;
+            display: flex;
+            width: 100%;
+        }
+        .white-key {
+            flex: 1;
+            background: #ddd8ce;
+            border: 1px solid #b5b0a5;
+            border-radius: 0 0 4px 4px;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.08s;
+            z-index: 1;
+        }
+        .white-key:hover { background: #ccc8be; }
+        .white-key.user-pressed { background: #7ab0e8; border-color: #5a90c8; }
+        .white-key.result-note { background: #d4a842; border-color: #b08a34; }
+        .white-key.user-pressed.result-note { background: #d4a842; }
+        .white-key.disabled { pointer-events: none; opacity: 0.4; }
+        .white-key .key-label {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            color: #888;
+            letter-spacing: 1px;
+        }
+        .white-key.user-pressed .key-label,
+        .white-key.result-note .key-label { color: #fff; }
+
+        .black-key {
+            width: 60%;
+            height: 100px;
+            background: #1a1820;
+            border: 1px solid #0e0d12;
+            border-radius: 0 0 3px 3px;
+            position: absolute;
+            top: 0;
+            z-index: 2;
+            cursor: pointer;
+            transition: background 0.08s;
+        }
+        .black-key:hover { background: #2a2830; }
+        .black-key.user-pressed { background: #5a90c8; }
+        .black-key.result-note { background: #b08a34; }
+        .black-key.user-pressed.result-note { background: #b08a34; }
+        .black-key.disabled { pointer-events: none; opacity: 0.4; }
+
+        /* ===== VOTE HISTOGRAM (live cascade) ===== */
+        #histogram {
+            width: 100%;
+            max-width: 720px;
+            padding: 0 16px;
+            margin-bottom: 14px;
+        }
+        #histogram canvas {
+            width: 100%;
+            height: 60px;
+            display: block;
+        }
+
+        /* ===== SCORE MAP ===== */
+        #score-section {
+            width: 100%;
+            max-width: 720px;
+            padding: 0 16px;
+            margin-bottom: 16px;
+        }
+        #score-section .section-label {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #a09888;
+            margin-bottom: 6px;
+        }
+        #score-wrap {
+            position: relative;
+            width: 100%;
+            border: 1px solid #1e1c24;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #08080e;
+        }
+        #scoreCanvas {
+            width: 100%;
+            display: block;
+        }
+
+        /* ===== PLAYBACK CONTROLS ===== */
+        #playback-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 12px 20px;
+            flex-wrap: wrap;
+        }
+        button.ctrl-btn {
+            padding: 8px 22px;
+            background: none;
+            border: 1px solid #d4a842;
+            color: #d4a842;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 12px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        button.ctrl-btn:hover { background: #d4a842; color: #0a0a12; }
+        button.ctrl-btn.active-btn { background: #d4a842; color: #0a0a12; }
+        button.ctrl-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+        button.ctrl-btn:disabled:hover { background: none; color: #d4a842; }
+
+        button.ctrl-btn.danger {
+            border-color: #6a4040;
+            color: #a06060;
+        }
+        button.ctrl-btn.danger:hover { background: #6a4040; color: #e0d0d0; }
+
+        .ctrl-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ctrl-group label {
+            font-size: 11px;
+            color: #c8c4bc;
+            letter-spacing: 1px;
+        }
+        .ctrl-group .val {
+            font-size: 11px;
+            color: #d4a842;
+            min-width: 24px;
+            text-align: right;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 80px;
+            height: 3px;
+            background: #1e1c24;
+            border-radius: 2px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: #d4a842;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: #d4a842;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* ===== INFO ===== */
+        #info {
+            text-align: center;
+            padding: 8px 24px 32px;
+            font-size: 13px;
+            color: #887a60;
+            line-height: 1.8;
+            max-width: 560px;
+        }
+        #info strong { color: #c8c4bc; }
+
+        /* ===== GRAIN OVERLAY ===== */
+        #grain {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+        }
+
+        /* ===== PLAYBACK INDICATOR ON SCORE ===== */
+        #playback-line {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: #ede8df;
+            z-index: 5;
+            display: none;
+            box-shadow: 0 0 8px rgba(237, 232, 223, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="grain"></canvas>
+    <a class="home-link" href="index.html">&larr; Home</a>
+
+    <div id="header">
+        <h1>PIANO</h1>
+        <p>30,000 people sit down at a piano</p>
+    </div>
+
+    <div id="setup-panel">
+        <div id="mode-toggle">
+            <button class="mode-btn active" data-mode="mean">Mean</button>
+            <button class="mode-btn" data-mode="mode">Mode</button>
+        </div>
+        <div class="setup-group">
+            <label>Voters</label>
+            <input type="range" id="voterSlider" min="2" max="30000" value="12">
+            <span class="val" id="voterVal">12</span>
+        </div>
+        <div class="setup-group" id="voicesGroup" style="opacity:0.3;pointer-events:none;">
+            <label>Voices</label>
+            <input type="range" id="voicesSlider" min="1" max="5" value="1">
+            <span class="val" id="voicesVal">1</span>
+        </div>
+    </div>
+
+    <div id="status">Choose a note to begin round 1</div>
+
+    <div id="result-display">
+        <div class="result-box">
+            <div class="label">You play</div>
+            <div class="value your" id="yourNote">&mdash;</div>
+        </div>
+        <div class="result-arrow">&rarr;</div>
+        <div class="result-box">
+            <div class="label">Everyone hears</div>
+            <div class="value" id="resultNote">&mdash;</div>
+        </div>
+    </div>
+
+    <div id="piano-container">
+        <div id="piano"></div>
+    </div>
+
+    <div id="histogram">
+        <canvas id="histCanvas" height="60"></canvas>
+    </div>
+
+    <div id="score-section">
+        <div class="section-label">Score &mdash; <span id="roundCount">0</span> rounds</div>
+        <div id="score-wrap">
+            <canvas id="scoreCanvas" height="180"></canvas>
+            <div id="playback-line"></div>
+        </div>
+    </div>
+
+    <div id="playback-controls">
+        <button class="ctrl-btn" id="sonifyBtn" disabled>&#9654; Play</button>
+        <button class="ctrl-btn" id="stopPlayBtn" disabled>&#9632; Stop</button>
+        <div class="ctrl-group">
+            <label>BPM</label>
+            <input type="range" id="bpmSlider" min="20" max="200" value="80">
+            <span class="val" id="bpmVal">80</span>
+        </div>
+        <button class="ctrl-btn danger" id="clearBtn">Clear</button>
+    </div>
+
+    <div id="info">
+        Choose a note. The other voters cast their votes over 2 seconds, then the result sounds.<br>
+        In <strong>Mean</strong>, everyone hears the average pitch.
+        In <strong>Mode</strong>, the majority note wins — raise <strong>Voices</strong> to hear the top votes as chords.<br>
+        Build a score round by round, then press <strong>Play</strong> to hear your composition.<br>
+        Click anywhere on the score to start playback from that point.
+    </div>
+
+    <script>
+    (function() {
+        // ===== NOTE DATA =====
+        var KEY_DATA = [
+            { note: 'C3',  freq: 130.81, type: 'white' },
+            { note: 'C\u266F3', freq: 138.59, type: 'black' },
+            { note: 'D3',  freq: 146.83, type: 'white' },
+            { note: 'E\u266D3', freq: 155.56, type: 'black' },
+            { note: 'E3',  freq: 164.81, type: 'white' },
+            { note: 'F3',  freq: 174.61, type: 'white' },
+            { note: 'F\u266F3', freq: 185.00, type: 'black' },
+            { note: 'G3',  freq: 196.00, type: 'white' },
+            { note: 'G\u266F3', freq: 207.65, type: 'black' },
+            { note: 'A3',  freq: 220.00, type: 'white' },
+            { note: 'B\u266D3', freq: 233.08, type: 'black' },
+            { note: 'B3',  freq: 246.94, type: 'white' },
+            { note: 'C4',  freq: 261.63, type: 'white' },
+            { note: 'C\u266F4', freq: 277.18, type: 'black' },
+            { note: 'D4',  freq: 293.66, type: 'white' },
+            { note: 'E\u266D4', freq: 311.13, type: 'black' },
+            { note: 'E4',  freq: 329.63, type: 'white' },
+            { note: 'F4',  freq: 349.23, type: 'white' },
+            { note: 'F\u266F4', freq: 369.99, type: 'black' },
+            { note: 'G4',  freq: 392.00, type: 'white' },
+            { note: 'G\u266F4', freq: 415.30, type: 'black' },
+            { note: 'A4',  freq: 440.00, type: 'white' },
+            { note: 'B\u266D4', freq: 466.16, type: 'black' },
+            { note: 'B4',  freq: 493.88, type: 'white' },
+            { note: 'C5',  freq: 523.25, type: 'white' }
+        ];
+        var NUM_KEYS = KEY_DATA.length;
+        var whiteKeys = KEY_DATA.filter(function(k) { return k.type === 'white'; });
+
+        // ===== STATE =====
+        var demoMode = 'mean';
+        var numVoters = 12;
+        var numVoices = 1;
+        var BPM = 80;
+        var voterChoices = [];
+        var roundLog = [];
+        var voting = false;
+        var playing = false;
+        var playTimer = null;
+        var previousWinnerIdx = -1;
+        var audioCtx = null;
+        var MAX_ROUNDS = 64;
+
+        // ===== DOM =====
+        var pianoEl = document.getElementById('piano');
+        var statusEl = document.getElementById('status');
+        var yourNoteEl = document.getElementById('yourNote');
+        var resultNoteEl = document.getElementById('resultNote');
+        var histCanvas = document.getElementById('histCanvas');
+        var histCtx = histCanvas.getContext('2d');
+        var scoreCanvas = document.getElementById('scoreCanvas');
+        var scoreCtx = scoreCanvas.getContext('2d');
+        var roundCountEl = document.getElementById('roundCount');
+        var playbackLine = document.getElementById('playback-line');
+        var sonifyBtn = document.getElementById('sonifyBtn');
+        var stopPlayBtn = document.getElementById('stopPlayBtn');
+        var clearBtn = document.getElementById('clearBtn');
+        var bpmSlider = document.getElementById('bpmSlider');
+        var bpmValEl = document.getElementById('bpmVal');
+        var voicesSlider = document.getElementById('voicesSlider');
+        var voicesValEl = document.getElementById('voicesVal');
+        var voicesGroup = document.getElementById('voicesGroup');
+        var voterSlider = document.getElementById('voterSlider');
+        var voterValEl = document.getElementById('voterVal');
+        var modeBtns = document.querySelectorAll('.mode-btn');
+
+        // ===== GRAIN =====
+        (function() {
+            var gc = document.getElementById('grain');
+            gc.width = window.innerWidth; gc.height = window.innerHeight;
+            var gctx = gc.getContext('2d');
+            var gi = gctx.createImageData(gc.width, gc.height);
+            var gd = gi.data;
+            for (var i = 0; i < gd.length; i += 4) {
+                var v = Math.floor(Math.random() * 255);
+                gd[i] = gd[i+1] = gd[i+2] = v; gd[i+3] = 255;
+            }
+            gctx.putImageData(gi, 0, 0);
+        })();
+
+        // ===== VOTER SLIDER (logarithmic) =====
+        function voterSliderToCount(val) {
+            var minLog = Math.log(2), maxLog = Math.log(30000);
+            var scale = (val - 2) / (30000 - 2);
+            return Math.round(Math.exp(minLog + scale * (maxLog - minLog)));
+        }
+        function updateVoterDisplay() {
+            var raw = parseInt(voterSlider.value);
+            numVoters = voterSliderToCount(raw);
+            if (numVoters >= 1000) {
+                voterValEl.textContent = (numVoters / 1000).toFixed(numVoters >= 10000 ? 0 : 1) + 'k';
+            } else {
+                voterValEl.textContent = numVoters;
+            }
+        }
+
+        // ===== BUILD PIANO =====
+        var keyElements = [];
+        whiteKeys.forEach(function(k) {
+            var idx = KEY_DATA.indexOf(k);
+            var el = document.createElement('div');
+            el.className = 'white-key';
+            var lbl = document.createElement('div');
+            lbl.className = 'key-label';
+            lbl.textContent = k.note;
+            el.appendChild(lbl);
+            el.addEventListener('mousedown', function(e) { e.preventDefault(); pressKey(idx); });
+            el.addEventListener('touchstart', function(e) { e.preventDefault(); pressKey(idx); }, { passive: false });
+            pianoEl.appendChild(el);
+            keyElements[idx] = el;
+        });
+
+        var blackKeyPositions = [];
+        var wIdx = 0;
+        for (var i = 0; i < NUM_KEYS; i++) {
+            if (KEY_DATA[i].type === 'white') { wIdx = whiteKeys.indexOf(KEY_DATA[i]); }
+            else { blackKeyPositions.push({ dataIdx: i, afterWhite: wIdx }); }
+        }
+
+        function positionBlackKeys() {
+            var pw = pianoEl.offsetWidth;
+            var wkw = pw / whiteKeys.length;
+            blackKeyPositions.forEach(function(bp) {
+                var el = keyElements[bp.dataIdx];
+                if (!el) {
+                    el = document.createElement('div');
+                    el.className = 'black-key';
+                    el.addEventListener('mousedown', function(e) { e.preventDefault(); pressKey(bp.dataIdx); });
+                    el.addEventListener('touchstart', function(e) { e.preventDefault(); pressKey(bp.dataIdx); }, { passive: false });
+                    pianoEl.appendChild(el);
+                    keyElements[bp.dataIdx] = el;
+                }
+                var bw = wkw * 0.58;
+                el.style.width = bw + 'px';
+                el.style.left = ((bp.afterWhite + 1) * wkw - bw / 2) + 'px';
+            });
+        }
+        positionBlackKeys();
+        window.addEventListener('resize', function() { positionBlackKeys(); drawScore(); });
+
+        // ===== AUDIO =====
+        function ensureAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playNote(freq, duration, volume) {
+            if (!audioCtx) return;
+            var vol = volume || 1.0;
+            var ctx = audioCtx;
+            var t = ctx.currentTime;
+            var osc1 = ctx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = freq;
+            var osc2 = ctx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.value = freq * 2.005;
+            var g1 = ctx.createGain(); g1.gain.value = 0.15 * vol;
+            var g2 = ctx.createGain(); g2.gain.value = 0.03 * vol;
+            var filt = ctx.createBiquadFilter(); filt.type = 'lowpass';
+            filt.frequency.value = Math.min(freq * 4, 5000); filt.Q.value = 0.5;
+            var env = ctx.createGain();
+            env.gain.setValueAtTime(0, t);
+            env.gain.linearRampToValueAtTime(1, t + 0.025);
+            env.gain.setValueAtTime(0.75, t + duration * 0.4);
+            env.gain.exponentialRampToValueAtTime(0.001, t + duration);
+            osc1.connect(g1); g1.connect(filt);
+            osc2.connect(g2); g2.connect(filt);
+            filt.connect(env); env.connect(ctx.destination);
+            osc1.start(t); osc2.start(t);
+            osc1.stop(t + duration + 0.1); osc2.stop(t + duration + 0.1);
+        }
+
+        function playChord(freqs, duration) {
+            if (!audioCtx || freqs.length === 0) return;
+            var vol = 1.0 / Math.sqrt(freqs.length);
+            freqs.forEach(function(f) { playNote(f, duration, vol); });
+        }
+
+        // ===== VOTERS =====
+        function initVoters() {
+            voterChoices = [];
+            for (var i = 0; i < numVoters; i++)
+                voterChoices.push(Math.floor(Math.random() * NUM_KEYS));
+        }
+
+        function driftVoters() {
+            // At high voter counts, ensure broad distribution
+            var rerandRate = numVoters > 500 ? 40 : numVoters > 50 ? 25 : 15;
+            voterChoices.forEach(function(choice, i) {
+                var roll = Math.random() * 100;
+                if (roll < rerandRate) {
+                    // Fully re-randomize
+                    voterChoices[i] = Math.floor(Math.random() * NUM_KEYS);
+                } else if (roll < rerandRate + 30) {
+                    // Drift with bounce
+                    var shift = Math.floor(Math.random() * 5) + 1;
+                    if (Math.random() > 0.5) shift = -shift;
+                    var newIdx = choice + shift;
+                    if (newIdx < 0) newIdx = -newIdx;
+                    if (newIdx >= NUM_KEYS) newIdx = 2 * (NUM_KEYS - 1) - newIdx;
+                    voterChoices[i] = Math.max(0, Math.min(NUM_KEYS - 1, newIdx));
+                }
+            });
+        }
+
+        function ensureVoterCount() {
+            if (voterChoices.length === 0 || Math.abs(voterChoices.length - numVoters) > voterChoices.length * 0.5) {
+                // Large change — fresh uniform distribution
+                voterChoices = [];
+                for (var i = 0; i < numVoters; i++)
+                    voterChoices.push(Math.floor(Math.random() * NUM_KEYS));
+            } else {
+                while (voterChoices.length < numVoters)
+                    voterChoices.push(Math.floor(Math.random() * NUM_KEYS));
+                while (voterChoices.length > numVoters)
+                    voterChoices.pop();
+            }
+        }
+
+        // ===== COMPUTATION =====
+        function computeResult(allVotes) {
+            if (allVotes.length === 0) return null;
+
+            var counts = new Array(NUM_KEYS).fill(0);
+            allVotes.forEach(function(idx) { counts[idx]++; });
+
+            if (demoMode === 'mean') {
+                var sum = 0;
+                allVotes.forEach(function(idx) { sum += KEY_DATA[idx].freq; });
+                var meanFreq = sum / allVotes.length;
+                var nearest = 0, nearestDist = Infinity;
+                KEY_DATA.forEach(function(k, i) {
+                    var dist = Math.abs(Math.log2(k.freq / meanFreq));
+                    if (dist < nearestDist) { nearestDist = dist; nearest = i; }
+                });
+                return { freq: meanFreq, nearestIdx: nearest, exactFreq: true, counts: counts, voices: [nearest], totalVotes: allVotes.length };
+            } else {
+                var entries = [];
+                for (var i = 0; i < NUM_KEYS; i++) {
+                    if (counts[i] > 0) entries.push({ idx: i, count: counts[i] });
+                }
+                entries.sort(function(a, b) {
+                    if (b.count !== a.count) return b.count - a.count;
+                    if (a.idx === previousWinnerIdx) return -1;
+                    if (b.idx === previousWinnerIdx) return 1;
+                    return a.idx - b.idx;
+                });
+
+                var winnerIdx = entries[0].idx;
+                var winnerCount = entries[0].count;
+                var tiedAtTop = entries.filter(function(e) { return e.count === winnerCount; });
+                var tiebreakReason = '';
+                if (tiedAtTop.length > 1) {
+                    tiebreakReason = (winnerIdx === previousWinnerIdx) ? 'incumbency' : 'lowest note';
+                }
+
+                var voiceIndices = [];
+                for (var v = 0; v < Math.min(numVoices, entries.length); v++) {
+                    voiceIndices.push(entries[v].idx);
+                }
+
+                previousWinnerIdx = winnerIdx;
+
+                return {
+                    freq: KEY_DATA[winnerIdx].freq,
+                    nearestIdx: winnerIdx,
+                    exactFreq: false,
+                    counts: counts,
+                    tied: tiedAtTop.length > 1,
+                    tiedCount: tiedAtTop.length,
+                    tiebreakReason: tiebreakReason,
+                    winnerCount: winnerCount,
+                    voices: voiceIndices,
+                    totalVotes: allVotes.length
+                };
+            }
+        }
+
+        // Recompute voices for playback with adjustable slider
+        function recomputeVoices(round, voices) {
+            if (round.mode === 'mean') {
+                return round.result;
+            }
+            var counts = round.counts;
+            var entries = [];
+            for (var i = 0; i < NUM_KEYS; i++) {
+                if (counts[i] > 0) entries.push({ idx: i, count: counts[i] });
+            }
+            entries.sort(function(a, b) {
+                if (b.count !== a.count) return b.count - a.count;
+                return a.idx - b.idx;
+            });
+            var voiceIndices = [];
+            for (var v = 0; v < Math.min(voices, entries.length); v++) {
+                voiceIndices.push(entries[v].idx);
+            }
+            return { voices: voiceIndices, freq: KEY_DATA[entries[0].idx].freq, nearestIdx: entries[0].idx };
+        }
+
+        // ===== KEY PRESS =====
+        function pressKey(idx) {
+            if (voting || playing) return;
+            if (roundLog.length >= MAX_ROUNDS) {
+                statusEl.innerHTML = 'Maximum ' + MAX_ROUNDS + ' rounds reached. Press <span class="note-name">Play</span>.';
+                return;
+            }
+
+            ensureAudio();
+            voting = true;
+            setKeysDisabled(true);
+
+            yourNoteEl.textContent = KEY_DATA[idx].note;
+            resultNoteEl.innerHTML = '&mdash;';
+
+            clearKeyHighlights();
+            if (keyElements[idx]) keyElements[idx].classList.add('user-pressed');
+
+            var roundNum = roundLog.length + 1;
+            statusEl.innerHTML = 'Round <span class="round-num">' + roundNum + '</span> — votes incoming\u2026';
+
+            ensureVoterCount();
+            driftVoters();
+
+            runCascade(idx, function(allVotes, counts) {
+                var result = computeResult(allVotes);
+
+                roundLog.push({
+                    userIdx: idx,
+                    votes: allVotes.slice(),
+                    counts: counts,
+                    result: result,
+                    mode: demoMode
+                });
+
+                if (result) {
+                    var dur = 0.8;
+                    if (demoMode === 'mode' && result.voices.length > 1) {
+                        playChord(result.voices.map(function(vi) { return KEY_DATA[vi].freq; }), dur);
+                    } else {
+                        playNote(result.freq, dur);
+                    }
+                }
+
+                showResult(result);
+                drawScore();
+                roundCountEl.textContent = roundLog.length;
+                sonifyBtn.disabled = false;
+
+                voting = false;
+                setKeysDisabled(false);
+
+                if (roundLog.length >= MAX_ROUNDS) {
+                    statusEl.innerHTML = 'Score complete (' + MAX_ROUNDS + ' rounds). Press <span class="note-name">Play</span> to hear it.';
+                } else {
+                    statusEl.innerHTML = 'Round <span class="round-num">' + roundNum + '</span> complete. Choose another note.';
+                }
+            });
+        }
+
+        // ===== CASCADE ANIMATION =====
+        function runCascade(userIdx, callback) {
+            var DURATION = 2000;
+            var STEPS = 50;
+            var stepMs = DURATION / STEPS;
+
+            var allVotes = voterChoices.slice();
+            allVotes.push(userIdx);
+
+            var totalVoters = allVotes.length;
+            var revealedCount = 1; // user already counted
+            var liveCounts = new Array(NUM_KEYS).fill(0);
+            liveCounts[userIdx] = 1;
+
+            // Shuffle voter order for staggered reveal
+            var voterOrder = [];
+            for (var i = 0; i < voterChoices.length; i++) voterOrder.push(i);
+            for (var i = voterOrder.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var tmp = voterOrder[i]; voterOrder[i] = voterOrder[j]; voterOrder[j] = tmp;
+            }
+
+            var step = 0;
+            drawLiveHistogram(liveCounts, userIdx);
+
+            var timer = setInterval(function() {
+                step++;
+                var targetRevealed = Math.min(Math.floor((step / STEPS) * voterChoices.length), voterChoices.length);
+                while (revealedCount - 1 < targetRevealed && (revealedCount - 1) < voterOrder.length) {
+                    var vi = voterOrder[revealedCount - 1];
+                    liveCounts[voterChoices[vi]]++;
+                    revealedCount++;
+                }
+
+                drawLiveHistogram(liveCounts, userIdx);
+
+                var pct = Math.min(100, Math.round((revealedCount / totalVoters) * 100));
+                statusEl.innerHTML = 'Round <span class="round-num">' + (roundLog.length + 1) + '</span> — ' + formatNum(revealedCount) + ' of ' + formatNum(totalVoters) + ' votes (' + pct + '%)';
+
+                if (step >= STEPS) {
+                    clearInterval(timer);
+                    liveCounts = new Array(NUM_KEYS).fill(0);
+                    allVotes.forEach(function(v) { liveCounts[v]++; });
+                    drawLiveHistogram(liveCounts, userIdx);
+                    callback(allVotes, liveCounts.slice());
+                }
+            }, stepMs);
+        }
+
+        function formatNum(n) {
+            if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'k';
+            return n;
+        }
+
+        // ===== LIVE HISTOGRAM =====
+        function drawLiveHistogram(counts, userIdx) {
+            var dpr = window.devicePixelRatio || 1;
+            var rect = histCanvas.getBoundingClientRect();
+            histCanvas.width = rect.width * dpr;
+            histCanvas.height = 60 * dpr;
+            histCtx.scale(dpr, dpr);
+            var w = rect.width, h = 60;
+            histCtx.clearRect(0, 0, w, h);
+
+            var maxCount = Math.max.apply(null, counts);
+            if (maxCount === 0) return;
+
+            var barW = w / NUM_KEYS;
+            for (var i = 0; i < NUM_KEYS; i++) {
+                if (counts[i] === 0) continue;
+                var barH = (counts[i] / maxCount) * (h - 4);
+                histCtx.fillStyle = (i === userIdx) ? 'rgba(122, 176, 232, 0.6)' : 'rgba(212, 168, 66, 0.35)';
+                histCtx.fillRect(i * barW + 1, h - barH, barW - 2, barH);
+            }
+        }
+
+        // ===== DISPLAY =====
+        function clearKeyHighlights() {
+            KEY_DATA.forEach(function(k, i) {
+                if (keyElements[i]) keyElements[i].classList.remove('user-pressed', 'result-note');
+            });
+        }
+
+        function setKeysDisabled(disabled) {
+            KEY_DATA.forEach(function(k, i) {
+                if (keyElements[i]) {
+                    if (disabled) keyElements[i].classList.add('disabled');
+                    else keyElements[i].classList.remove('disabled');
+                }
+            });
+        }
+
+        function showResult(result) {
+            if (!result) return;
+            clearKeyHighlights();
+
+            if (result.voices && result.voices.length > 1) {
+                result.voices.forEach(function(vi) {
+                    if (keyElements[vi]) keyElements[vi].classList.add('result-note');
+                });
+                resultNoteEl.textContent = result.voices.map(function(vi) { return KEY_DATA[vi].note; }).join(' + ');
+            } else {
+                if (keyElements[result.nearestIdx]) keyElements[result.nearestIdx].classList.add('result-note');
+                if (demoMode === 'mean') {
+                    resultNoteEl.innerHTML = '\u2248 ' + KEY_DATA[result.nearestIdx].note + ' <span style="color:#a09888;font-size:14px;">(' + Math.round(result.freq) + ' Hz)</span>';
+                } else {
+                    resultNoteEl.textContent = KEY_DATA[result.nearestIdx].note;
+                }
+            }
+        }
+
+        // ===== SCORE MAP =====
+        function drawScore() {
+            var dpr = window.devicePixelRatio || 1;
+            var rect = scoreCanvas.getBoundingClientRect();
+            var w = rect.width;
+            var h = 180;
+            scoreCanvas.width = w * dpr;
+            scoreCanvas.height = h * dpr;
+            scoreCtx.scale(dpr, dpr);
+            scoreCtx.clearRect(0, 0, w, h);
+
+            if (roundLog.length === 0) {
+                scoreCtx.fillStyle = '#0e0d14';
+                scoreCtx.fillRect(0, 0, w, h);
+                scoreCtx.fillStyle = '#4a4538';
+                scoreCtx.font = '14px "EB Garamond", Georgia, serif';
+                scoreCtx.textAlign = 'center';
+                scoreCtx.fillText('Score will appear here as you vote', w / 2, h / 2 + 5);
+                return;
+            }
+
+            var labelW = 28;
+            var plotW = w - labelW;
+            var cols = Math.max(roundLog.length, 16);
+            var colW = plotW / cols;
+            var rowH = h / NUM_KEYS;
+
+            // Background
+            scoreCtx.fillStyle = '#0e0d14';
+            scoreCtx.fillRect(0, 0, w, h);
+
+            // Faint horizontal gridlines for white keys
+            scoreCtx.strokeStyle = '#161420';
+            scoreCtx.lineWidth = 0.5;
+            for (var ni = 0; ni < NUM_KEYS; ni++) {
+                var noteIdx = NUM_KEYS - 1 - ni;
+                if (KEY_DATA[noteIdx].type === 'white') {
+                    var gy = ni * rowH + rowH;
+                    scoreCtx.beginPath();
+                    scoreCtx.moveTo(labelW, gy);
+                    scoreCtx.lineTo(w, gy);
+                    scoreCtx.stroke();
+                }
+            }
+
+            // Find global max count for color scaling
+            var globalMax = 0;
+            roundLog.forEach(function(round) {
+                if (!round.counts) return;
+                var mx = Math.max.apply(null, round.counts);
+                if (mx > globalMax) globalMax = mx;
+            });
+
+            // Draw heatmap
+            roundLog.forEach(function(round, ri) {
+                if (!round.counts) return;
+                var x = labelW + ri * colW;
+                for (var ni = 0; ni < NUM_KEYS; ni++) {
+                    var noteIdx = NUM_KEYS - 1 - ni;
+                    var count = round.counts[noteIdx];
+                    var y = ni * rowH;
+
+                    if (count > 0) {
+                        var intensity = count / globalMax;
+                        var r = Math.round(40 + intensity * 172);
+                        var g = Math.round(30 + intensity * 128);
+                        var b = Math.round(15 + intensity * 51);
+                        var a = 0.15 + intensity * 0.85;
+                        scoreCtx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+                        scoreCtx.fillRect(x, y, colW, rowH);
+                    }
+                }
+
+                // Winner outline(s)
+                var result = round.result;
+                if (result && result.voices) {
+                    result.voices.forEach(function(vi, voiceIdx) {
+                        var ny = (NUM_KEYS - 1 - vi) * rowH;
+                        scoreCtx.strokeStyle = voiceIdx === 0 ? '#ede8df' : 'rgba(237,232,223,0.35)';
+                        scoreCtx.lineWidth = voiceIdx === 0 ? 1.5 : 1;
+                        scoreCtx.strokeRect(x + 1, ny + 1, colW - 2, rowH - 2);
+                    });
+                }
+
+                // User's note: small blue dot
+                var userY = (NUM_KEYS - 1 - round.userIdx) * rowH + rowH / 2;
+                scoreCtx.fillStyle = 'rgba(122, 176, 232, 0.85)';
+                scoreCtx.beginPath();
+                scoreCtx.arc(x + colW / 2, userY, Math.max(2, colW * 0.15), 0, Math.PI * 2);
+                scoreCtx.fill();
+            });
+
+            // Note labels on left
+            scoreCtx.fillStyle = '#685e4e';
+            scoreCtx.font = '8px "EB Garamond", Georgia, serif';
+            scoreCtx.textAlign = 'right';
+            for (var ni = 0; ni < NUM_KEYS; ni++) {
+                var noteIdx = NUM_KEYS - 1 - ni;
+                if (KEY_DATA[noteIdx].type === 'white') {
+                    scoreCtx.fillText(KEY_DATA[noteIdx].note, labelW - 4, ni * rowH + rowH / 2 + 3);
+                }
+            }
+        }
+
+        // ===== SONIFY =====
+        function startSonify(startFrom) {
+            if (roundLog.length === 0) return;
+            ensureAudio();
+            playing = true;
+            setKeysDisabled(true);
+            sonifyBtn.disabled = true;
+            sonifyBtn.classList.add('active-btn');
+            stopPlayBtn.disabled = false;
+            playbackLine.style.display = 'block';
+
+            var idx = startFrom || 0;
+            var interval = (60.0 / BPM) * 1000;
+
+            function playRound() {
+                if (!playing || idx >= roundLog.length) {
+                    stopSonify();
+                    return;
+                }
+
+                var round = roundLog[idx];
+                var dur = Math.min((60.0 / BPM) * 0.8, 1.5);
+                var reResult = recomputeVoices(round, numVoices);
+
+                if (round.mode === 'mean' || reResult.voices.length <= 1) {
+                    playNote(reResult.freq || KEY_DATA[reResult.nearestIdx].freq, dur);
+                } else {
+                    playChord(reResult.voices.map(function(vi) { return KEY_DATA[vi].freq; }), dur);
+                }
+
+                clearKeyHighlights();
+                if (keyElements[round.userIdx]) keyElements[round.userIdx].classList.add('user-pressed');
+                reResult.voices.forEach(function(vi) {
+                    if (keyElements[vi]) keyElements[vi].classList.add('result-note');
+                });
+
+                yourNoteEl.textContent = KEY_DATA[round.userIdx].note;
+                if (reResult.voices.length > 1) {
+                    resultNoteEl.textContent = reResult.voices.map(function(vi) { return KEY_DATA[vi].note; }).join(' + ');
+                } else if (round.mode === 'mean') {
+                    var playFreq = reResult.freq || KEY_DATA[reResult.nearestIdx].freq;
+                    resultNoteEl.innerHTML = '\u2248 ' + KEY_DATA[reResult.nearestIdx].note + ' <span style="color:#a09888;font-size:14px;">(' + Math.round(playFreq) + ' Hz)</span>';
+                } else {
+                    resultNoteEl.textContent = KEY_DATA[reResult.nearestIdx].note;
+                }
+                statusEl.innerHTML = 'Playing round <span class="round-num">' + (idx + 1) + '</span> of ' + roundLog.length;
+
+                // Playback line position
+                var scoreRect = scoreCanvas.getBoundingClientRect();
+                var labelW = 28;
+                var plotW = scoreRect.width - labelW;
+                var cols = Math.max(roundLog.length, 16);
+                var colW = plotW / cols;
+                playbackLine.style.left = (labelW + idx * colW + colW / 2) + 'px';
+
+                drawLiveHistogram(round.counts, round.userIdx);
+
+                idx++;
+                playTimer = setTimeout(playRound, interval);
+            }
+
+            playRound();
+        }
+
+        function stopSonify() {
+            playing = false;
+            if (playTimer) { clearTimeout(playTimer); playTimer = null; }
+            setKeysDisabled(false);
+            sonifyBtn.disabled = roundLog.length === 0;
+            sonifyBtn.classList.remove('active-btn');
+            stopPlayBtn.disabled = true;
+            playbackLine.style.display = 'none';
+            clearKeyHighlights();
+            statusEl.innerHTML = roundLog.length + ' rounds recorded. Choose another note or press <span class="note-name">Play</span>.';
+        }
+
+        // ===== CONTROLS =====
+        modeBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                if (voting || playing) return;
+                var m = btn.getAttribute('data-mode');
+                if (m === demoMode) return;
+                demoMode = m;
+                modeBtns.forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                if (m === 'mode') {
+                    voicesGroup.style.opacity = '1';
+                    voicesGroup.style.pointerEvents = 'auto';
+                } else {
+                    voicesGroup.style.opacity = '0.3';
+                    voicesGroup.style.pointerEvents = 'none';
+                }
+            });
+        });
+
+        voterSlider.addEventListener('input', updateVoterDisplay);
+
+        bpmSlider.addEventListener('input', function() {
+            BPM = parseInt(this.value);
+            bpmValEl.textContent = BPM;
+        });
+
+        voicesSlider.addEventListener('input', function() {
+            numVoices = parseInt(this.value);
+            voicesValEl.textContent = numVoices;
+        });
+
+        sonifyBtn.addEventListener('click', function() {
+            if (playing) return;
+            startSonify();
+        });
+
+        stopPlayBtn.addEventListener('click', stopSonify);
+
+        // Click on score to play from that point
+        scoreCanvas.style.cursor = 'pointer';
+        scoreCanvas.addEventListener('click', function(e) {
+            if (voting || roundLog.length === 0) return;
+            var rect = scoreCanvas.getBoundingClientRect();
+            var clickX = e.clientX - rect.left;
+            var labelW = 28;
+            var plotW = rect.width - labelW;
+            var cols = Math.max(roundLog.length, 16);
+            var colW = plotW / cols;
+            var roundIdx = Math.floor((clickX - labelW) / colW);
+            roundIdx = Math.max(0, Math.min(roundLog.length - 1, roundIdx));
+
+            if (playing) stopSonify();
+            startSonify(roundIdx);
+        });
+
+        clearBtn.addEventListener('click', function() {
+            if (voting) return;
+            stopSonify();
+            roundLog = [];
+            previousWinnerIdx = -1;
+            yourNoteEl.innerHTML = '&mdash;';
+            resultNoteEl.innerHTML = '&mdash;';
+            roundCountEl.textContent = '0';
+            clearKeyHighlights();
+            initVoters();
+            drawScore();
+            drawLiveHistogram(new Array(NUM_KEYS).fill(0), -1);
+            sonifyBtn.disabled = true;
+            statusEl.textContent = 'Choose a note to begin round 1';
+        });
+
+        // ===== INIT =====
+        updateVoterDisplay();
+        initVoters();
+        drawScore();
+
+    })();
+    </script>
+</body>
+</html>
