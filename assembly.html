@@ -6,1194 +6,588 @@
     <title>Assembly — Democracy in Music</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B0E1A'/%3E%3Ccircle cx='11' cy='9' r='5' fill='%23d4a842'/%3E%3Ccircle cx='21' cy='8' r='4' fill='%2346d2d2'/%3E%3Ccircle cx='15' cy='18' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23' r='3.5' fill='%23d25a6e'/%3E%3Ccircle cx='23' cy='22' r='2.8' fill='%236aa860'/%3E%3C/svg%3E">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Georgia', serif;
+            font-family: 'EB Garamond', Georgia, serif;
             background: #0a0a1a;
             color: #e0e0e0;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 24px 20px 40px;
+        }
+        a.home { position: fixed; top: 12px; left: 16px; font-size: 11px; color: #333; text-decoration: none; letter-spacing: 2px; z-index: 99; }
+        #header { text-align: center; margin-bottom: 24px; }
+        #header h1 { font-size: 28px; letter-spacing: 8px; font-weight: 300; color: #fff; }
+        #header p { font-size: 14px; font-style: italic; color: #777; margin-top: 6px; }
+
+        /* Progress */
+        #progress { display: flex; gap: 12px; margin-bottom: 32px; }
+        .prog-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #1a1a2e; border: 1px solid #2a2a44; transition: all 0.4s;
+        }
+        .prog-dot.done { background: #a78bfa; border-color: #a78bfa; }
+        .prog-dot.current { background: none; border-color: #a78bfa; box-shadow: 0 0 8px rgba(167,139,250,0.3); }
+
+        /* Step container */
+        #step { max-width: 520px; width: 100%; text-align: center; }
+        #layer-name {
+            font-size: 12px; letter-spacing: 4px; text-transform: uppercase;
+            color: #a78bfa; margin-bottom: 6px;
+        }
+        #step-prompt {
+            font-size: 20px; color: #ccc; margin-bottom: 24px; font-style: italic;
         }
 
-        #header {
-            text-align: center;
-            padding: 24px 20px 6px;
+        /* Option cards */
+        #options { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+        .opt-card {
+            width: 110px; padding: 18px 8px; border: 1px solid #1a1a2e; border-radius: 6px;
+            background: #0f0f1e; cursor: pointer; transition: all 0.2s; text-align: center;
+            user-select: none; -webkit-user-select: none;
         }
-        #header h1 {
-            font-size: 28px;
-            letter-spacing: 8px;
-            font-weight: 300;
-            color: #fff;
-        }
-        #header p {
-            font-size: 13px;
-            font-style: italic;
-            color: #777;
-            margin-top: 6px;
-        }
+        .opt-card:hover { border-color: #2a2a44; background: #12122a; }
+        .opt-card.previewing { border-color: #a78bfa; background: #140f28; box-shadow: 0 0 16px rgba(167,139,250,0.1); }
+        .opt-card .opt-name { font-size: 15px; color: #ddd; letter-spacing: 1px; margin-bottom: 4px; }
+        .opt-card.previewing .opt-name { color: #c4b5fd; }
+        .opt-card .opt-hint { font-size: 10px; color: #3a3a50; font-style: italic; }
+        .opt-card.previewing .opt-hint { color: #7a6a9a; }
 
-        #mode-toggle {
-            display: flex;
-            gap: 0;
-            margin: 16px 0 10px;
+        /* Vote bar (shown during reveal) */
+        .opt-card .vote-bar-wrap {
+            height: 4px; background: #1a1a2e; border-radius: 2px; margin-top: 10px;
+            overflow: hidden; display: none;
         }
-        .mode-btn {
-            padding: 8px 24px;
-            background: none;
-            border: 1px solid #333;
-            color: #666;
-            font-family: 'Georgia', serif;
-            font-size: 11px;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-transform: uppercase;
+        .opt-card .vote-bar {
+            height: 100%; background: #a78bfa; border-radius: 2px;
+            transition: width 0.8s ease; width: 0%;
         }
-        .mode-btn:first-child { border-radius: 3px 0 0 3px; }
-        .mode-btn:last-child { border-radius: 0 3px 3px 0; border-left: none; }
-        .mode-btn.active {
-            background: #4a9eff;
-            border-color: #4a9eff;
-            color: #0a0a1a;
+        .opt-card .vote-count {
+            font-size: 10px; color: #555; margin-top: 4px; min-height: 14px; display: none;
         }
+        .opt-card.winner { border-color: #a78bfa; background: #1a1030; }
+        .opt-card.winner .opt-name { color: #fff; }
+        .opt-card.winner .vote-bar { background: #a78bfa; }
+        .opt-card.you-voted .opt-hint { color: #a78bfa; }
 
-        #vote-status {
-            text-align: center;
-            font-size: 11px;
-            color: #555;
-            letter-spacing: 1px;
-            min-height: 20px;
-            margin-bottom: 6px;
-            line-height: 1.5;
+        /* Action button */
+        #action-area { min-height: 60px; display: flex; align-items: center; justify-content: center; }
+        .action-btn {
+            padding: 10px 32px; background: none; border: 1px solid #a78bfa; color: #a78bfa;
+            font-family: 'EB Garamond', Georgia, serif; font-size: 14px; letter-spacing: 1px;
+            cursor: pointer; border-radius: 4px; transition: all 0.2s;
         }
-        #vote-status .credits {
-            color: #4a9eff;
-        }
+        .action-btn:hover { background: #a78bfa; color: #0a0a1a; }
+        .action-btn:disabled { opacity: 0.3; cursor: default; }
+        .action-btn:disabled:hover { background: none; color: #a78bfa; }
 
-        #grid-container {
-            padding: 0 16px;
-            width: 100%;
-            max-width: 780px;
+        /* Status text */
+        #status {
+            font-size: 15px; color: #999; margin-top: 20px; min-height: 24px;
+            letter-spacing: 0.5px; text-align: center; transition: color 0.3s;
         }
+        #status.highlight { color: #c4b5fd; }
 
-        .grid-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 4px;
+        /* Result screen */
+        #result { display: none; max-width: 680px; width: 100%; text-align: center; }
+        #result h2 { font-size: 22px; font-weight: 400; color: #ccc; margin-bottom: 20px; }
+        #result-grid { padding: 0 8px; }
+        .result-grid-row { display: flex; align-items: center; margin-bottom: 5px; }
+        .result-grid-label {
+            width: 64px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+            color: #555; text-align: right; padding-right: 10px; flex-shrink: 0;
         }
-        .row-label {
-            width: 72px;
-            font-size: 10px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #555;
-            text-align: right;
-            padding-right: 10px;
-            flex-shrink: 0;
+        .result-grid-cells { display: flex; gap: 5px; flex: 1; }
+        .result-cell {
+            flex: 1; padding: 12px 4px; border: 1px solid #1a1a2e; border-radius: 4px;
+            background: #0f0f1e; text-align: center; transition: all 0.3s;
         }
-        .cells {
-            display: flex;
-            gap: 4px;
-            flex: 1;
+        .result-cell .rc-name { font-size: 11px; color: #3a3a50; letter-spacing: 0.5px; }
+        .result-cell.is-winner { border-color: #a78bfa; background: #1a1030; transition: all 0.12s; }
+        .result-cell.is-winner .rc-name { color: #c4b5fd; }
+        .result-cell.is-winner.flash { background: #2a1850; border-color: #c4b5fd; }
+        .result-cell.is-winner.flash .rc-name { color: #fff; }
+        .result-cell.is-yours { position: relative; }
+        .result-cell.is-yours::after {
+            content: 'you'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+            font-size: 7px; color: #a78bfa; letter-spacing: 1px;
         }
-        .cell {
-            flex: 1;
-            min-height: 54px;
-            border: 1px solid #1a1a2e;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: all 0.15s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            user-select: none;
-            -webkit-user-select: none;
-            background: #0f0f1e;
-            padding: 4px 2px;
-        }
-        .cell:hover {
-            border-color: #2a2a44;
-            background: #12122a;
-        }
-        .cell.active {
-            border-color: #4a9eff;
-            background: #0f1528;
-            box-shadow: 0 0 12px rgba(74, 158, 255, 0.12);
-        }
-        .cell .cell-label {
-            font-size: 9px;
-            color: #3a3a50;
-            letter-spacing: 1px;
-        }
-        .cell.active .cell-label {
-            color: #7ab8ff;
-        }
-        .cell.playing {
-            border-color: #a78bfa;
-            box-shadow: 0 0 14px rgba(70, 210, 210, 0.15);
-        }
-        .cell.playing .cell-label {
-            color: #a78bfa;
-        }
-
-        /* Vote bars */
-        .cell-bar-container {
-            width: 75%;
-            height: 3px;
-            background: #1a1a2e;
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 4px;
-        }
-        .cell-bar {
-            height: 100%;
-            background: #2a2a4e;
-            border-radius: 2px;
-            transition: width 0.3s ease;
-            width: 0%;
-        }
-        .cell.active .cell-bar {
-            background: #4a9eff;
-        }
-        .cell .vote-count {
-            font-size: 8px;
-            color: #2a2a40;
-            margin-top: 2px;
-            min-height: 11px;
-        }
-        .cell.active .vote-count {
-            color: #4a7aaa;
-        }
-        .cell .user-votes {
-            font-size: 8px;
-            color: #4a9eff;
-            min-height: 10px;
-        }
-
-        /* Mute */
-        .row-mute {
-            width: 26px;
-            height: 26px;
-            border: 1px solid #1a1a2e;
-            border-radius: 3px;
-            background: none;
-            color: #444;
-            font-size: 9px;
-            cursor: pointer;
-            margin-left: 6px;
-            flex-shrink: 0;
-            transition: all 0.15s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .row-mute:hover { border-color: #333; }
-        .row-mute.muted {
-            background: #1a0a0a;
-            border-color: #3a1a1a;
-            color: #884444;
-        }
-
-        #transport {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            margin: 14px 0;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        button.transport-btn {
-            padding: 9px 26px;
-            background: none;
-            border: 1px solid #4a9eff;
-            color: #4a9eff;
-            font-family: 'Georgia', serif;
-            font-size: 12px;
-            letter-spacing: 1px;
-            cursor: pointer;
-            border-radius: 3px;
-            transition: all 0.2s;
-        }
-        button.transport-btn:hover {
-            background: #4a9eff;
-            color: #0a0a1a;
-        }
-        button.transport-btn.playing-btn {
-            background: #4a9eff;
-            color: #0a0a1a;
-        }
-
-        .transport-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .transport-group label {
-            font-size: 11px;
-            color: #444;
-            letter-spacing: 1px;
-        }
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 90px;
-            height: 3px;
-            background: #1a1a2e;
-            border-radius: 2px;
-            outline: none;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 13px;
-            height: 13px;
-            border-radius: 50%;
-            background: #4a9eff;
-            cursor: pointer;
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 13px;
-            height: 13px;
-            border-radius: 50%;
-            background: #4a9eff;
-            cursor: pointer;
-            border: none;
-        }
-
-        #beat-display {
-            display: flex;
-            gap: 5px;
-            margin: 6px 0 2px;
-        }
-        .beat-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #111122;
-            transition: background 0.08s;
-        }
-        .beat-dot.on { background: #a78bfa; }
-        .beat-dot.bar { background: #1a1a30; }
-
-        #info {
-            text-align: center;
-            padding: 12px 20px 28px;
-            font-size: 11px;
-            color: #2a2a3a;
-            line-height: 1.7;
-            max-width: 560px;
-        }
-
-        #credit-viz {
-            width: 100%; max-width: 640px;
-            padding: 4px 16px 8px;
-        }
-        #credit-label {
-            font-size: 8px; color: rgba(167,139,250,0.3);
-            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px;
-        }
-        #creditCanvas {
-            width: 100%; height: 60px; display: block;
-            border-radius: 3px;
-        }
+        #result-transport { margin-top: 20px; display: flex; gap: 12px; justify-content: center; }
     </style>
+</head>
 <body>
-    <a href="index.html" style="position:fixed;top:12px;left:16px;font-size:11px;color:#333;text-decoration:none;letter-spacing:2px;z-index:99;font-family:Georgia,serif;">&larr; Home</a>
+    <a class="home" href="index.html">&larr; Home</a>
+
     <div id="header">
         <h1>ASSEMBLY</h1>
-        <p>What should we play?</p>
+        <p>Build a piece of music, one vote at a time</p>
     </div>
 
-    <div id="mode-toggle">
-        <button class="mode-btn active" data-mode="explore">Explore</button>
-        <button class="mode-btn" data-mode="vote">Vote</button>
-    </div>
+    <div id="progress"></div>
 
-    <div id="vote-status"></div>
-
-    <div id="grid-container"></div>
-
-    <div id="beat-display"></div>
-
-    <div id="credit-viz" style="display:none;">
-        <div id="credit-label">credit budget</div>
-        <canvas id="creditCanvas" height="60"></canvas>
-    </div>
-
-    <div id="transport">
-        <button class="transport-btn" id="playBtn">&#9654; Play</button>
-        <div class="transport-group">
-            <label>BPM</label>
-            <input type="range" id="bpmSlider" min="50" max="130" value="76">
-            <span id="bpmVal" style="font-size:11px;color:#444;min-width:26px;">76</span>
+    <div id="step">
+        <div id="layer-name"></div>
+        <div id="step-prompt">Tap to preview, then cast your vote</div>
+        <div id="options"></div>
+        <div id="action-area">
+            <button class="action-btn" id="voteBtn" disabled>Cast Vote</button>
         </div>
-        <button class="transport-btn" id="newVoteBtn" style="display:none;">New Round</button>
-        <button class="transport-btn" id="clearVotesBtn" style="display:none;">Clear My Votes</button>
+        <div id="status"></div>
     </div>
 
-    <div id="info">
-        <span id="info-explore">Choose one block per layer. Press play. Swap blocks to reshape the music live.</span>
-        <span id="info-vote" style="display:none;">
-            You have 16 voice credits. Click a block to add a vote.<br>
-            Concentrating costs more: 1 vote = 1 credit, 2 votes = 4, 3 votes = 9.<br>
-            Out of credits? Clicking again removes a vote.
-        </span>
+    <div id="result">
+        <h2>What we chose together</h2>
+        <div id="result-grid"></div>
+        <div id="result-transport">
+            <button class="action-btn" id="stopBtn">&#9632; Stop</button>
+            <button class="action-btn" id="againBtn">New Round</button>
+        </div>
     </div>
+
 
     <script>
     (function() {
-        // ==========================================
-        // CONFIGURATION
-        // ==========================================
         var LAYERS = [
-            { name: 'Rhythm', variations: ['—', 'Pulse', 'Scatter', 'Sway', 'Drift'] },
-            { name: 'Bass', variations: ['—', 'Root', 'Walk', 'Throb', 'Sub'] },
-            { name: 'Chords', variations: ['—', 'Warm', 'Glass', 'Hollow', 'Open'] },
-            { name: 'Melody', variations: ['—', 'Arc', 'Steps', 'Float', 'Call'] },
-            { name: 'Texture', variations: ['—', 'Rain', 'Hum', 'Crackle', 'Wind'] }
+            { name: 'Rhythm', variations: ['Pulse', 'Scatter', 'Sway', 'Drift'] },
+            { name: 'Bass', variations: ['Root', 'Walk', 'Throb', 'Sub'] },
+            { name: 'Chords', variations: ['Warm', 'Glass', 'Hollow', 'Open'] },
+            { name: 'Melody', variations: ['Arc', 'Steps', 'Float', 'Call'] },
+            { name: 'Texture', variations: ['Rain', 'Hum', 'Crackle', 'Wind'] }
         ];
-
+        var PROMPTS = [
+            'Choose a rhythm',
+            'Add a bass line',
+            'Pick the chords',
+            'Choose a melody',
+            'Add a texture'
+        ];
         var NOTES = {
             C2: 65.41, Eb2: 77.78, F2: 87.31, G2: 98.00, Bb2: 116.54,
             C3: 130.81, Eb3: 155.56, F3: 174.61, G3: 196.00, Bb3: 233.08,
             C4: 261.63, Eb4: 311.13, F4: 349.23, G4: 392.00, Bb4: 466.16,
             C5: 523.25, Eb5: 622.25, G5: 783.99
         };
+        var BPM = 76, STEPS = 16, CROWD_SIZE = 24;
 
-        var BPM = 76;
-        var STEPS = 16;
-        var VOICE_CREDITS = 16;
+        // State
+        var currentLayer = 0;
+        var phase = 'preview'; // preview | revealed | done
+        var userChoice = -1; // which option the user picked for current layer
+        var userChoices = []; // all user choices
+        var winners = []; // winning variation index (1-indexed for audio) per layer
+        var crowdVotes = []; // votes per option for current layer
+        var resultWinnerCells = []; // DOM refs to winning cells in result grid
 
-        var audioCtx = null;
-        var masterGain = null;
-        var reverbSend = null;
-        var reverbReturn = null;
-        var compressor = null;
-        var masterFilter = null;
-
-        var isPlaying = false;
-        var currentStep = -1;
-        var nextStepTime = 0;
-        var schedulerTimer = null;
-        var mode = 'explore';
-
-        var activeVariation = [1, 1, 1, 0, 1]; // Pulse, Root, Warm, —, Rain
+        // Audio
+        var audioCtx = null, masterGain = null, reverbSend = null, compressor = null, masterFilter = null;
+        var isPlaying = false, currentStep = -1, nextStepTime = 0, schedulerTimer = null;
+        var activeVariation = [0, 0, 0, 0, 0]; // 0 = silent, 1-4 = variations
         var mutedLayers = [false, false, false, false, false];
 
-        // Vote state
-        var simVotes = [];      // simVotes[layer][variation]
-        var userVotes = [];     // userVotes[layer][variation] = number of votes placed
-        var userCreditsUsed = 0;
-
-        // ==========================================
         // DOM
-        // ==========================================
-        var gridContainer = document.getElementById('grid-container');
-        var beatDisplay = document.getElementById('beat-display');
-        var playBtn = document.getElementById('playBtn');
-        var bpmSlider = document.getElementById('bpmSlider');
-        var bpmVal = document.getElementById('bpmVal');
-        var newVoteBtn = document.getElementById('newVoteBtn');
-        var clearVotesBtn = document.getElementById('clearVotesBtn');
-        var voteStatus = document.getElementById('vote-status');
-        var modeBtns = document.querySelectorAll('.mode-btn');
-        var infoExplore = document.getElementById('info-explore');
-        var infoVote = document.getElementById('info-vote');
-        var creditViz = document.getElementById('credit-viz');
-        var creditCanvas = document.getElementById('creditCanvas');
-        var creditCtx = creditCanvas.getContext('2d');
+        var progress = document.getElementById('progress');
+        var layerName = document.getElementById('layer-name');
+        var stepPrompt = document.getElementById('step-prompt');
+        var optionsEl = document.getElementById('options');
+        var voteBtn = document.getElementById('voteBtn');
+        var statusEl = document.getElementById('status');
+        var stepEl = document.getElementById('step');
+        var resultEl = document.getElementById('result');
+        var resultGrid = document.getElementById('result-grid');
+        var againBtn = document.getElementById('againBtn');
+        var stopBtn = document.getElementById('stopBtn');
 
-        // Beat dots
-        for (var b = 0; b < STEPS; b++) {
-            var dot = document.createElement('div');
-            dot.className = 'beat-dot' + (b % 4 === 0 ? ' bar' : '');
-            beatDisplay.appendChild(dot);
+        // Progress dots
+        for (var i = 0; i < LAYERS.length; i++) {
+            var d = document.createElement('div');
+            d.className = 'prog-dot';
+            progress.appendChild(d);
         }
 
-        // Grid
-        var cellElements = [];
-        LAYERS.forEach(function(layer, li) {
-            var row = document.createElement('div');
-            row.className = 'grid-row';
-
-            var label = document.createElement('div');
-            label.className = 'row-label';
-            label.textContent = layer.name;
-            row.appendChild(label);
-
-            var cells = document.createElement('div');
-            cells.className = 'cells';
-            cellElements[li] = [];
-
-            layer.variations.forEach(function(vName, vi) {
-                var cell = document.createElement('div');
-                cell.className = 'cell' + (vi === activeVariation[li] ? ' active' : '');
-
-                var lbl = document.createElement('div');
-                lbl.className = 'cell-label';
-                lbl.textContent = vName;
-                cell.appendChild(lbl);
-
-                var barC = document.createElement('div');
-                barC.className = 'cell-bar-container';
-                barC.style.display = 'none';
-                var bar = document.createElement('div');
-                bar.className = 'cell-bar';
-                barC.appendChild(bar);
-                cell.appendChild(barC);
-
-                var vc = document.createElement('div');
-                vc.className = 'vote-count';
-                cell.appendChild(vc);
-
-                var uv = document.createElement('div');
-                uv.className = 'user-votes';
-                cell.appendChild(uv);
-
-                cell.addEventListener('click', function() { handleCellClick(li, vi); });
-                cells.appendChild(cell);
-                cellElements[li][vi] = cell;
-            });
-
-            row.appendChild(cells);
-
-            var muteBtn = document.createElement('button');
-            muteBtn.className = 'row-mute';
-            muteBtn.textContent = 'M';
-            muteBtn.addEventListener('click', function() {
-                mutedLayers[li] = !mutedLayers[li];
-                muteBtn.classList.toggle('muted', mutedLayers[li]);
-            });
-            row.appendChild(muteBtn);
-            gridContainer.appendChild(row);
-        });
-
-        // ==========================================
-        // MODE
-        // ==========================================
-        modeBtns.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                var m = btn.getAttribute('data-mode');
-                if (m === mode) return;
-                mode = m;
-                modeBtns.forEach(function(b) { b.classList.remove('active'); });
-                btn.classList.add('active');
-                if (mode === 'vote') {
-                    newVoteBtn.style.display = '';
-                    clearVotesBtn.style.display = '';
-                    creditViz.style.display = '';
-                    infoExplore.style.display = 'none';
-                    infoVote.style.display = '';
-                    startNewVote();
-                } else {
-                    newVoteBtn.style.display = 'none';
-                    clearVotesBtn.style.display = 'none';
-                    creditViz.style.display = 'none';
-                    infoExplore.style.display = '';
-                    infoVote.style.display = 'none';
-                    voteStatus.textContent = '';
-                    hideVoteUI();
-                }
-            });
-        });
-
-        newVoteBtn.addEventListener('click', startNewVote);
-
-        clearVotesBtn.addEventListener('click', function() {
-            LAYERS.forEach(function(_, li) {
-                LAYERS[li].variations.forEach(function(_, vi) {
-                    userVotes[li][vi] = 0;
-                });
-            });
-            userCreditsUsed = 0;
-            updateVoteDisplay();
-        });
-
-        function hideVoteUI() {
-            LAYERS.forEach(function(layer, li) {
-                layer.variations.forEach(function(_, vi) {
-                    var c = cellElements[li][vi];
-                    c.querySelector('.cell-bar-container').style.display = 'none';
-                    c.querySelector('.vote-count').textContent = '';
-                    c.querySelector('.user-votes').textContent = '';
-                });
-            });
+        function updateProgress() {
+            var dots = progress.querySelectorAll('.prog-dot');
+            for (var i = 0; i < dots.length; i++) {
+                dots[i].className = 'prog-dot';
+                if (i < currentLayer) dots[i].classList.add('done');
+                else if (i === currentLayer && phase !== 'done') dots[i].classList.add('current');
+                else if (phase === 'done') dots[i].classList.add('done');
+            }
         }
 
         // ==========================================
-        // QUADRATIC VOTING
+        // STEP FLOW
         // ==========================================
-        function startNewVote() {
-            userCreditsUsed = 0;
-            userVotes = [];
-            simVotes = [];
+        function showStep() {
+            phase = 'preview';
+            userChoice = -1;
+            var layer = LAYERS[currentLayer];
 
-            LAYERS.forEach(function(layer, li) {
-                userVotes[li] = [];
-                simVotes[li] = [];
+            layerName.textContent = layer.name;
+            stepPrompt.textContent = PROMPTS[currentLayer];
+            optionsEl.innerHTML = '';
+            statusEl.textContent = currentLayer === 0 ? 'Tap a block to hear it' : 'Tap to hear how it fits';
+            statusEl.className = '';
+            voteBtn.disabled = true;
+            voteBtn.textContent = 'Cast Vote';
+            voteBtn.style.display = '';
 
-                // Generate tight simulated votes: 2 or 3 contenders close together
-                var contenders = [];
-                var numContenders = 2 + Math.floor(Math.random() * 2);
-                while (contenders.length < numContenders) {
-                    var pick = 1 + Math.floor(Math.random() * (layer.variations.length - 1));
-                    if (contenders.indexOf(pick) === -1) contenders.push(pick);
-                }
-
-                for (var vi = 0; vi < layer.variations.length; vi++) {
-                    userVotes[li][vi] = 0;
-                    if (vi === 0) {
-                        simVotes[li][vi] = Math.floor(Math.random() * 3);
-                    } else if (contenders.indexOf(vi) >= 0) {
-                        // Tight race: base of 5-9
-                        simVotes[li][vi] = 5 + Math.floor(Math.random() * 5);
-                    } else {
-                        simVotes[li][vi] = Math.floor(Math.random() * 3);
-                    }
-                }
+            layer.variations.forEach(function(name, vi) {
+                var card = document.createElement('div');
+                card.className = 'opt-card';
+                card.innerHTML = '<div class="opt-name">' + name + '</div>' +
+                    '<div class="opt-hint">tap to preview</div>' +
+                    '<div class="vote-bar-wrap"><div class="vote-bar"></div></div>' +
+                    '<div class="vote-count"></div>';
+                card.addEventListener('click', function() { handleOptionTap(vi); });
+                optionsEl.appendChild(card);
             });
 
-            // Show UI
-            LAYERS.forEach(function(layer, li) {
-                layer.variations.forEach(function(_, vi) {
-                    cellElements[li][vi].querySelector('.cell-bar-container').style.display = '';
-                });
+            updateProgress();
+        }
+
+        function handleOptionTap(vi) {
+            if (phase !== 'preview') return;
+
+            userChoice = vi;
+            voteBtn.disabled = false;
+
+            // Update card states
+            var cards = optionsEl.querySelectorAll('.opt-card');
+            cards.forEach(function(c, i) {
+                c.className = 'opt-card' + (i === vi ? ' previewing' : '');
+                c.querySelector('.opt-hint').textContent = i === vi ? 'your choice' : 'tap to preview';
             });
 
-            updateVoteDisplay();
+            statusEl.textContent = '';
+
+            // Preview this variation
+            activeVariation[currentLayer] = vi + 1; // +1 because audio uses 1-indexed (0 = silence)
+            if (!isPlaying) startPlayback();
         }
 
-        function qvCost(numVotes) {
-            return numVotes * numVotes;
-        }
+        function castVote() {
+            if (userChoice < 0 || phase !== 'preview') return;
+            phase = 'revealed';
+            voteBtn.disabled = true;
+            voteBtn.style.display = 'none';
+            userChoices[currentLayer] = userChoice;
 
-        function totalUserCreditsUsed() {
+            // Generate crowd votes
+            crowdVotes = [];
+            var favorite = Math.floor(Math.random() * 4);
+            for (var i = 0; i < 4; i++) {
+                if (i === favorite) crowdVotes[i] = 6 + Math.floor(Math.random() * 6);
+                else crowdVotes[i] = 1 + Math.floor(Math.random() * 5);
+            }
+            // Add user vote
+            crowdVotes[userChoice]++;
+
+            // Find winner
+            var maxV = 0, winIdx = 0;
+            for (var i = 0; i < 4; i++) {
+                if (crowdVotes[i] > maxV) { maxV = crowdVotes[i]; winIdx = i; }
+            }
+            winners[currentLayer] = winIdx + 1; // 1-indexed for audio
+
+            // Reveal animation
+            statusEl.textContent = 'Counting votes\u2026';
+            statusEl.className = 'highlight';
+            var cards = optionsEl.querySelectorAll('.opt-card');
             var total = 0;
-            LAYERS.forEach(function(_, li) {
-                LAYERS[li].variations.forEach(function(_, vi) {
-                    total += qvCost(userVotes[li][vi]);
-                });
+            for (var i = 0; i < 4; i++) total += crowdVotes[i];
+
+            // Show bars
+            cards.forEach(function(c) {
+                c.querySelector('.vote-bar-wrap').style.display = '';
+                c.querySelector('.vote-count').style.display = '';
             });
-            return total;
-        }
 
-        function handleCellClick(li, vi) {
-            if (mode === 'explore') {
-                activeVariation[li] = vi;
-                LAYERS[li].variations.forEach(function(_, v) {
-                    cellElements[li][v].classList.toggle('active', v === vi);
-                });
-                return;
-            }
-
-            // Vote mode: add a vote to this cell
-            if (vi === 0) return; // Can't vote for silence
-
-            var currentVotesHere = userVotes[li][vi];
-            var costOfNext = qvCost(currentVotesHere + 1) - qvCost(currentVotesHere);
-            var currentTotal = totalUserCreditsUsed();
-
-            if (currentTotal + costOfNext > VOICE_CREDITS) {
-                // Can't afford it. Try removing the last vote instead (toggle)
-                if (currentVotesHere > 0) {
-                    userVotes[li][vi]--;
-                }
-            } else {
-                userVotes[li][vi]++;
-            }
-
-            userCreditsUsed = totalUserCreditsUsed();
-            updateVoteDisplay();
-        }
-
-        function updateVoteDisplay() {
-            var remaining = VOICE_CREDITS - totalUserCreditsUsed();
-            voteStatus.innerHTML = '<span class="credits">' + remaining + '</span> of ' + VOICE_CREDITS + ' voice credits remaining';
-
-            LAYERS.forEach(function(layer, li) {
-                var maxTotal = 0;
-                var maxIdx = 0;
-                var grandTotal = 0;
-
-                // Compute totals
-                var totals = [];
-                for (var vi = 0; vi < layer.variations.length; vi++) {
-                    var t = simVotes[li][vi] + userVotes[li][vi];
-                    totals.push(t);
-                    grandTotal += t;
-                    if (t > maxTotal) {
-                        maxTotal = t;
-                        maxIdx = vi;
+            // Animate bars after a beat
+            setTimeout(function() {
+                cards.forEach(function(c, i) {
+                    var pct = (crowdVotes[i] / total) * 100;
+                    c.querySelector('.vote-bar').style.width = pct + '%';
+                    c.querySelector('.vote-count').textContent = crowdVotes[i] + ' vote' + (crowdVotes[i] !== 1 ? 's' : '');
+                    if (i === userChoice) {
+                        c.classList.add('you-voted');
+                        c.querySelector('.opt-hint').textContent = 'you voted';
                     }
-                }
+                });
+            }, 300);
 
-                layer.variations.forEach(function(_, vi) {
-                    var cell = cellElements[li][vi];
-                    var bar = cell.querySelector('.cell-bar');
-                    var countEl = cell.querySelector('.vote-count');
-                    var uvEl = cell.querySelector('.user-votes');
-                    var pct = grandTotal > 0 ? (totals[vi] / grandTotal * 100) : 0;
-                    bar.style.width = pct + '%';
-                    countEl.textContent = totals[vi];
-                    if (userVotes[li][vi] > 0) {
-                        uvEl.textContent = 'you: ' + userVotes[li][vi] + ' (' + qvCost(userVotes[li][vi]) + ' cr)';
+            // Reveal winner after bars animate
+            setTimeout(function() {
+                cards.forEach(function(c, i) {
+                    if (i === winIdx) c.classList.add('winner');
+                    else { c.style.opacity = '0.4'; }
+                });
+
+                // Set the winning variation for playback
+                activeVariation[currentLayer] = winners[currentLayer];
+
+                var youWon = userChoice === winIdx;
+                statusEl.textContent = youWon
+                    ? 'Your choice won'
+                    : 'The group chose ' + LAYERS[currentLayer].variations[winIdx];
+                statusEl.className = 'highlight';
+
+                // Show next button
+                setTimeout(function() {
+                    voteBtn.style.display = '';
+                    voteBtn.disabled = false;
+                    if (currentLayer < LAYERS.length - 1) {
+                        voteBtn.textContent = 'Next Layer \u2192';
                     } else {
-                        uvEl.textContent = '';
+                        voteBtn.textContent = 'See the Result';
                     }
-                });
-
-                // Winner
-                activeVariation[li] = maxIdx;
-                layer.variations.forEach(function(_, vi) {
-                    cellElements[li][vi].classList.toggle('active', vi === maxIdx);
-                });
-            });
-            drawCreditBudget();
+                }, 600);
+            }, 1200);
         }
 
-        // Credit budget visualization
-        var LAYER_COLORS = ['#fb923c', '#38bdf8', '#a78bfa', '#fbbf24', '#34d399'];
+        function advanceToNext() {
+            if (phase === 'revealed') {
+                currentLayer++;
+                if (currentLayer >= LAYERS.length) {
+                    showResult();
+                } else {
+                    showStep();
+                }
+            }
+        }
 
-        function drawCreditBudget() {
-            var dpr = window.devicePixelRatio || 1;
-            var rect = creditCanvas.getBoundingClientRect();
-            creditCanvas.width = rect.width * dpr;
-            creditCanvas.height = 60 * dpr;
-            creditCtx.scale(dpr, dpr);
-            var w = rect.width, h = 60;
-            creditCtx.clearRect(0, 0, w, h);
+        function showResult() {
+            phase = 'done';
+            stepEl.style.display = 'none';
+            resultEl.style.display = 'block';
+            updateProgress();
+            resultGrid.innerHTML = '';
+            resultWinnerCells = [];
 
-            // Background
-            creditCtx.fillStyle = '#0d0d1a';
-            creditCtx.fillRect(0, 0, w, h);
-
-            // Collect all spend segments
-            var segments = [];
-            var totalSpent = 0;
             LAYERS.forEach(function(layer, li) {
-                layer.variations.forEach(function(vName, vi) {
-                    if (vi === 0) return;
-                    var votes = userVotes[li][vi];
-                    if (votes === 0) return;
-                    var cost = qvCost(votes);
-                    segments.push({ layer: li, variation: vi, name: vName, votes: votes, cost: cost, layerName: layer.name });
-                    totalSpent += cost;
+                var row = document.createElement('div');
+                row.className = 'result-grid-row';
+
+                var label = document.createElement('div');
+                label.className = 'result-grid-label';
+                label.textContent = layer.name;
+                row.appendChild(label);
+
+                var cells = document.createElement('div');
+                cells.className = 'result-grid-cells';
+
+                layer.variations.forEach(function(name, vi) {
+                    var cell = document.createElement('div');
+                    cell.className = 'result-cell';
+                    if ((vi + 1) === winners[li]) {
+                        cell.classList.add('is-winner');
+                        resultWinnerCells[li] = cell;
+                    }
+                    if (vi === userChoices[li]) cell.classList.add('is-yours');
+                    cell.innerHTML = '<div class="rc-name">' + name + '</div>';
+                    cells.appendChild(cell);
                 });
+
+                row.appendChild(cells);
+                resultGrid.appendChild(row);
             });
-
-            var barY = 8, barH = 28;
-            var remaining = VOICE_CREDITS - totalSpent;
-
-            // Draw total bar outline
-            creditCtx.strokeStyle = 'rgba(167,139,250,0.15)';
-            creditCtx.lineWidth = 1;
-            creditCtx.strokeRect(0.5, barY - 0.5, w - 1, barH + 1);
-
-            // Draw credit ticks
-            for (var i = 1; i < VOICE_CREDITS; i++) {
-                var tx = (i / VOICE_CREDITS) * w;
-                creditCtx.strokeStyle = 'rgba(167,139,250,0.06)';
-                creditCtx.beginPath();
-                creditCtx.moveTo(tx, barY);
-                creditCtx.lineTo(tx, barY + barH);
-                creditCtx.stroke();
-            }
-
-            // Draw filled segments
-            var x = 0;
-            segments.forEach(function(seg) {
-                var segW = (seg.cost / VOICE_CREDITS) * w;
-                creditCtx.fillStyle = LAYER_COLORS[seg.layer];
-                creditCtx.globalAlpha = 0.6;
-                creditCtx.fillRect(x, barY, segW, barH);
-                creditCtx.globalAlpha = 1;
-
-                // Border
-                creditCtx.strokeStyle = LAYER_COLORS[seg.layer];
-                creditCtx.globalAlpha = 0.3;
-                creditCtx.strokeRect(x + 0.5, barY, segW - 1, barH);
-                creditCtx.globalAlpha = 1;
-
-                // Label if wide enough
-                if (segW > 30) {
-                    creditCtx.fillStyle = '#0a0a1a';
-                    creditCtx.font = '9px Georgia';
-                    creditCtx.textAlign = 'center';
-                    creditCtx.fillText(seg.name, x + segW / 2, barY + barH / 2 + 3);
-                }
-
-                x += segW;
-            });
-
-            // Labels below bar
-            creditCtx.font = '8px Georgia';
-            creditCtx.textAlign = 'left';
-            x = 0;
-            segments.forEach(function(seg) {
-                var segW = (seg.cost / VOICE_CREDITS) * w;
-                creditCtx.fillStyle = LAYER_COLORS[seg.layer];
-                creditCtx.globalAlpha = 0.7;
-                if (segW > 24) {
-                    creditCtx.fillText(seg.votes + '² = ' + seg.cost, x + 3, barY + barH + 12);
-                }
-                creditCtx.globalAlpha = 1;
-                x += segW;
-            });
-
-            // Remaining label
-            if (remaining > 0) {
-                creditCtx.fillStyle = 'rgba(167,139,250,0.25)';
-                creditCtx.textAlign = 'right';
-                creditCtx.font = '9px Georgia';
-                creditCtx.fillText(remaining + ' remaining', w - 4, barY + barH + 12);
-            }
         }
-        // ==========================================
+
+        function resetAll() {
+            currentLayer = 0;
+            userChoices = [];
+            winners = [];
+            activeVariation = [0, 0, 0, 0, 0];
+            resultWinnerCells = [];
+            stepEl.style.display = '';
+            resultEl.style.display = 'none';
+            stopBtn.textContent = '\u25A0 Stop';
+            if (isPlaying) stopPlayback();
+            showStep();
+        }
+
+        // Event listeners
+        voteBtn.addEventListener('click', function() {
+            if (phase === 'preview') castVote();
+            else if (phase === 'revealed') advanceToNext();
+        });
+        againBtn.addEventListener('click', resetAll);
+        stopBtn.addEventListener('click', function() {
+            if (isPlaying) {
+                stopPlayback();
+                stopBtn.textContent = '\u25B6 Play';
+            } else {
+                startPlayback();
+                stopBtn.textContent = '\u25A0 Stop';
+            }
+        });
+
         // ==========================================
         // AUDIO ENGINE
         // ==========================================
         function buildAudioGraph() {
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             var ctx = audioCtx;
-
-            // Compressor
             compressor = ctx.createDynamicsCompressor();
-            compressor.threshold.value = -24;
-            compressor.knee.value = 12;
-            compressor.ratio.value = 4;
-            compressor.attack.value = 0.01;
-            compressor.release.value = 0.15;
+            compressor.threshold.value = -24; compressor.knee.value = 12;
+            compressor.ratio.value = 4; compressor.attack.value = 0.01; compressor.release.value = 0.15;
             compressor.connect(ctx.destination);
-
-            // Master filter: gentle lowpass to tame harshness
             masterFilter = ctx.createBiquadFilter();
-            masterFilter.type = 'lowpass';
-            masterFilter.frequency.value = 5000;
-            masterFilter.Q.value = 0.5;
+            masterFilter.type = 'lowpass'; masterFilter.frequency.value = 5000; masterFilter.Q.value = 0.5;
             masterFilter.connect(compressor);
-
-            // Master gain
-            masterGain = ctx.createGain();
-            masterGain.gain.value = 0.7;
-            masterGain.connect(masterFilter);
-
-            // Reverb: multi-tap delay network
-            reverbSend = ctx.createGain();
-            reverbSend.gain.value = 0.35;
-
+            masterGain = ctx.createGain(); masterGain.gain.value = 0.7; masterGain.connect(masterFilter);
+            reverbSend = ctx.createGain(); reverbSend.gain.value = 0.35;
             var delays = [0.037, 0.079, 0.113, 0.151, 0.197, 0.251];
-            var reverbMix = ctx.createGain();
-            reverbMix.gain.value = 0.4;
-            reverbMix.connect(masterFilter);
-
+            var reverbMix = ctx.createGain(); reverbMix.gain.value = 0.4; reverbMix.connect(masterFilter);
             delays.forEach(function(dt) {
-                var d = ctx.createDelay(1.0);
-                d.delayTime.value = dt;
-                var g = ctx.createGain();
-                g.gain.value = 0.18;
-                var f = ctx.createBiquadFilter();
-                f.type = 'lowpass';
-                f.frequency.value = 2500 - dt * 4000;
-                f.Q.value = 0.3;
-                reverbSend.connect(d);
-                d.connect(f);
-                f.connect(g);
-                g.connect(d); // feedback
-                g.connect(reverbMix);
+                var d = ctx.createDelay(1.0); d.delayTime.value = dt;
+                var g = ctx.createGain(); g.gain.value = 0.18;
+                var f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 2500 - dt * 4000; f.Q.value = 0.3;
+                reverbSend.connect(d); d.connect(f); f.connect(g); g.connect(d); g.connect(reverbMix);
             });
-
-            reverbReturn = reverbMix;
         }
-
-        function stepDuration() {
-            return 60.0 / BPM / 4;
-        }
-
-        // Utility: connect through reverb
-        function connectDry(node) {
-            node.connect(masterGain);
-        }
+        function stepDuration() { return 60.0 / BPM / 4; }
+        function connectDry(node) { node.connect(masterGain); }
         function connectWet(node, amount) {
-            var g = audioCtx.createGain();
-            g.gain.value = amount || 1;
-            node.connect(g);
-            g.connect(reverbSend);
+            var g = audioCtx.createGain(); g.gain.value = amount || 1; node.connect(g); g.connect(reverbSend);
         }
-
-        // ==========================================
-        // INSTRUMENTS
-        // ==========================================
 
         // --- RHYTHM ---
         function scheduleRhythm(variation, time, dur) {
             if (variation === 0) return;
-            var ctx = audioCtx;
-            var s = currentStep % STEPS;
-
+            var ctx = audioCtx, s = currentStep % STEPS;
             function softHit(t, freq, vol, decay) {
-                // Filtered noise burst
-                var len = ctx.sampleRate * decay;
-                var buf = ctx.createBuffer(1, len, ctx.sampleRate);
-                var d = buf.getChannelData(0);
-                for (var i = 0; i < len; i++) {
-                    d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.2));
-                }
-                var src = ctx.createBufferSource();
-                src.buffer = buf;
-                var f = ctx.createBiquadFilter();
-                f.type = 'bandpass';
-                f.frequency.value = freq;
-                f.Q.value = 1.2;
-                var g = ctx.createGain();
-                g.gain.setValueAtTime(vol, t);
-                g.gain.exponentialRampToValueAtTime(0.0001, t + decay);
-                src.connect(f);
-                f.connect(g);
-                connectDry(g);
-                connectWet(g, 0.3);
-                src.start(t);
+                var len = ctx.sampleRate * decay, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+                for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.2));
+                var src = ctx.createBufferSource(); src.buffer = buf;
+                var f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 1.2;
+                var g = ctx.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + decay);
+                src.connect(f); f.connect(g); connectDry(g); connectWet(g, 0.3); src.start(t);
             }
-
             function softKick(t, vol) {
-                var osc = ctx.createOscillator();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(90, t);
-                osc.frequency.exponentialRampToValueAtTime(35, t + 0.15);
-                var g = ctx.createGain();
-                g.gain.setValueAtTime(vol, t);
-                g.gain.setValueAtTime(vol * 0.8, t + 0.05);
+                var osc = ctx.createOscillator(); osc.type = 'sine';
+                osc.frequency.setValueAtTime(90, t); osc.frequency.exponentialRampToValueAtTime(35, t + 0.15);
+                var g = ctx.createGain(); g.gain.setValueAtTime(vol, t); g.gain.setValueAtTime(vol * 0.8, t + 0.05);
                 g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
-                osc.connect(g);
-                connectDry(g);
-                osc.start(t);
-                osc.stop(t + 0.4);
+                osc.connect(g); connectDry(g); osc.start(t); osc.stop(t + 0.4);
             }
-
-            if (variation === 1) { // Pulse
-                if (s % 4 === 0) softKick(time, 0.2);
-                if (s % 2 === 0) softHit(time, 7000, 0.04, 0.06);
-            } else if (variation === 2) { // Scatter
-                if (s % 4 === 0) softKick(time, 0.15);
-                if (Math.random() > 0.5) softHit(time + Math.random() * dur * 0.3, 5000 + Math.random() * 4000, 0.025, 0.04);
-            } else if (variation === 3) { // Sway
-                if (s % 8 === 0 || s === 6) softKick(time, 0.15);
-                if (s % 3 === 0) softHit(time, 6000, 0.03, 0.07);
-            } else if (variation === 4) { // Drift
-                if (s === 0 || s === 5 || s === 10) softKick(time, 0.12);
-                if (s % 5 === 2) softHit(time, 4000, 0.02, 0.09);
-            }
+            if (variation === 1) { if (s % 4 === 0) softKick(time, 0.2); if (s % 2 === 0) softHit(time, 7000, 0.04, 0.06); }
+            else if (variation === 2) { if (s % 4 === 0) softKick(time, 0.15); if (Math.random() > 0.5) softHit(time + Math.random() * dur * 0.3, 5000 + Math.random() * 4000, 0.025, 0.04); }
+            else if (variation === 3) { if (s % 8 === 0 || s === 6) softKick(time, 0.15); if (s % 3 === 0) softHit(time, 6000, 0.03, 0.07); }
+            else if (variation === 4) { if (s === 0 || s === 5 || s === 10) softKick(time, 0.12); if (s % 5 === 2) softHit(time, 4000, 0.02, 0.09); }
         }
-
         // --- BASS ---
         function scheduleBass(variation, time, dur) {
             if (variation === 0) return;
-            var ctx = audioCtx;
-            var s = currentStep % STEPS;
-
+            var ctx = audioCtx, s = currentStep % STEPS;
             function bassNote(t, freq, length, vol) {
-                // Layered: sine fundamental + filtered triangle
-                var osc1 = ctx.createOscillator();
-                osc1.type = 'sine';
-                osc1.frequency.value = freq;
-                var osc2 = ctx.createOscillator();
-                osc2.type = 'triangle';
-                osc2.frequency.value = freq;
-
-                var f = ctx.createBiquadFilter();
-                f.type = 'lowpass';
-                f.frequency.value = freq * 3;
-                f.Q.value = 0.7;
-
-                var g1 = ctx.createGain();
-                g1.gain.value = vol * 0.7;
-                var g2 = ctx.createGain();
-                g2.gain.value = vol * 0.3;
+                var osc1 = ctx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = freq;
+                var osc2 = ctx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.value = freq;
+                var f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = freq * 3; f.Q.value = 0.7;
+                var g1 = ctx.createGain(); g1.gain.value = vol * 0.7;
+                var g2 = ctx.createGain(); g2.gain.value = vol * 0.3;
                 var master = ctx.createGain();
-                master.gain.setValueAtTime(0, t);
-                master.gain.linearRampToValueAtTime(1, t + 0.025);
-                master.gain.setValueAtTime(1, t + length * 0.6);
-                master.gain.exponentialRampToValueAtTime(0.001, t + length);
-
-                osc1.connect(g1); g1.connect(f);
-                osc2.connect(g2); g2.connect(f);
-                f.connect(master);
-                connectDry(master);
-                connectWet(master, 0.15);
-                osc1.start(t); osc1.stop(t + length + 0.1);
-                osc2.start(t); osc2.stop(t + length + 0.1);
+                master.gain.setValueAtTime(0, t); master.gain.linearRampToValueAtTime(1, t + 0.025);
+                master.gain.setValueAtTime(1, t + length * 0.6); master.gain.exponentialRampToValueAtTime(0.001, t + length);
+                osc1.connect(g1); g1.connect(f); osc2.connect(g2); g2.connect(f);
+                f.connect(master); connectDry(master); connectWet(master, 0.15);
+                osc1.start(t); osc1.stop(t + length + 0.1); osc2.start(t); osc2.stop(t + length + 0.1);
             }
-
-            if (variation === 1) { // Root
-                if (s % 8 === 0) bassNote(time, NOTES.C2, dur * 6, 0.18);
-            } else if (variation === 2) { // Walk
-                var walk = [NOTES.C2, 0, 0, NOTES.Eb2, 0, 0, NOTES.F2, 0, 0, NOTES.G2, 0, 0, NOTES.Bb2, 0, 0, 0];
-                if (walk[s]) bassNote(time, walk[s], dur * 2.5, 0.14);
-            } else if (variation === 3) { // Throb
-                if (s % 4 === 0) {
-                    bassNote(time, NOTES.C2, dur * 3.5, 0.16);
-                }
-            } else if (variation === 4) { // Sub
-                if (s % 16 === 0) {
-                    var osc = ctx.createOscillator();
-                    osc.type = 'sine';
-                    osc.frequency.value = NOTES.C2 * 0.5;
-                    var g = ctx.createGain();
-                    g.gain.setValueAtTime(0, time);
-                    g.gain.linearRampToValueAtTime(0.22, time + dur * 4);
-                    g.gain.setValueAtTime(0.22, time + dur * 10);
-                    g.gain.exponentialRampToValueAtTime(0.001, time + dur * 16);
-                    osc.connect(g);
-                    connectDry(g);
-                    osc.start(time);
-                    osc.stop(time + dur * 17);
-                }
-            }
+            if (variation === 1) { if (s % 8 === 0) bassNote(time, NOTES.C2, dur * 6, 0.18); }
+            else if (variation === 2) { var walk = [NOTES.C2, 0, 0, NOTES.Eb2, 0, 0, NOTES.F2, 0, 0, NOTES.G2, 0, 0, NOTES.Bb2, 0, 0, 0]; if (walk[s]) bassNote(time, walk[s], dur * 2.5, 0.14); }
+            else if (variation === 3) { if (s % 4 === 0) bassNote(time, NOTES.C2, dur * 3.5, 0.16); }
+            else if (variation === 4) { if (s % 16 === 0) { var osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = NOTES.C2 * 0.5; var g = ctx.createGain(); g.gain.setValueAtTime(0, time); g.gain.linearRampToValueAtTime(0.22, time + dur * 4); g.gain.setValueAtTime(0.22, time + dur * 10); g.gain.exponentialRampToValueAtTime(0.001, time + dur * 16); osc.connect(g); connectDry(g); osc.start(time); osc.stop(time + dur * 17); } }
         }
-
         // --- CHORDS ---
         function scheduleChords(variation, time, dur) {
             if (variation === 0) return;
-            var ctx = audioCtx;
-            var s = currentStep % STEPS;
-            if (s % 8 !== 0) return; // Retrigger every half bar
-
-            var chordSets = {
-                1: [NOTES.C3, NOTES.Eb3, NOTES.G3, NOTES.Bb3],       // Warm
-                2: [NOTES.C4, NOTES.G4, NOTES.C5],                     // Glass
-                3: [NOTES.C3, NOTES.F3, NOTES.Bb3],                    // Hollow
-                4: [NOTES.G3, NOTES.C4, NOTES.Eb4, NOTES.Bb4]         // Open
-            };
-
-            var notes = chordSets[variation];
-            if (!notes) return;
-
-            var length = dur * 7;
-            var waveType = variation === 2 ? 'sine' : 'triangle';
-
-            notes.forEach(function(freq, ni) {
-                // Each note: 2 detuned oscillators
+            var ctx = audioCtx, s = currentStep % STEPS;
+            if (s % 8 !== 0) return;
+            var chordSets = { 1: [NOTES.C3, NOTES.Eb3, NOTES.G3, NOTES.Bb3], 2: [NOTES.C4, NOTES.G4, NOTES.C5], 3: [NOTES.C3, NOTES.F3, NOTES.Bb3], 4: [NOTES.G3, NOTES.C4, NOTES.Eb4, NOTES.Bb4] };
+            var notes = chordSets[variation]; if (!notes) return;
+            var length = dur * 7, waveType = variation === 2 ? 'sine' : 'triangle';
+            notes.forEach(function(freq) {
                 for (var d = -1; d <= 1; d += 2) {
-                    var osc = ctx.createOscillator();
-                    osc.type = waveType;
-                    osc.frequency.value = freq;
-                    osc.detune.value = d * (variation === 2 ? 3 : 6);
-                    var g = ctx.createGain();
-                    var vol = 0.025;
-                    g.gain.setValueAtTime(0, time);
-                    g.gain.linearRampToValueAtTime(vol, time + dur * 3);
-                    g.gain.setValueAtTime(vol * 0.8, time + length * 0.7);
-                    g.gain.exponentialRampToValueAtTime(0.001, time + length);
-                    osc.connect(g);
-                    connectDry(g);
-                    connectWet(g, 0.6);
-                    osc.start(time);
-                    osc.stop(time + length + 0.2);
+                    var osc = ctx.createOscillator(); osc.type = waveType; osc.frequency.value = freq; osc.detune.value = d * (variation === 2 ? 3 : 6);
+                    var g = ctx.createGain(); var vol = 0.025;
+                    g.gain.setValueAtTime(0, time); g.gain.linearRampToValueAtTime(vol, time + dur * 3);
+                    g.gain.setValueAtTime(vol * 0.8, time + length * 0.7); g.gain.exponentialRampToValueAtTime(0.001, time + length);
+                    osc.connect(g); connectDry(g); connectWet(g, 0.6); osc.start(time); osc.stop(time + length + 0.2);
                 }
             });
         }
-
         // --- MELODY ---
-        var melodyData = {
-            1: [NOTES.C4, 0, 0, NOTES.Eb4, 0, 0, NOTES.G4, 0, 0, 0, NOTES.F4, 0, 0, NOTES.Eb4, 0, 0],
-            2: [NOTES.G4, 0, 0, 0, NOTES.Bb4, 0, 0, 0, NOTES.C5, 0, 0, 0, NOTES.Bb4, 0, 0, 0],
-            3: [0, 0, 0, NOTES.Eb5, 0, 0, 0, 0, 0, 0, 0, NOTES.C5, 0, 0, 0, 0],
-            4: [NOTES.G4, 0, 0, 0, 0, 0, 0, 0, 0, 0, NOTES.Bb4, 0, NOTES.G4, 0, 0, 0]
-        };
-
+        var melodyData = { 1: [NOTES.C4,0,0,NOTES.Eb4,0,0,NOTES.G4,0,0,0,NOTES.F4,0,0,NOTES.Eb4,0,0], 2: [NOTES.G4,0,0,0,NOTES.Bb4,0,0,0,NOTES.C5,0,0,0,NOTES.Bb4,0,0,0], 3: [0,0,0,NOTES.Eb5,0,0,0,0,0,0,0,NOTES.C5,0,0,0,0], 4: [NOTES.G4,0,0,0,0,0,0,0,0,0,NOTES.Bb4,0,NOTES.G4,0,0,0] };
         function scheduleMelody(variation, time, dur) {
             if (variation === 0 || !melodyData[variation]) return;
-            var s = currentStep % STEPS;
-            var freq = melodyData[variation][s];
-            if (!freq) return;
-
-            var ctx = audioCtx;
-            var length = dur * 4;
-
-            // Warm sine with gentle overtone
-            var osc1 = ctx.createOscillator();
-            osc1.type = 'sine';
-            osc1.frequency.value = freq;
-            var osc2 = ctx.createOscillator();
-            osc2.type = 'sine';
-            osc2.frequency.value = freq * 2.01; // Slight detuned octave
-            var g1 = ctx.createGain();
-            g1.gain.value = 0.07;
-            var g2 = ctx.createGain();
-            g2.gain.value = 0.015;
+            var s = currentStep % STEPS, freq = melodyData[variation][s]; if (!freq) return;
+            var ctx = audioCtx, length = dur * 4;
+            var osc1 = ctx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = freq;
+            var osc2 = ctx.createOscillator(); osc2.type = 'sine'; osc2.frequency.value = freq * 2.01;
+            var g1 = ctx.createGain(); g1.gain.value = 0.07; var g2 = ctx.createGain(); g2.gain.value = 0.015;
             var env = ctx.createGain();
-            env.gain.setValueAtTime(0, time);
-            env.gain.linearRampToValueAtTime(1, time + 0.04);
-            env.gain.setValueAtTime(0.7, time + length * 0.4);
-            env.gain.exponentialRampToValueAtTime(0.001, time + length);
-            osc1.connect(g1); g1.connect(env);
-            osc2.connect(g2); g2.connect(env);
-            connectDry(env);
-            connectWet(env, 0.5);
-            osc1.start(time); osc1.stop(time + length + 0.1);
-            osc2.start(time); osc2.stop(time + length + 0.1);
+            env.gain.setValueAtTime(0, time); env.gain.linearRampToValueAtTime(1, time + 0.04);
+            env.gain.setValueAtTime(0.7, time + length * 0.4); env.gain.exponentialRampToValueAtTime(0.001, time + length);
+            osc1.connect(g1); g1.connect(env); osc2.connect(g2); g2.connect(env);
+            connectDry(env); connectWet(env, 0.5);
+            osc1.start(time); osc1.stop(time + length + 0.1); osc2.start(time); osc2.stop(time + length + 0.1);
         }
-
         // --- TEXTURE ---
         function scheduleTexture(variation, time, dur) {
             if (variation === 0) return;
-            var ctx = audioCtx;
-            var s = currentStep % STEPS;
-
-            if (variation === 1) { // Rain
-                if (Math.random() > 0.55) {
-                    var len = ctx.sampleRate * 0.04;
-                    var buf = ctx.createBuffer(1, len, ctx.sampleRate);
-                    var data = buf.getChannelData(0);
-                    for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.25));
-                    var src = ctx.createBufferSource();
-                    src.buffer = buf;
-                    var f = ctx.createBiquadFilter();
-                    f.type = 'bandpass';
-                    f.frequency.value = 4000 + Math.random() * 6000;
-                    f.Q.value = 3;
-                    var g = ctx.createGain();
-                    g.gain.value = 0.012;
-                    src.connect(f); f.connect(g);
-                    connectDry(g);
-                    connectWet(g, 0.7);
-                    src.start(time + Math.random() * dur * 0.6);
-                }
-            } else if (variation === 2 && s % 8 === 0) { // Hum
-                var osc1 = ctx.createOscillator();
-                osc1.type = 'sine';
-                osc1.frequency.value = NOTES.G3;
-                var osc2 = ctx.createOscillator();
-                osc2.type = 'sine';
-                osc2.frequency.value = NOTES.G3 * 1.003;
-                var g = ctx.createGain();
-                g.gain.setValueAtTime(0, time);
-                g.gain.linearRampToValueAtTime(0.025, time + dur * 4);
-                g.gain.exponentialRampToValueAtTime(0.001, time + dur * 8);
-                osc1.connect(g); osc2.connect(g);
-                connectDry(g);
-                connectWet(g, 0.8);
-                osc1.start(time); osc1.stop(time + dur * 9);
-                osc2.start(time); osc2.stop(time + dur * 9);
-            } else if (variation === 3 && Math.random() > 0.65) { // Crackle
-                var len = ctx.sampleRate * 0.008;
-                var buf = ctx.createBuffer(1, len, ctx.sampleRate);
-                var data = buf.getChannelData(0);
-                for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1);
-                var src = ctx.createBufferSource();
-                src.buffer = buf;
-                var g = ctx.createGain();
-                g.gain.value = 0.008;
-                src.connect(g);
-                connectDry(g);
-                src.start(time + Math.random() * dur);
-            } else if (variation === 4 && s % 4 === 0) { // Wind
-                var len = ctx.sampleRate * 0.6;
-                var buf = ctx.createBuffer(1, len, ctx.sampleRate);
-                var data = buf.getChannelData(0);
-                for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1);
-                var src = ctx.createBufferSource();
-                src.buffer = buf;
-                var f = ctx.createBiquadFilter();
-                f.type = 'bandpass';
-                f.frequency.value = 300 + Math.random() * 400;
-                f.Q.value = 0.4;
-                var g = ctx.createGain();
-                g.gain.setValueAtTime(0, time);
-                g.gain.linearRampToValueAtTime(0.02, time + 0.2);
-                g.gain.exponentialRampToValueAtTime(0.001, time + 0.6);
-                src.connect(f); f.connect(g);
-                connectDry(g);
-                connectWet(g, 0.5);
-                src.start(time);
-            }
+            var ctx = audioCtx, s = currentStep % STEPS;
+            if (variation === 1) { if (Math.random() > 0.55) { var len = ctx.sampleRate * 0.04, buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0); for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.25)); var src = ctx.createBufferSource(); src.buffer = buf; var f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 4000 + Math.random() * 6000; f.Q.value = 3; var g = ctx.createGain(); g.gain.value = 0.012; src.connect(f); f.connect(g); connectDry(g); connectWet(g, 0.7); src.start(time + Math.random() * dur * 0.6); } }
+            else if (variation === 2 && s % 8 === 0) { var osc1 = ctx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = NOTES.G3; var osc2 = ctx.createOscillator(); osc2.type = 'sine'; osc2.frequency.value = NOTES.G3 * 1.003; var g = ctx.createGain(); g.gain.setValueAtTime(0, time); g.gain.linearRampToValueAtTime(0.025, time + dur * 4); g.gain.exponentialRampToValueAtTime(0.001, time + dur * 8); osc1.connect(g); osc2.connect(g); connectDry(g); connectWet(g, 0.8); osc1.start(time); osc1.stop(time + dur * 9); osc2.start(time); osc2.stop(time + dur * 9); }
+            else if (variation === 3 && Math.random() > 0.65) { var len = ctx.sampleRate * 0.008, buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0); for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1); var src = ctx.createBufferSource(); src.buffer = buf; var g = ctx.createGain(); g.gain.value = 0.008; src.connect(g); connectDry(g); src.start(time + Math.random() * dur); }
+            else if (variation === 4 && s % 4 === 0) { var len = ctx.sampleRate * 0.6, buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0); for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1); var src = ctx.createBufferSource(); src.buffer = buf; var f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 300 + Math.random() * 400; f.Q.value = 0.4; var g = ctx.createGain(); g.gain.setValueAtTime(0, time); g.gain.linearRampToValueAtTime(0.02, time + 0.2); g.gain.exponentialRampToValueAtTime(0.001, time + 0.6); src.connect(f); f.connect(g); connectDry(g); connectWet(g, 0.5); src.start(time); }
         }
 
         var schedulers = [scheduleRhythm, scheduleBass, scheduleChords, scheduleMelody, scheduleTexture];
 
-        // ==========================================
-        // SEQUENCER
-        // ==========================================
         function scheduleStep(time) {
             var dur = stepDuration();
-            for (var li = 0; li < LAYERS.length; li++) {
-                if (mutedLayers[li]) continue;
-                schedulers[li](activeVariation[li], time, dur);
-            }
+            for (var li = 0; li < LAYERS.length; li++) { schedulers[li](activeVariation[li], time, dur); }
         }
-
-        function advanceStep() {
+        function advanceSeqStep() {
             currentStep++;
             var s = currentStep % STEPS;
 
-            var dots = beatDisplay.querySelectorAll('.beat-dot');
-            dots.forEach(function(d, i) { d.classList.toggle('on', i === s); });
-
-            if (s % 4 === 0) {
-                LAYERS.forEach(function(layer, li) {
-                    var vi = activeVariation[li];
-                    if (vi > 0 && !mutedLayers[li]) {
-                        var cell = cellElements[li][vi];
-                        cell.classList.add('playing');
-                        setTimeout(function() { cell.classList.remove('playing'); }, 140);
-                    }
+            // Flash result grid cells on beats
+            if (phase === 'done' && s % 4 === 0 && resultWinnerCells.length > 0) {
+                resultWinnerCells.forEach(function(cell, li) {
+                    if (!cell) return;
+                    setTimeout(function() {
+                        cell.classList.add('flash');
+                        setTimeout(function() { cell.classList.remove('flash'); }, 180);
+                    }, li * 60); // stagger: ripple top to bottom
                 });
             }
         }
-
         function scheduler() {
             if (!audioCtx || !isPlaying) return;
             while (nextStepTime < audioCtx.currentTime + 0.12) {
-                scheduleStep(nextStepTime);
-                advanceStep();
-                nextStepTime += stepDuration();
+                scheduleStep(nextStepTime); advanceSeqStep(); nextStepTime += stepDuration();
             }
             schedulerTimer = setTimeout(scheduler, 20);
         }
-
         function startPlayback() {
-            if (audioCtx) {
-                audioCtx.close().catch(function(){});
-            }
+            if (audioCtx) audioCtx.close().catch(function(){});
             buildAudioGraph();
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume().then(beginPlay);
-            } else {
-                beginPlay();
-            }
+            if (audioCtx.state === 'suspended') audioCtx.resume().then(beginPlay);
+            else beginPlay();
         }
-
         function beginPlay() {
-            isPlaying = true;
-            currentStep = -1;
-            nextStepTime = audioCtx.currentTime + 0.05;
-            playBtn.textContent = '\u25A0 Stop';
-            playBtn.classList.add('playing-btn');
+            isPlaying = true; currentStep = -1; nextStepTime = audioCtx.currentTime + 0.05;
             scheduler();
         }
-
         function stopPlayback() {
             isPlaying = false;
             if (schedulerTimer) { clearTimeout(schedulerTimer); schedulerTimer = null; }
-            playBtn.textContent = '\u25B6 Play';
-            playBtn.classList.remove('playing-btn');
-            beatDisplay.querySelectorAll('.beat-dot').forEach(function(d) { d.classList.remove('on'); });
             if (audioCtx) { audioCtx.close().catch(function(){}); audioCtx = null; }
         }
 
-        // ==========================================
-        // CONTROLS
-        // ==========================================
-        playBtn.addEventListener('click', function() {
-            if (isPlaying) stopPlayback(); else startPlayback();
-        });
-        bpmSlider.addEventListener('input', function() {
-            BPM = parseInt(this.value);
-            bpmVal.textContent = BPM;
-        });
-
+        // Init
+        showStep();
     })();
     </script>
 </body>
