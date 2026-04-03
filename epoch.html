@@ -611,7 +611,7 @@
         var specGains = [];
 
         function ensureAudio() {
-            if (masterGain) return; // already built
+            if (masterGain) return; // graph already built
             if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
             compressor = audioCtx.createDynamicsCompressor();
             compressor.threshold.value=-20; compressor.ratio.value=6; compressor.knee.value=10;
@@ -631,7 +631,7 @@
         function buildSpectrum() {
             // Create oscillators mapped to canvas columns
             killSpectrum();
-            if (!audioCtx) return;
+            if (!audioCtx || !masterGain) return;
             var t = audioCtx.currentTime;
 
             // Frequency range: 50 Hz to 900 Hz — warm register
@@ -702,7 +702,7 @@
 
         // Bell tone for individual touches
         function sonifyTouch(col, row) {
-            if (!audioCtx) return;
+            if (!audioCtx || !masterGain) return;
             var now = audioCtx.currentTime;
             if (now - lastSonifyTime < 0.03) return; lastSonifyTime = now;
 
@@ -733,19 +733,19 @@
 
             userTouch = { col: col, row: row }; hasPlaced = true;
 
-            // Unlock audio IMMEDIATELY on user gesture — before any other work
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-            }
-            audioCtx.resume();
-
-            ensureAudio();
-
+            // Visuals IMMEDIATELY
             applyTouch(col, row, COMMUNITIES[currentComm].touchIntensity); render2D(); updateTerrain();
+            overlay.classList.add('hidden'); canvas.style.cursor = 'default';
+            playBtn.disabled = false;
+            ownershipVal.textContent = '1 / 1';
+            ownershipNote.textContent = 'sole author';
+            var cfg = COMMUNITIES[currentComm];
+            setNarrator(cfg.totalVoices.toLocaleString() + ' people · ' + cfg.years + ' years');
 
-            // User touch tone — mapped to position (slight delay lets context resume)
-            setTimeout(function() {
-                if (!audioCtx) return;
+            // Audio: build graph and play tone ONLY after context is running
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var onRunning = function() {
+                ensureAudio();
                 var freq = 50 * Math.pow(900/50, col/GRID_COLS);
                 var now = audioCtx.currentTime;
                 var o = audioCtx.createOscillator(), g = audioCtx.createGain();
@@ -754,16 +754,12 @@
                 g.gain.exponentialRampToValueAtTime(0.001, now + 2);
                 o.connect(g); g.connect(masterGain); g.connect(reverbNode);
                 o.start(now); o.stop(now + 2.5);
-            }, 50);
-
-            overlay.classList.add('hidden'); canvas.style.cursor = 'default';
-            playBtn.disabled = false;
-            ownershipVal.textContent = '1 / 1';
-            ownershipNote.textContent = 'sole author';
-
-            // Prime: show what's about to unfold
-            var cfg = COMMUNITIES[currentComm];
-            setNarrator(cfg.totalVoices.toLocaleString() + ' people · ' + cfg.years + ' years');
+            };
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume().then(onRunning).catch(function(){});
+            } else {
+                onRunning();
+            }
         }
 
         canvas.addEventListener('mousedown', handleTouch);

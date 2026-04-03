@@ -842,12 +842,13 @@
                 isPlaying=false;playBtn.textContent='\u25B6 Play';playBtn.classList.remove('active-btn');
                 if(audioCtx){audioCtx.close().catch(function(){});audioCtx=null;}
             }else{
-                // Unlock audio IMMEDIATELY on user gesture
+                // Create context and build audio ONLY after confirmed running
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                audioCtx.resume();
-                buildAudio();
-                var start=function(){isPlaying=true;playBtn.textContent='\u25A0 Stop';playBtn.classList.add('active-btn');};
-                if(audioCtx.state==='suspended')audioCtx.resume().then(start);else start();
+                var start=function(){
+                    buildAudio();
+                    isPlaying=true;playBtn.textContent='\u25A0 Stop';playBtn.classList.add('active-btn');
+                };
+                if(audioCtx.state==='suspended')audioCtx.resume().then(start).catch(function(){});else start();
             }
         });
 
@@ -867,8 +868,8 @@
                 if(isPlaying){
                     if(audioCtx)audioCtx.close().catch(function(){});
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    audioCtx.resume();
-                    buildAudio();
+                    var rebuild=function(){buildAudio();};
+                    if(audioCtx.state==='suspended')audioCtx.resume().then(rebuild).catch(function(){});else rebuild();
                 }
             });
         });
