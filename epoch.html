@@ -611,8 +611,8 @@
         var specGains = [];
 
         function ensureAudio() {
-            if (audioCtx) return;
-            audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+            if (masterGain) return; // already built
+            if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
             compressor = audioCtx.createDynamicsCompressor();
             compressor.threshold.value=-20; compressor.ratio.value=6; compressor.knee.value=10;
             compressor.connect(audioCtx.destination);
@@ -732,7 +732,14 @@
             col = clamp(col, 0, GRID_COLS - 1); row = clamp(row, 0, GRID_ROWS - 1);
 
             userTouch = { col: col, row: row }; hasPlaced = true;
-            ensureAudio(); if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            // Unlock audio IMMEDIATELY on user gesture — before any other work
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+            }
+            audioCtx.resume();
+
+            ensureAudio();
 
             applyTouch(col, row, COMMUNITIES[currentComm].touchIntensity); render2D(); updateTerrain();
 

@@ -576,7 +576,7 @@
         // AUDIO ENGINE
         // ==========================================
         function buildAudio() {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             var ac = audioCtx;
 
             compressor = ac.createDynamicsCompressor();
@@ -842,6 +842,9 @@
                 isPlaying=false;playBtn.textContent='\u25B6 Play';playBtn.classList.remove('active-btn');
                 if(audioCtx){audioCtx.close().catch(function(){});audioCtx=null;}
             }else{
+                // Unlock audio IMMEDIATELY on user gesture
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                audioCtx.resume();
                 buildAudio();
                 var start=function(){isPlaying=true;playBtn.textContent='\u25A0 Stop';playBtn.classList.add('active-btn');};
                 if(audioCtx.state==='suspended')audioCtx.resume().then(start);else start();
@@ -863,7 +866,9 @@
                 scoreCtx.fillStyle='#0a0a0a';scoreCtx.fillRect(0,0,scoreCanvas.width,scoreCanvas.height);
                 if(isPlaying){
                     if(audioCtx)audioCtx.close().catch(function(){});
-                    buildAudio();if(audioCtx.state==='suspended')audioCtx.resume();
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    audioCtx.resume();
+                    buildAudio();
                 }
             });
         });

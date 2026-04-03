@@ -396,7 +396,7 @@
     // AUDIO
     // ==========================================
     function buildAudio() {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         masterComp = audioCtx.createDynamicsCompressor();
         masterComp.threshold.value = -20;
@@ -768,14 +768,20 @@
     function beginExperience() {
         if (started) return;
         started = true;
+
+        // Unlock audio IMMEDIATELY on user gesture — before any other work
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioCtx.resume();
+
         overlay.classList.add('hidden');
-        buildAudio();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
 
         // Pre-populate an election for visual interest
         runElection();
         createParticles();
         updateParticleTargets();
+
+        // Build audio graph on the already-resuming context
+        buildAudio();
         updateVoiceTargets();
 
         // Seed gains so the very first beat isn't gated by the > 0.01 check

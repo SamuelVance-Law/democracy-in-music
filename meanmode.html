@@ -498,7 +498,7 @@
         // AUDIO
         // ==========================================
         function buildAudio() {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
             var comp = audioCtx.createDynamicsCompressor();
             comp.threshold.value = -18; comp.ratio.value = 5; comp.knee.value = 8;
@@ -969,10 +969,17 @@
         function beginExperience() {
             if (started) return;
             started = true;
+
+            // Unlock audio IMMEDIATELY on user gesture — before any other work
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            audioCtx.resume();
+
             overlay.classList.add('hidden');
             initVoters();
+
+            // Build audio graph on the already-resuming context
             buildAudio();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
+
             lastTime = performance.now();
             tick(lastTime);
         }
