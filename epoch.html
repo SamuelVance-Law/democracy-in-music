@@ -736,15 +736,18 @@
 
             applyTouch(col, row, COMMUNITIES[currentComm].touchIntensity); render2D(); updateTerrain();
 
-            // User touch tone — mapped to position
-            var freq = 50 * Math.pow(900/50, col/GRID_COLS);
-            var now = audioCtx.currentTime;
-            var o = audioCtx.createOscillator(), g = audioCtx.createGain();
-            o.type = 'sine'; o.frequency.value = freq;
-            g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(0.12, now + 0.04);
-            g.gain.exponentialRampToValueAtTime(0.001, now + 2);
-            o.connect(g); g.connect(masterGain); g.connect(reverbNode);
-            o.start(now); o.stop(now + 2.5);
+            // User touch tone — mapped to position (slight delay lets context resume)
+            setTimeout(function() {
+                if (!audioCtx) return;
+                var freq = 50 * Math.pow(900/50, col/GRID_COLS);
+                var now = audioCtx.currentTime;
+                var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+                o.type = 'sine'; o.frequency.value = freq;
+                g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(0.12, now + 0.04);
+                g.gain.exponentialRampToValueAtTime(0.001, now + 2);
+                o.connect(g); g.connect(masterGain); g.connect(reverbNode);
+                o.start(now); o.stop(now + 2.5);
+            }, 50);
 
             overlay.classList.add('hidden'); canvas.style.cursor = 'default';
             playBtn.disabled = false;

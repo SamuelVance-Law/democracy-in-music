@@ -765,7 +765,7 @@
     });
 
     // Start
-    overlay.addEventListener('click', function() {
+    function beginExperience() {
         if (started) return;
         started = true;
         overlay.classList.add('hidden');
@@ -778,11 +778,17 @@
         updateParticleTargets();
         updateVoiceTargets();
 
+        // Seed gains so the very first beat isn't gated by the > 0.01 check
+        for (var i = 0; i < N; i++) {
+            voiceCurrentGains[i] = voiceTargetGains[i] * 0.5;
+        }
+
         lastStepTime = performance.now();
         tick(performance.now());
-    });
+    }
+    overlay.addEventListener('click', beginExperience);
     overlay.addEventListener('touchstart', function(e) {
-        e.preventDefault(); overlay.click();
+        e.preventDefault(); beginExperience();
     }, { passive: false });
 
     // ==========================================

@@ -863,7 +863,7 @@
                 scoreCtx.fillStyle='#0a0a0a';scoreCtx.fillRect(0,0,scoreCanvas.width,scoreCanvas.height);
                 if(isPlaying){
                     if(audioCtx)audioCtx.close().catch(function(){});
-                    buildAudio();audioCtx.resume();
+                    buildAudio();if(audioCtx.state==='suspended')audioCtx.resume();
                 }
             });
         });

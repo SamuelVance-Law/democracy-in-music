@@ -966,7 +966,7 @@
         canvas.addEventListener('touchend', function() { isPointerDown = false; });
 
         // Start
-        overlay.addEventListener('click', function() {
+        function beginExperience() {
             if (started) return;
             started = true;
             overlay.classList.add('hidden');
@@ -975,10 +975,11 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
             lastTime = performance.now();
             tick(lastTime);
-        });
+        }
+        overlay.addEventListener('click', beginExperience);
         overlay.addEventListener('touchstart', function(e) {
             e.preventDefault();
-            overlay.click();
+            beginExperience();
         }, { passive: false });
 
         // Mode toggle
