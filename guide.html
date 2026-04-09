@@ -10,7 +10,7 @@
     <!-- Open Graph -->
     <meta property="og:title" content="A Guide to Democracy in Music">
     <meta property="og:description" content="What happens when we apply democratic governance to musical composition and ownership?">
-    <meta property="og:image" content="https://democracyinmusic.com/og-image.png">
+    <meta property="og:image" content="https://democracyinmusic.com/ogimage.png">
     <meta property="og:url" content="https://democracyinmusic.com/guide.html">
     <meta property="og:type" content="article">
     <meta name="twitter:card" content="summary_large_image">
@@ -27,13 +27,13 @@
         }
         html { scroll-behavior: smooth; font-size: 19px; scrollbar-width: thin; scrollbar-color: #ccc var(--cream); }
         body { font-family: 'EB Garamond', Georgia, serif; background: var(--cream); color: var(--text); line-height: 1.82; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden; }
-        ::selection { background: rgba(212,168,66,0.2); color: var(--text); }
-        .progress { position: fixed; top: 0; left: 0; height: 2px; z-index: 10000; width: 0; transition: width 0.1s linear; background: linear-gradient(90deg, var(--piano), var(--miro), var(--assembly), var(--parliament), var(--choreo), var(--epoch)); }
+        ::selection { background: rgba(28,25,23,0.08); color: var(--text); }
+        .progress { position: fixed; top: 0; left: 0; height: 2px; z-index: 10000; width: 0; transition: width 0.1s linear; background: var(--text-dim); }
         .cover { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 60px 28px; position: relative; }
-        .cover-rule { width: 80px; height: 1px; background: var(--rule); margin-bottom: 48px; }
-        .cover h1 { font-size: 2.6rem; font-weight: 400; letter-spacing: 0.08em; line-height: 1.25; margin-bottom: 20px; }
-        .cover .author { font-size: 1.05rem; font-style: italic; color: var(--text-mid); margin-bottom: 48px; }
-        .cover-rule-bottom { width: 80px; height: 1px; background: var(--rule); }
+        .cover-rule { width: 60px; height: 1px; background: var(--rule); margin-bottom: 40px; }
+        .cover h1 { font-size: 2.4rem; font-weight: 400; letter-spacing: 0.06em; line-height: 1.3; margin-bottom: 18px; }
+        .cover .author { font-size: 1.05rem; font-style: italic; color: var(--text-mid); margin-bottom: 40px; }
+        .cover-rule-bottom { width: 60px; height: 1px; background: var(--rule); }
         .cover .scroll-cue { position: absolute; bottom: 40px; font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); animation: gentle-pulse 3s ease-in-out infinite; }
         @keyframes gentle-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
         .toc { max-width: 520px; margin: 0 auto; padding: 80px 28px 100px; }
@@ -64,12 +64,12 @@
         .figure-pair img { width: 100%; height: auto; display: block; object-fit: cover; }
         .figure-pair-caption { grid-column: 1 / -1; font-size: 0.78rem; font-style: italic; color: var(--text-dim); text-align: center; }
         .card-container { display: flex; justify-content: center; padding: 120px 0 12px; }
-        .card-container svg { max-width: 320px; width: 100%; height: auto; filter: drop-shadow(0 4px 20px rgba(0,0,0,0.06)); }
+        .card-container svg { max-width: 320px; width: 100%; height: auto; filter: drop-shadow(0 4px 20px rgba(0,0,0,0.04)); }
         .card-container + .chapter-break { padding-top: 32px; }
         .prototype-embed { margin: 56px -60px; position: relative; }
         .prototype-label { font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--text-dim); text-align: center; margin-bottom: 14px; }
-        .prototype-frame { width: 100%; background: #0a0a0a; border-radius: 6px; overflow: hidden; border: 1px solid var(--rule-light); box-shadow: 0 8px 40px rgba(0,0,0,0.08); }
-        .prototype-frame iframe { width: 100%; border: none; display: block; background: #0a0a0a; min-height: 600px; }
+        .prototype-frame { width: 100%; background: var(--cream); border-radius: 4px; overflow: hidden; border: 1px solid var(--rule); }
+        .prototype-frame iframe { width: 100%; border: none; display: block; background: var(--cream); min-height: 600px; }
         .prototype-caption { font-size: 0.72rem; font-style: italic; color: var(--text-dim); text-align: center; margin-top: 12px; }
         .section-divider { width: 40px; height: 1px; background: var(--rule); margin: 80px auto; }
         .fn-ref { font-size: 0.7em; vertical-align: super; line-height: 0; color: var(--text-dim); text-decoration: none; cursor: pointer; transition: color 0.2s; }
@@ -85,7 +85,7 @@
         .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
         @media (max-width: 740px) { .prototype-embed { margin-left: -28px; margin-right: -28px; } }
-        @media (max-width: 600px) { html { font-size: 17px; } .cover h1 { font-size: 2rem; letter-spacing: 0.05em; } .chapter-break h2 { font-size: 1.4rem; } .figure-pair { grid-template-columns: 1fr; } .prototype-embed { margin-left: -28px; margin-right: -28px; } .card-container svg { max-width: 260px; } }
+        @media (max-width: 600px) { html { font-size: 17px; } .cover h1 { font-size: 2rem; letter-spacing: 0.04em; } .chapter-break h2 { font-size: 1.4rem; } .figure-pair { grid-template-columns: 1fr; } .prototype-embed { margin-left: -28px; margin-right: -28px; } .card-container svg { max-width: 260px; } }
     </style>
 </head>
 <body>

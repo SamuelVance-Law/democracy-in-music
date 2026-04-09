@@ -10,8 +10,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'EB Garamond', Georgia, serif;
-            background: #0a0a12;
-            color: #c8c4bc;
+            background: #F7F4EE;
+            color: #1C1917;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -19,27 +19,30 @@
             overflow-x: hidden;
         }
 
-        #grain {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none; z-index: 9999; opacity: 0.03;
-        }
-
         a.home-link {
             position: fixed; top: 12px; left: 16px;
-            font-size: 12px; color: #887a60; text-decoration: none;
+            font-size: 12px; color: #9C9590; text-decoration: none;
             letter-spacing: 2px; z-index: 99;
         }
-        a.home-link:hover { color: #d4a842; }
+        a.home-link:hover { color: #1C1917; }
 
         #header { text-align: center; padding: 28px 20px 10px; }
+        
+        #header h2 {
+            font-size: 24px; font-weight: 400; color: #1C1917;
+            line-height: 1.3; margin-top: 4px;
+        }
+        .header-rule {
+            width: 40px; height: 1px; background: #D6D3D1;
+            margin: 18px auto 0;
+        }
         #header h1 {
-            font-size: 30px; letter-spacing: 10px;
-            font-weight: 400; color: #ede8df;
+            font-size: 15px; letter-spacing: 3px; text-transform: uppercase;
+            font-weight: 400; color: #1C1917;
         }
         #header p {
             font-size: 14px; font-style: italic;
-            color: #a09888; margin-top: 6px;
+            color: #57534E; margin-top: 6px;
         }
 
         #canvas-wrap {
@@ -48,7 +51,7 @@
         }
         #mainCanvas {
             width: 100%; height: auto; display: block;
-            border: 1px solid rgba(212,168,66,0.12);
+            border: 1px solid #D6D3D1;
             border-radius: 3px;
             cursor: crosshair; touch-action: none;
         }
@@ -57,35 +60,29 @@
             position: absolute; top: 0; left: 16px; right: 16px; bottom: 0;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            background: rgba(10,10,18,0.88);
+            background: rgba(247,244,238,0.92);
             border-radius: 3px; cursor: pointer;
             transition: opacity 0.8s;
             z-index: 5;
         }
         #start-overlay.hidden { opacity: 0; pointer-events: none; }
-        .overlay-text {
-            font-size: 22px; letter-spacing: 6px;
-            text-transform: uppercase; color: #d4a842;
+        .overlay-text { color: #1C1917;
             margin-bottom: 12px;
         }
         .overlay-sub {
-            font-size: 16px; color: #c8c4bc; font-style: italic;
+            font-size: 15px; color: #1C1917; font-style: italic;
             max-width: 320px; text-align: center; line-height: 1.6;
-        }
-        .overlay-then {
-            font-size: 13px; color: #887a60; font-style: italic;
-            letter-spacing: 2px; margin-bottom: 8px;
         }
 
         #status {
             text-align: center; padding: 8px 20px 4px;
-            font-size: 13px; color: #887a60; letter-spacing: 0.5px;
+            font-size: 13px; color: #9C9590; letter-spacing: 0.5px;
             min-height: 24px;
         }
-        #status .note { color: #d4a842; font-weight: 500; }
-        #status .freq { color: #a09888; font-size: 12px; }
+        #status .note { color: #1C1917; font-weight: 500; }
+        #status .freq { color: #57534E; font-size: 12px; }
         #status .user-note { color: #7ab0e8; }
-        #status .consensus { color: #c8c4bc; }
+        #status .consensus { color: #1C1917; }
 
         #controls {
             display: flex; align-items: center; justify-content: center;
@@ -95,7 +92,7 @@
         #mode-toggle { display: flex; gap: 0; }
         .mode-btn {
             padding: 7px 22px; background: none;
-            border: 1px solid #3a3528; color: #a09888;
+            border: 1px solid #D6D3D1; color: #57534E;
             font-family: 'EB Garamond', Georgia, serif;
             font-size: 12px; letter-spacing: 2px;
             cursor: pointer; transition: all 0.2s; text-transform: uppercase;
@@ -103,66 +100,63 @@
         .mode-btn:first-child { border-radius: 3px 0 0 3px; }
         .mode-btn:last-child { border-radius: 0 3px 3px 0; border-left: none; }
         .mode-btn:not(:first-child) { border-left: none; }
-        .mode-btn.active {
-            background: #d4a842; border-color: #d4a842; color: #0a0a12;
-        }
+        .mode-btn.active { background: #1C1917; border-color: #1C1917; color: #F7F4EE; }
 
         .ctrl-group { display: flex; align-items: center; gap: 7px; }
         .ctrl-group label {
-            font-size: 11px; color: #c8c4bc; letter-spacing: 2px; text-transform: uppercase;
+            font-size: 11px; color: #1C1917; letter-spacing: 2px; text-transform: uppercase;
         }
         .ctrl-group .val {
-            font-size: 11px; color: #d4a842; min-width: 36px; text-align: right;
+            font-size: 11px; color: #1C1917; min-width: 36px; text-align: right;
             font-variant-numeric: tabular-nums;
         }
 
         input[type="range"] {
             -webkit-appearance: none; appearance: none;
-            width: 100px; height: 3px; background: #1e1c24;
+            width: 100px; height: 3px; background: #D6D3D1;
             border-radius: 2px; outline: none;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none; width: 14px; height: 14px;
-            border-radius: 50%; background: #d4a842; cursor: pointer;
+            border-radius: 50%; background: #1C1917; cursor: pointer;
         }
         input[type="range"]::-moz-range-thumb {
             width: 14px; height: 14px; border-radius: 50%;
-            background: #d4a842; cursor: pointer; border: none;
+            background: #1C1917; cursor: pointer; border: none;
         }
 
         #info {
             text-align: center; padding: 10px 24px 32px;
-            font-size: 13px; color: #887a60; line-height: 1.8;
+            font-size: 13px; color: #9C9590; line-height: 1.8;
             max-width: 540px;
         }
-        #info strong { color: #c8c4bc; }
+        #info strong { color: #1C1917; }
 
         .ctrl-btn {
             padding: 7px 18px; background: none;
-            border: 1px solid #3a3528; color: #a09888;
+            border: 1px solid #D6D3D1; color: #57534E;
             font-family: 'EB Garamond', Georgia, serif;
             font-size: 12px; letter-spacing: 2px;
             cursor: pointer; border-radius: 3px;
             transition: all 0.2s; text-transform: uppercase;
         }
-        .ctrl-btn:hover { border-color: #d4a842; color: #d4a842; }
+        .ctrl-btn:hover { background: #1C1917; color: #F7F4EE; }
     </style>
 </head>
 <body>
-    <canvas id="grain"></canvas>
     <a class="home-link" href="index.html">&larr; Home</a>
 
     <div id="header">
         <h1>MEAN MODE</h1>
-        <p>Different kinds of average</p>
+        <h2>Different kinds of average</h2>
+        <div class="header-rule"></div>
     </div>
 
     <div id="canvas-wrap">
         <canvas id="mainCanvas" width="780" height="440"></canvas>
         <div id="start-overlay">
             <div class="overlay-text">Click to listen</div>
-            <div class="overlay-then">then</div>
-            <div class="overlay-text">Drag to vote</div>
+            <div class="overlay-sub">Add your vote and drag to change it. Or let go and just listen.</div>
         </div>
     </div>
 
@@ -227,6 +221,20 @@
         // ==========================================
         var canvas = document.getElementById('mainCanvas');
         var ctx = canvas.getContext('2d');
+        var dpr = window.devicePixelRatio || 1;
+
+        function resizeCanvas() {
+            var rect = canvas.getBoundingClientRect();
+            W = rect.width;
+            H = rect.height || Math.round(W * 440 / 780);
+            canvas.width = W * dpr;
+            canvas.height = H * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            SCORE_W = W - LABEL_W - DIST_W - 10;
+            DIST_X = W - DIST_W - 5;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
         var overlay = document.getElementById('start-overlay');
         var statusEl = document.getElementById('status');
         var voterSlider = document.getElementById('voterSlider');
@@ -263,20 +271,8 @@
         var isPointerDown = false;
 
         // ==========================================
-        // GRAIN
-        // ==========================================
-        (function() {
-            var gc = document.getElementById('grain');
-            gc.width = window.innerWidth; gc.height = window.innerHeight;
-            var gctx = gc.getContext('2d');
-            var gi = gctx.createImageData(gc.width, gc.height);
-            var gd = gi.data;
-            for (var i = 0; i < gd.length; i += 4) {
-                var v = Math.floor(Math.random() * 255);
-                gd[i] = gd[i+1] = gd[i+2] = v; gd[i+3] = 255;
-            }
-            gctx.putImageData(gi, 0, 0);
-        })();
+                // ==========================================
+        
 
         // ==========================================
         // FREQUENCY HELPERS
@@ -503,7 +499,7 @@
         // AUDIO
         // ==========================================
         function buildAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
             var comp = audioCtx.createDynamicsCompressor();
             comp.threshold.value = -18; comp.ratio.value = 5; comp.knee.value = 8;
@@ -647,7 +643,7 @@
         // RENDERING
         // ==========================================
         function render() {
-            ctx.fillStyle = '#0a0a12';
+            ctx.fillStyle = '#FEFDFB';
             ctx.fillRect(0, 0, W, H);
 
             drawGridLines();
@@ -663,10 +659,10 @@
                 var y = freqToY(n.freq);
                 if (n.noteIdx === 0) {
                     // A notes: brighter, act as octave markers
-                    ctx.strokeStyle = 'rgba(212,168,66,0.1)';
+                    ctx.strokeStyle = 'rgba(28,25,23,0.12)';
                     ctx.lineWidth = 0.8;
                 } else if (n.isWhite) {
-                    ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+                    ctx.strokeStyle = 'rgba(28,25,23,0.04)';
                     ctx.lineWidth = 0.5;
                 } else {
                     continue; // skip accidentals for gridlines
@@ -686,7 +682,7 @@
                 var n = NOTES[i];
                 if (n.noteIdx !== 0) continue; // only label A notes
                 var y = freqToY(n.freq);
-                ctx.fillStyle = '#685e4e';
+                ctx.fillStyle = '#9C9590';
                 ctx.fillText(n.name, LABEL_W - 6, y);
             }
         }
@@ -826,7 +822,7 @@
             // Label
             ctx.save();
             ctx.font = '8px "EB Garamond", Georgia, serif';
-            ctx.fillStyle = '#4a4538';
+            ctx.fillStyle = '#9C9590';
             ctx.textAlign = 'center';
             ctx.translate(DIST_X + DIST_W * 0.5, MARGIN_TOP - 7);
             ctx.fillText('DISTRIBUTION', 0, 0);
@@ -890,7 +886,7 @@
             }
 
             // Separator line between score and distribution
-            ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+            ctx.strokeStyle = 'rgba(28,25,23,0.05)';
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(DIST_X, MARGIN_TOP);
@@ -971,29 +967,20 @@
         canvas.addEventListener('touchend', function() { isPointerDown = false; });
 
         // Start
-        function beginExperience() {
+        overlay.addEventListener('click', function() {
             if (started) return;
             started = true;
             overlay.classList.add('hidden');
-
-            // Visuals start IMMEDIATELY
             initVoters();
+            buildAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
             lastTime = performance.now();
             tick(lastTime);
-
-            // Audio: create context and build graph ONLY after confirmed running
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            var onRunning = function() {
-                buildAudio();
-            };
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume().then(onRunning).catch(function(){});
-            } else {
-                onRunning();
-            }
-        }
-        overlay.addEventListener('click', beginExperience);
-        overlay.addEventListener('touchend', beginExperience);
+        });
+        overlay.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            overlay.click();
+        }, { passive: false });
 
         // Mode toggle
         modeBtns.forEach(function(btn) {
@@ -1031,7 +1018,7 @@
             if (audioCtx) {
                 if (playing) {
                     audioCtx.resume();
-                } else if (masterGain) {
+                } else {
                     // Fade master to zero
                     var t = audioCtx.currentTime;
                     masterGain.gain.linearRampToValueAtTime(0, t + 0.3);
@@ -1067,10 +1054,10 @@
                 computeCollective();
 
                 // Update audio
-                if (masterGain && masterGain.gain.value < 0.18) {
+                if (masterGain.gain.value < 0.18) {
                     masterGain.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + 0.2);
                 }
-                if (mainOscs.length > 0) updateAudio();
+                updateAudio();
 
                 // Advance score
                 scoreAccum += dt * SCORE_PPS;

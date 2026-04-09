@@ -5,600 +5,205 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Democracy in Music</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B0E1A'/%3E%3Ccircle cx='11' cy='9' r='5' fill='%23d4a842'/%3E%3Ccircle cx='21' cy='8' r='4' fill='%2346d2d2'/%3E%3Ccircle cx='15' cy='18' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23' r='3.5' fill='%23d25a6e'/%3E%3Ccircle cx='23' cy='22' r='2.8' fill='%236aa860'/%3E%3C/svg%3E">
-    <!-- Open Graph -->
     <meta property="og:title" content="Democracy in Music">
     <meta property="og:description" content="What happens when we apply democratic governance to musical composition and ownership?">
-    <meta property="og:image" content="https://democracyinmusic.com/og-image.png">
+    <meta property="og:image" content="https://democracyinmusic.com/ogimage.png">
     <meta property="og:url" content="https://democracyinmusic.com">
-    <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #F7F4EE; --ink: #1C1917; --mid: #57534E; --light: #9C9590;
+            --dim: #C8C3BD; --rule: #D6D3D1; --rule-light: #E7E5E4;
+        }
+        html { font-size: 17px; scroll-behavior: smooth; }
         body {
             font-family: 'EB Garamond', Georgia, serif;
-            background: #0a0a0a;
-            color: #e0e0e0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 32px 20px 40px;
-            overflow-x: hidden;
+            background: var(--bg); color: var(--ink);
+            min-height: 100vh; -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
         }
+        ::selection { background: rgba(28,25,23,0.1); }
 
-        /* Grain */
-        .grain {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none;
-            z-index: 100;
-            opacity: 0.1;
-        }
+        .page { max-width: 640px; margin: 0 auto; padding: 0 28px; }
 
-        /* ===== CENTER (inside ring) ===== */
-        .center {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            pointer-events: none;
-            z-index: 2;
+        /* ── Cover ── */
+        .cover {
+            display: flex; flex-direction: column;
+            align-items: center; text-align: center;
+            padding: 80px 28px 48px;
         }
-        .center h1 {
-            font-size: 22px;
-            letter-spacing: 7px;
-            font-weight: 300;
-            color: #fff;
-            text-transform: uppercase;
-            line-height: 1.6;
+        .cover-rule { width: 60px; height: 1px; background: var(--rule); margin-bottom: 40px; }
+        .cover h1 {
+            font-size: 2.4rem; font-weight: 400; letter-spacing: 0.06em;
+            line-height: 1.3; margin-bottom: 16px;
         }
-        .center p {
-            font-size: 13px;
-            font-style: italic;
-            color: #888;
-            letter-spacing: 0.5px;
-            margin-top: 8px;
-            max-width: 320px;
+        .cover .author {
+            font-size: 1rem; font-style: italic; color: var(--mid); margin-bottom: 40px;
         }
+        .cover-rule-b { width: 60px; height: 1px; background: var(--rule); margin-bottom: 36px; }
 
-        /* ===== ASSET LINKS ===== */
-        .assets {
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 0;
+        /* ── Nav links ── */
+        .nav {
+            display: flex; align-items: center; justify-content: center; gap: 0;
         }
+        .nav a {
+            display: block; text-decoration: none; padding: 14px 28px;
+            text-align: center; transition: color 0.2s;
+        }
+        .nav a .label {
+            font-size: 1.15rem; font-weight: 400; color: var(--ink);
+            letter-spacing: 0.03em;
+        }
+        .nav a .sub {
+            font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--light); margin-top: 2px;
+        }
+        .nav a:hover .label { color: var(--mid); }
+        .nav-divider { width: 1px; height: 32px; background: var(--rule); }
 
-        .asset-link {
-            display: block;
-            text-decoration: none;
-            padding: 18px 36px;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        .asset-link:hover {
-            background: rgba(255,255,255,0.03);
-        }
-
-        .asset-link .label {
-            font-size: 26px;
+        /* ── Prototypes ── */
+        .prototypes { padding: 0 0 60px; }
+        .section-rule { width: 40px; height: 1px; background: var(--rule); margin: 48px auto 48px; }
+        .section-label {
+            font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--ink); text-align: center; margin-bottom: 32px;
             font-weight: 400;
-            letter-spacing: 0.06em;
-            transition: opacity 0.3s;
         }
-        .asset-link:hover .label { opacity: 0.8; }
+        .proto-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+        }
+        .proto-card {
+            padding: 24px 28px; border: 1px solid var(--rule-light);
+            margin: -0.5px; text-decoration: none; color: inherit;
+            display: block; transition: background 0.2s;
+        }
+        .proto-card:hover { background: rgba(28,25,23,0.015); }
+        .proto-num {
+            font-size: 0.7rem; letter-spacing: 2px; color: var(--dim); margin-bottom: 4px;
+        }
+        .proto-name {
+            font-size: 1.15rem; font-weight: 400; color: var(--ink);
+            letter-spacing: 0.04em; margin-bottom: 3px;
+        }
+        .proto-method {
+            font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--light); margin-bottom: 10px;
+        }
+        .proto-desc {
+            font-size: 0.85rem; color: var(--mid); line-height: 1.6;
+        }
+        .proto-card:hover .proto-name { color: var(--mid); }
 
-        .asset-link .sub {
-            font-size: 11px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            opacity: 0.5;
-            margin-top: 4px;
-        }
-
-        .asset-link.link-onesheet .label { color: #d4a842; }
-        .asset-link.link-onesheet .sub   { color: #d4a842; }
-        .asset-link.link-guide .label    { color: #a78bfa; }
-        .asset-link.link-guide .sub      { color: #a78bfa; }
-        .asset-link.link-github .label   { color: #46d2d2; }
-        .asset-link.link-github .sub     { color: #46d2d2; }
-
-        .asset-divider {
-            width: 1px;
-            height: 40px;
-            background: rgba(255,255,255,0.1);
-        }
-
-        /* ===== RING ===== */
-        .ring {
-            position: relative;
-            width: 720px;
-            height: 720px;
-        }
-
-        a.card {
-            position: absolute;
-            width: 148px;
-            text-align: center;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.4s ease;
-        }
-        a.card:hover {
-            transform: translate(-50%, -50%) scale(1.07) !important;
-        }
-
-        .card-preview {
-            width: 104px;
-            height: 104px;
-            border-radius: 50%;
-            margin: 0 auto 14px;
-            overflow: hidden;
-            border: 1.5px solid rgba(255,255,255,0.09);
-            position: relative;
-            transition: all 0.4s ease;
-        }
-        .card-preview canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-        a.card:hover .card-preview {
-            border-color: var(--accent);
-            box-shadow: 0 0 24px var(--glow), 0 0 50px var(--glow-soft);
-        }
-
-        .card-title {
-            font-size: 14px;
-            letter-spacing: 4px;
-            font-weight: 300;
-            color: #fff;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-            transition: color 0.3s;
-        }
-        a.card:hover .card-title { color: var(--accent); }
-        .card-method {
-            font-size: 9px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--accent);
-        }
-
-        .card.piano      { --accent: #d4a842; --glow: rgba(212,168,66,0.2); --glow-soft: rgba(212,168,66,0.06); }
-        .card.meanmode   { --accent: #d4a842; --glow: rgba(212,168,66,0.2); --glow-soft: rgba(212,168,66,0.06); }
-        .card.miro        { --accent: #46d2d2; --glow: rgba(70,210,210,0.2); --glow-soft: rgba(70,210,210,0.06); }
-        .card.assembly    { --accent: #a78bfa; --glow: rgba(167,139,250,0.2); --glow-soft: rgba(167,139,250,0.06); }
-        .card.choreo      { --accent: #d25a6e; --glow: rgba(210,90,110,0.2); --glow-soft: rgba(210,90,110,0.06); }
-        .card.epoch       { --accent: #6aa860; --glow: rgba(106,168,96,0.2); --glow-soft: rgba(106,168,96,0.06); }
-        .card.parliament  { --accent: #e07a3a; --glow: rgba(224,122,58,0.2); --glow-soft: rgba(224,122,58,0.06); }
-
-        /* ===== FOOTER ===== */
+        /* ── Footer ── */
         .footer {
-            margin-top: 12px;
-            text-align: center;
+            text-align: center; padding: 60px 28px 80px;
+            border-top: 1px solid var(--rule-light);
+            margin-top: 40px;
         }
         .footer-year {
-            font-size: 14px;
-            letter-spacing: 10px;
-            color: #333;
-            margin-bottom: 12px;
+            font-size: 0.75rem; letter-spacing: 6px; color: var(--dim); margin-bottom: 10px;
         }
         .footer-contact {
-            font-size: 11px;
-            color: #555;
-            letter-spacing: 1px;
+            font-size: 0.8rem; color: var(--light); font-style: italic;
         }
-        .footer-contact a {
-            color: #555;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        .footer-contact a:hover { color: #ccc; }
-        .footer-contact span {
-            margin: 0 8px;
-            color: #333;
-        }
+        .footer-contact a { color: var(--light); text-decoration: none; }
+        .footer-contact a:hover { color: var(--mid); }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 740px) {
-            body { justify-content: flex-start; padding-top: 30px; overflow-y: auto; }
-            .assets { flex-direction: column; gap: 0; }
-            .asset-divider { width: 60px; height: 1px; }
-            .asset-link { text-align: center; }
-            .ring {
-                width: 100%; height: auto;
-                display: flex; flex-direction: column;
-                align-items: center; gap: 40px; padding: 10px 0;
-            }
-            .center {
-                position: relative; top: auto; left: auto;
-                transform: none; margin-bottom: 8px; order: -1;
-            }
-            a.card {
-                position: relative !important;
-                top: auto !important; left: auto !important;
-                transform: none !important;
-            }
-            a.card:hover { transform: scale(1.03) !important; }
-            .footer-contact span { display: block; font-size: 0; line-height: 0; margin: 4px 0; }
+        @media (max-width: 600px) {
+            html { font-size: 15px; }
+            .cover h1 { font-size: 1.9rem; }
+            .proto-grid { grid-template-columns: 1fr; }
+            .nav { flex-direction: column; gap: 0; }
+            .nav-divider { width: 32px; height: 1px; }
         }
     </style>
 </head>
 <body>
 
-    <canvas class="grain" id="grain"></canvas>
+<div class="cover">
+    <div class="cover-rule"></div>
+    <h1>A Guide to<br>Democracy in Music</h1>
+    <p class="author">Sam Vance-Law</p>
+    <div class="cover-rule-b"></div>
 
-    <!-- ASSET LINKS -->
-    <nav class="assets">
-        <a class="asset-link link-onesheet" href="onesheet.html">
-            <div class="label">One Sheet</div>
-            <div class="sub">Overview</div>
-        </a>
-        <div class="asset-divider"></div>
-        <a class="asset-link link-guide" href="guide.html">
+    <div class="nav">
+        <a href="guide.html">
             <div class="label">Guide</div>
-            <div class="sub">Full Document</div>
+            <div class="sub">Full document</div>
         </a>
-        <div class="asset-divider"></div>
-        <a class="asset-link link-github" href="https://github.com/SamuelVance-Law/democracy-in-music" target="_blank">
-            <div class="label">GitHub</div>
-            <div class="sub">Open Source</div>
+        <div class="nav-divider"></div>
+        <a href="onesheet.html">
+            <div class="label">Overview</div>
+            <div class="sub">One sheet</div>
         </a>
-    </nav>
-
-    <!-- PROTOTYPE RING -->
-    <div class="ring" id="ring">
-        <div class="center">
-            <h1>Democracy<br>in Music</h1>
-            <p>What if large groups of people could<br>create and own music together?</p>
-        </div>
-
-        <a class="card piano" href="piano.html">
-            <div class="card-preview"><canvas data-type="piano"></canvas></div>
-            <div class="card-title">Piano</div>
-            <div class="card-method">Mean &amp; Mode</div>
-        </a>
-
-        <a class="card meanmode" href="meanmode.html">
-            <div class="card-preview"><canvas data-type="meanmode"></canvas></div>
-            <div class="card-title">Mean Mode</div>
-            <div class="card-method">Continuous Pitch</div>
-        </a>
-
-        <a class="card miro" href="miro.html">
-            <div class="card-preview"><canvas data-type="miro"></canvas></div>
-            <div class="card-title">Miro</div>
-            <div class="card-method">Spatial Voting</div>
-        </a>
-
-        <a class="card assembly" href="assembly.html">
-            <div class="card-preview"><canvas data-type="assembly"></canvas></div>
-            <div class="card-title">Assembly</div>
-            <div class="card-method">Quadratic Voting</div>
-        </a>
-
-        <a class="card parliament" href="parliament.html">
-            <div class="card-preview"><canvas data-type="parliament"></canvas></div>
-            <div class="card-title">Parliament</div>
-            <div class="card-method">Electoral Systems</div>
-        </a>
-
-        <a class="card epoch" href="epoch.html">
-            <div class="card-preview"><canvas data-type="epoch"></canvas></div>
-            <div class="card-title">Epoch</div>
-            <div class="card-method">Generational Ownership</div>
-        </a>
-
-        <a class="card choreo" href="choreography.html">
-            <div class="card-preview"><canvas data-type="choreo"></canvas></div>
-            <div class="card-title">Choreo</div>
-            <div class="card-method">Body as Instrument</div>
+        <div class="nav-divider"></div>
+        <a href="https://github.com/SamuelVance-Law/democracy-in-music">
+            <div class="label">Source</div>
+            <div class="sub">GitHub</div>
         </a>
     </div>
+</div>
 
-    <!-- FOOTER -->
-    <div class="footer">
-        <div class="footer-year">2 0 2 6</div>
-        <div class="footer-contact">
-            <a href="mailto:samuelvancelaw@gmail.com">samuelvancelaw@gmail.com</a>
-            <span>·</span>
-            <a href="https://democracyinmusic.com">democracyinmusic.com</a>
-            <span>·</span>
-            <a href="https://samvancelaw.com">samvancelaw.com</a>
+<div class="page">
+    <div class="prototypes">
+        <div class="section-rule"></div>
+        <div class="section-label">Seven Prototypes</div>
+        <div class="proto-grid">
+            <a class="proto-card" href="piano.html">
+                <div class="proto-num">I</div>
+                <div class="proto-name">Piano</div>
+                <div class="proto-method">Democratic Instrument</div>
+                <div class="proto-desc">30,000 people sit at a piano. Each plays a note. The note you hear is the democratic result of every choice.</div>
+            </a>
+            <a class="proto-card" href="meanmode.html">
+                <div class="proto-num">I‑b</div>
+                <div class="proto-name">Mean Mode</div>
+                <div class="proto-method">Continuous Pitch</div>
+                <div class="proto-desc">The same votes, heard through different kinds of average. Mean, mode, and chord from the same collective input.</div>
+            </a>
+            <a class="proto-card" href="miro.html">
+                <div class="proto-num">II</div>
+                <div class="proto-name">MIRO</div>
+                <div class="proto-method">Spatial Voting</div>
+                <div class="proto-desc">A shared canvas where each touch becomes a vote. Overlapping choices form peaks in a 3D landscape. The topography is sonified.</div>
+            </a>
+            <a class="proto-card" href="assembly.html">
+                <div class="proto-num">III</div>
+                <div class="proto-name">Assembly</div>
+                <div class="proto-method">Quadratic Voting</div>
+                <div class="proto-desc">Five layers of pre-composed musical blocks. Participants spend voice credits to vote on which blocks to play.</div>
+            </a>
+            <a class="proto-card" href="parliament.html">
+                <div class="proto-num">IV</div>
+                <div class="proto-name">Parliament</div>
+                <div class="proto-method">Electoral Systems</div>
+                <div class="proto-desc">Seven voices. Three systems for choosing who is heard. The votes never change. Only the rules do.</div>
+            </a>
+            <a class="proto-card" href="choreography.html">
+                <div class="proto-num">V</div>
+                <div class="proto-name">Choreography</div>
+                <div class="proto-method">Body as Instrument</div>
+                <div class="proto-desc">Dancers' movements transcribed into sound in real time. The body as musical instrument. Multiple bodies as collective composers.</div>
+            </a>
+            <a class="proto-card" href="epoch.html">
+                <div class="proto-num">VI</div>
+                <div class="proto-name">Epoch</div>
+                <div class="proto-method">Generational Ownership</div>
+                <div class="proto-desc">A composition that accumulates over days, months, generations. The literal ownership of cultural history.</div>
+            </a>
         </div>
     </div>
+</div>
 
-    <script>
-    (function() {
-        // ==========================================
-        // GRAIN
-        // ==========================================
-        var gc = document.getElementById('grain');
-        gc.width = window.innerWidth; gc.height = window.innerHeight;
-        var gctx = gc.getContext('2d');
-        var gi = gctx.createImageData(gc.width, gc.height);
-        var gd = gi.data;
-        for (var i = 0; i < gd.length; i += 4) {
-            var v = Math.floor(Math.random() * 18);
-            gd[i] = v; gd[i+1] = v; gd[i+2] = v; gd[i+3] = 255;
-        }
-        gctx.putImageData(gi, 0, 0);
+<div class="footer">
+    <div class="footer-year">2 0 2 6</div>
+    <div class="footer-contact"><a href="mailto:samuelvancelaw@gmail.com">samuelvancelaw@gmail.com</a></div>
+    <div class="footer-contact"><a href="https://samvancelaw.com">samvancelaw.com</a></div>
+</div>
 
-        // ==========================================
-        // CIRCLE POSITIONING — 7 cards evenly spaced
-        // ==========================================
-        var cards = document.querySelectorAll('.ring .card');
-        var ring = document.getElementById('ring');
-
-        function position() {
-            if (window.innerWidth <= 740) {
-                cards.forEach(function(c) { c.style.left=''; c.style.top=''; c.style.transform=''; });
-                return;
-            }
-            var cx = ring.offsetWidth / 2, cy = ring.offsetHeight / 2;
-            var radius = 270, n = cards.length, start = -Math.PI / 2;
-            cards.forEach(function(card, i) {
-                var angle = start + (2 * Math.PI / n) * i;
-                card.style.left = (cx + radius * Math.cos(angle)) + 'px';
-                card.style.top = (cy + radius * Math.sin(angle)) + 'px';
-                card.style.transform = 'translate(-50%, -50%)';
-            });
-        }
-        position();
-        window.addEventListener('resize', position);
-
-        // ==========================================
-        // PIXEL-PAINTED PREVIEWS
-        // ==========================================
-        var S = 200;
-
-        function gauss() {
-            var u = Math.random(), v = Math.random();
-            return Math.sqrt(-2 * Math.log(u || 0.001)) * Math.cos(2 * Math.PI * v);
-        }
-
-        document.querySelectorAll('.card-preview canvas').forEach(function(c) {
-            c.width = S; c.height = S;
-            var ctx = c.getContext('2d');
-            var img = ctx.createImageData(S, S);
-            var buf = new Float32Array(S * S * 3);
-
-            var type = c.dataset.type;
-
-            if (type === 'piano') {
-                var centerX = S * 0.42, sigmaX = S * 0.18;
-                for (var n = 0; n < 40000; n++) {
-                    var x = centerX + gauss() * sigmaX;
-                    var y = S * 0.5 + gauss() * S * 0.22;
-                    var ix = Math.round(x), iy = Math.round(y);
-                    if (ix < 0 || ix >= S || iy < 0 || iy >= S) continue;
-                    var idx = (iy * S + ix) * 3;
-                    buf[idx]   += 42; buf[idx+1] += 34; buf[idx+2] += 13;
-                }
-                for (var kx = 0; kx < S; kx += Math.floor(S / 20)) {
-                    for (var ky = 0; ky < S; ky++) {
-                        var idx = (ky * S + kx) * 3;
-                        buf[idx] += 4; buf[idx+1] += 3; buf[idx+2] += 1;
-                    }
-                }
-            }
-
-            else if (type === 'meanmode') {
-                var numBars = 40;
-                var barW = Math.floor(S / numBars);
-                var peaks = [
-                    { pos: 0.3, h: 0.75, w: 0.12 },
-                    { pos: 0.55, h: 0.5, w: 0.08 },
-                    { pos: 0.72, h: 0.35, w: 0.06 }
-                ];
-                for (var b = 0; b < numBars; b++) {
-                    var bx = (b + 0.5) / numBars;
-                    var val = 0.04;
-                    peaks.forEach(function(pk) {
-                        var d = (bx - pk.pos) / pk.w;
-                        val += pk.h * Math.exp(-d*d / 2);
-                    });
-                    var barH = Math.floor(val * S * 0.7);
-                    var x0 = b * barW + 1, x1 = (b + 1) * barW - 1;
-                    for (var py = S - 1; py >= S - barH; py--) {
-                        var fade = 1 - (S - 1 - py) / barH;
-                        var bright = 0.3 + fade * 0.6;
-                        for (var px = x0; px < x1 && px < S; px++) {
-                            var idx = (py * S + px) * 3;
-                            buf[idx]   += 212 * bright * 0.4;
-                            buf[idx+1] += 168 * bright * 0.4;
-                            buf[idx+2] += 66 * bright * 0.4;
-                        }
-                    }
-                }
-                var meanX = Math.floor(S * 0.38);
-                for (var py = Math.floor(S * 0.1); py < S; py++) {
-                    var idx = (py * S + meanX) * 3;
-                    buf[idx] += 60; buf[idx+1] += 50; buf[idx+2] += 18;
-                    if (meanX+1 < S) { idx+=3; buf[idx] += 30; buf[idx+1] += 25; buf[idx+2] += 9; }
-                }
-            }
-
-            else if (type === 'miro') {
-                var peaks = [
-                    { x: S*0.35, y: S*0.4, sx: S*0.12, sy: S*0.1, h: 1.0 },
-                    { x: S*0.65, y: S*0.55, sx: S*0.09, sy: S*0.08, h: 0.7 },
-                    { x: S*0.5,  y: S*0.25, sx: S*0.07, sy: S*0.06, h: 0.5 }
-                ];
-                for (var py = 0; py < S; py++) {
-                    for (var px = 0; px < S; px++) {
-                        var val = 0;
-                        peaks.forEach(function(p) {
-                            var dx = (px - p.x) / p.sx;
-                            var dy = (py - p.y) / p.sy;
-                            val += p.h * Math.exp(-(dx*dx + dy*dy) / 2);
-                        });
-                        var contour = Math.abs(Math.sin(val * 12)) * 0.3;
-                        var banded = Math.min(1, val * 0.7 + contour);
-                        var idx = (py * S + px) * 3;
-                        buf[idx]   += 70 * banded * 1.2;
-                        buf[idx+1] += 210 * banded * 1.2;
-                        buf[idx+2] += 210 * banded * 1.2;
-                    }
-                }
-            }
-
-            else if (type === 'assembly') {
-                var layers = 5, blocksPerLayer = 5;
-                var layerH = S / layers, blockW = S / blocksPerLayer;
-                var chosen = [];
-                for (var l = 0; l < layers; l++) chosen.push(Math.floor(Math.random() * blocksPerLayer));
-                for (var py = 0; py < S; py++) {
-                    for (var px = 0; px < S; px++) {
-                        var layer = Math.min(Math.floor(py / layerH), layers - 1);
-                        var block = Math.floor(px / blockW);
-                        var layerPos = (py % layerH) / layerH;
-                        if (layerPos < 0.04 || layerPos > 0.96) continue;
-                        var blockPos = (px % blockW) / blockW;
-                        if (blockPos < 0.05 || blockPos > 0.95) continue;
-                        var bright = block === chosen[layer]
-                            ? 0.6 + 0.2 * Math.sin(layerPos * Math.PI)
-                            : 0.1 + 0.03 * Math.sin(blockPos * Math.PI);
-                        var idx = (py * S + px) * 3;
-                        buf[idx]   += 167 * bright;
-                        buf[idx+1] += 139 * bright;
-                        buf[idx+2] += 250 * bright;
-                    }
-                }
-            }
-
-            else if (type === 'parliament') {
-                var pcx = S / 2, pcy = S / 2;
-                var outerR = S * 0.44, innerR = S * 0.24;
-                var segments = [
-                    { pct: 0.22, r: 210, g: 80,  b: 80  },
-                    { pct: 0.15, r: 220, g: 130, b: 100 },
-                    { pct: 0.18, r: 212, g: 168, b: 66  },
-                    { pct: 0.12, r: 100, g: 180, b: 120 },
-                    { pct: 0.10, r: 70,  g: 180, b: 180 },
-                    { pct: 0.14, r: 100, g: 140, b: 210 },
-                    { pct: 0.09, r: 154, g: 122, b: 216 },
-                ];
-                var winnerIdx = 0;
-                var angle = -Math.PI / 2;
-                for (var si = 0; si < segments.length; si++) {
-                    var seg = segments[si];
-                    var sliceAngle = seg.pct * Math.PI * 2;
-                    var isBright = (si === winnerIdx);
-                    for (var py = 0; py < S; py++) {
-                        for (var px = 0; px < S; px++) {
-                            var dx = px - pcx, dy = py - pcy;
-                            var dist = Math.sqrt(dx*dx + dy*dy);
-                            if (dist < innerR || dist > outerR) continue;
-                            var a = Math.atan2(dy, dx);
-                            var aNorm = a - angle;
-                            while (aNorm < 0) aNorm += Math.PI * 2;
-                            while (aNorm > Math.PI * 2) aNorm -= Math.PI * 2;
-                            if (aNorm > sliceAngle) continue;
-                            var bright = isBright ? 0.7 : 0.08;
-                            var edgeFade = 1;
-                            if (dist > outerR - 2) edgeFade *= (outerR - dist) / 2;
-                            if (dist < innerR + 2) edgeFade *= (dist - innerR) / 2;
-                            edgeFade = Math.max(0, Math.min(1, edgeFade));
-                            var idx = (py * S + px) * 3;
-                            buf[idx]   += seg.r * bright * edgeFade;
-                            buf[idx+1] += seg.g * bright * edgeFade;
-                            buf[idx+2] += seg.b * bright * edgeFade;
-                        }
-                    }
-                    angle += sliceAngle;
-                }
-            }
-
-            else if (type === 'epoch') {
-                var ecx = S * 0.5, ecy = S * 0.5;
-                for (var n = 0; n < 1200; n++) {
-                    var t = n / 1200;
-                    var spread = 6 + t * S * 0.3;
-                    var epx = ecx + gauss() * spread * 0.5;
-                    var epy = ecy + gauss() * spread * 0.35;
-                    var blobR = 8 + Math.random() * 14;
-                    for (var by = -blobR; by <= blobR; by++) {
-                        for (var bx = -blobR; bx <= blobR; bx++) {
-                            var ix = Math.round(epx + bx), iy = Math.round(epy + by);
-                            if (ix < 0 || ix >= S || iy < 0 || iy >= S) continue;
-                            var d = Math.sqrt(bx*bx + by*by);
-                            if (d > blobR) continue;
-                            var falloff = Math.exp(-(d*d) / (blobR * 0.7));
-                            var idx = (iy * S + ix) * 3;
-                            buf[idx]   += 106 * falloff * 0.35 * (0.6 + t * 0.4);
-                            buf[idx+1] += 168 * falloff * 0.35 * (0.5 + t * 0.5);
-                            buf[idx+2] += 96 * falloff * 0.35 * (0.4 + t * 0.6);
-                        }
-                    }
-                }
-            }
-
-            else if (type === 'choreo') {
-                for (var f = 0; f < 10; f++) {
-                    var cpx = S * 0.15 + Math.random() * S * 0.7;
-                    var cpy = S * 0.15 + Math.random() * S * 0.7;
-                    var cvx = (Math.random() - 0.5) * 5;
-                    var cvy = (Math.random() - 0.5) * 4;
-                    var points = [];
-                    for (var step = 0; step < 100; step++) {
-                        points.push({ x: cpx, y: cpy });
-                        cvx += (Math.random() - 0.5) * 2;
-                        cvy += (Math.random() - 0.5) * 1.5;
-                        cvx *= 0.94; cvy *= 0.94;
-                        cpx += cvx; cpy += cvy;
-                    }
-                    var trailBright = 0.5 + Math.random() * 0.5;
-                    points.forEach(function(pt, si) {
-                        var fade = si / points.length;
-                        var r = 4 + fade * 6;
-                        for (var by = -r; by <= r; by++) {
-                            for (var bx = -r; bx <= r; bx++) {
-                                var ix = Math.round(pt.x + bx), iy = Math.round(pt.y + by);
-                                if (ix < 0 || ix >= S || iy < 0 || iy >= S) continue;
-                                var d = Math.sqrt(bx*bx + by*by);
-                                if (d > r) continue;
-                                var falloff = Math.exp(-(d*d) / (r * 0.7)) * trailBright * (0.4 + fade * 0.6);
-                                var idx = (iy * S + ix) * 3;
-                                buf[idx]   += 210 * falloff * 0.5;
-                                buf[idx+1] += 90 * falloff * 0.5;
-                                buf[idx+2] += 110 * falloff * 0.5;
-                            }
-                        }
-                    });
-                    var end = points[points.length - 1];
-                    var dotR = 7;
-                    for (var by = -dotR; by <= dotR; by++) {
-                        for (var bx = -dotR; bx <= dotR; bx++) {
-                            var ix = Math.round(end.x + bx), iy = Math.round(end.y + by);
-                            if (ix < 0 || ix >= S || iy < 0 || iy >= S) continue;
-                            var d = Math.sqrt(bx*bx + by*by);
-                            if (d > dotR) continue;
-                            var falloff = Math.exp(-(d*d) / (dotR * 0.5));
-                            var idx = (iy * S + ix) * 3;
-                            buf[idx]   += 210 * falloff * 1.5;
-                            buf[idx+1] += 90 * falloff * 1.5;
-                            buf[idx+2] += 110 * falloff * 1.5;
-                        }
-                    }
-                }
-            }
-
-            // Write buffer to imageData
-            var d = img.data;
-            for (var i = 0; i < S * S; i++) {
-                var bi = i * 3, di = i * 4;
-                d[di]   = Math.min(255, Math.floor(8 + buf[bi]));
-                d[di+1] = Math.min(255, Math.floor(8 + buf[bi+1]));
-                d[di+2] = Math.min(255, Math.floor(8 + buf[bi+2]));
-                d[di+3] = 255;
-            }
-            ctx.putImageData(img, 0, 0);
-        });
-    })();
-    </script>
 </body>
 </html>

@@ -9,8 +9,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Georgia', serif;
-            background: #0a0a0a;
-            color: #e0e0e0;
+            background: #F7F4EE;
+            color: #1C1917;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -23,19 +23,28 @@
             letter-spacing: 2px; z-index: 99; font-family: Georgia, serif;
         }
         #header { text-align: center; padding: 18px 20px 4px; }
-        #header h1 { font-size: 26px; letter-spacing: 8px; font-weight: 300; color: #fff; }
+        
+        #header h2 {
+            font-size: 24px; font-weight: 400; color: #1C1917;
+            line-height: 1.3; margin-top: 4px;
+        }
+        .header-rule {
+            width: 40px; height: 1px; background: #D6D3D1;
+            margin: 18px auto 0;
+        }
+        #header h1 { font-size: 15px; letter-spacing: 3px; font-weight: 400; color: #9C9590; text-transform: uppercase; }
         #header p { font-size: 13px; font-style: italic; color: #777; margin-top: 6px; }
 
         #sound-mode { display: flex; gap: 0; margin: 10px 0 6px; }
         .smode-btn {
-            padding: 6px 18px; background: none; border: 1px solid #333;
+            padding: 6px 18px; background: none; border: 1px solid #D6D3D1;
             color: #555; font-family: 'Georgia', serif; font-size: 10px;
             letter-spacing: 2px; cursor: pointer; transition: all 0.2s; text-transform: uppercase;
         }
         .smode-btn:first-child { border-radius: 3px 0 0 3px; }
         .smode-btn:last-child { border-radius: 0 3px 3px 0; }
         .smode-btn:not(:first-child) { border-left: none; }
-        .smode-btn.active { background: #d25a6e; border-color: #d25a6e; color: #0a0a0a; }
+        .smode-btn.active { background: #1C1917; border-color: #1C1917; color: #F7F4EE; }
 
         #views {
             display: flex; flex-direction: column; align-items: center;
@@ -81,34 +90,34 @@
 
         input[type="range"] {
             -webkit-appearance: none; appearance: none;
-            width: 100px; height: 3px; background: #1a1a2e; border-radius: 2px; outline: none;
+            width: 100px; height: 3px; background: #D6D3D1; border-radius: 2px; outline: none;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none; width: 14px; height: 14px;
-            border-radius: 50%; background: #4a9eff; cursor: pointer;
+            border-radius: 50%; background: #1C1917; cursor: pointer;
         }
         input[type="range"]::-moz-range-thumb {
             width: 14px; height: 14px; border-radius: 50%;
-            background: #4a9eff; cursor: pointer; border: none;
+            background: #1C1917; cursor: pointer; border: none;
         }
         button.ctrl-btn {
-            padding: 7px 18px; background: none; border: 1px solid #4a9eff;
-            color: #4a9eff; font-family: 'Georgia', serif; font-size: 11px;
+            padding: 7px 18px; background: none; border: 1px solid #1C1917;
+            color: #1C1917; font-family: 'Georgia', serif; font-size: 11px;
             letter-spacing: 1px; cursor: pointer; border-radius: 3px; transition: all 0.2s;
         }
-        button.ctrl-btn:hover { background: #4a9eff; color: #0a0a0a; }
-        button.ctrl-btn.active-btn { background: #4a9eff; color: #0a0a0a; }
+        button.ctrl-btn:hover { background: #1C1917; color: #F7F4EE; }
+        button.ctrl-btn.active-btn { background: #1C1917; color: #F7F4EE; }
         #dancer-count { font-size: 11px; color: #555; letter-spacing: 1px; min-width: 20px; text-align: center; }
 
         #status-bar {
             display: flex; align-items: center; justify-content: center;
             gap: 24px; padding: 2px 20px 4px; font-size: 10px; color: #333; letter-spacing: 1px;
         }
-        .status-val { color: #d25a6e; }
+        .status-val { color: #1C1917; }
 
         #info {
             text-align: center; padding: 4px 20px 24px; font-size: 11px;
-            color: #2a2a3a; line-height: 1.7; max-width: 560px;
+            color: #9C9590; font-style: italic; line-height: 1.7; max-width: 560px;
         }
     </style>
 </head>
@@ -116,7 +125,8 @@
     <a id="home-link" href="index.html">&larr; Home</a>
     <div id="header">
         <h1>CHOREOGRAPHY</h1>
-        <p>The body as musical instrument</p>
+        <h2>The body as musical instrument</h2>
+        <div class="header-rule"></div>
     </div>
     <div id="sound-mode">
         <button class="smode-btn active" data-mode="arpeggio">Arpeggio</button>
@@ -232,8 +242,8 @@
         // ==========================================
         var W = 840, H = 340;
         var scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0a0a0a);
-        scene.fog = new THREE.FogExp2(0x0a0a0a, 0.035);
+        scene.background = new THREE.Color(0xF7F4EE);
+        scene.fog = new THREE.FogExp2(0xF7F4EE, 0.025);
 
         var camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 100);
         updateCamera();
@@ -514,7 +524,7 @@
 
             // Shift image left by 2px
             var imgData = scoreCtx.getImageData(2, 0, sw - 2, sh);
-            scoreCtx.fillStyle = '#0a0a0a';
+            scoreCtx.fillStyle = '#FEFDFB';
             scoreCtx.fillRect(0, 0, sw, sh);
             scoreCtx.putImageData(imgData, 0, 0);
 
@@ -576,7 +586,7 @@
         // AUDIO ENGINE
         // ==========================================
         function buildAudio() {
-            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             var ac = audioCtx;
 
             compressor = ac.createDynamicsCompressor();
@@ -842,13 +852,9 @@
                 isPlaying=false;playBtn.textContent='\u25B6 Play';playBtn.classList.remove('active-btn');
                 if(audioCtx){audioCtx.close().catch(function(){});audioCtx=null;}
             }else{
-                // Create context and build audio ONLY after confirmed running
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                var start=function(){
-                    buildAudio();
-                    isPlaying=true;playBtn.textContent='\u25A0 Stop';playBtn.classList.add('active-btn');
-                };
-                if(audioCtx.state==='suspended')audioCtx.resume().then(start).catch(function(){});else start();
+                buildAudio();
+                var start=function(){isPlaying=true;playBtn.textContent='\u25A0 Stop';playBtn.classList.add('active-btn');};
+                if(audioCtx.state==='suspended')audioCtx.resume().then(start);else start();
             }
         });
 
@@ -864,12 +870,10 @@
                 document.getElementById('info-partials').style.display=m==='partials'?'':'none';
                 dancers.forEach(function(d){d.lastArpStep=-1;d.lastPhaseStep=-1;});
                 // Clear score
-                scoreCtx.fillStyle='#0a0a0a';scoreCtx.fillRect(0,0,scoreCanvas.width,scoreCanvas.height);
+                scoreCtx.fillStyle='#FEFDFB';scoreCtx.fillRect(0,0,scoreCanvas.width,scoreCanvas.height);
                 if(isPlaying){
                     if(audioCtx)audioCtx.close().catch(function(){});
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    var rebuild=function(){buildAudio();};
-                    if(audioCtx.state==='suspended')audioCtx.resume().then(rebuild).catch(function(){});else rebuild();
+                    buildAudio();audioCtx.resume();
                 }
             });
         });
@@ -911,7 +915,7 @@
         }
 
         // Init score background
-        scoreCtx.fillStyle='#0a0a0a';
+        scoreCtx.fillStyle='#FEFDFB';
         scoreCtx.fillRect(0,0,scoreCanvas.width,scoreCanvas.height);
 
         initDancers(4);

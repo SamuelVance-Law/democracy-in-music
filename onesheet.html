@@ -5,448 +5,220 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Democracy in Music — One Sheet</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B0E1A'/%3E%3Ccircle cx='11' cy='9' r='5' fill='%23d4a842'/%3E%3Ccircle cx='21' cy='8' r='4' fill='%2346d2d2'/%3E%3Ccircle cx='15' cy='18' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23' r='3.5' fill='%23d25a6e'/%3E%3Ccircle cx='23' cy='22' r='2.8' fill='%236aa860'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --text: #c8c8c8;
-            --text-dim: #777;
-            --text-bright: #efefef;
-            --bg: #0a0a0a;
-            --border: rgba(255,255,255,0.06);
-            --piano: #d4a842;
-            --miro: #46d2d2;
-            --assembly: #a78bfa;
-            --parliament: #e07a3a;
-            --choreo: #d25a6e;
-            --epoch: #6aa860;
-            --meanmode: #d4a842;
+            --bg: #F7F4EE; --ink: #1C1917; --mid: #57534E; --light: #9C9590;
+            --dim: #C8C3BD; --rule: #D6D3D1; --rule-light: #E7E5E4;
         }
-
         html { scroll-behavior: smooth; }
-
         body {
             font-family: 'EB Garamond', Georgia, serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.7;
-            font-size: 17px;
-            overflow-x: hidden;
-            min-height: 100vh;
+            background: var(--bg); color: var(--ink);
+            line-height: 1.7; font-size: 17px;
+            -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
         }
+        ::selection { background: rgba(28,25,23,0.1); }
+        .page { max-width: 700px; margin: 0 auto; padding: 0 32px; }
 
-        /* Grain */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.07;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-            background-size: 200px 200px;
-        }
-
-        /* ===== LAYOUT ===== */
-        .page {
-            max-width: 780px;
-            margin: 0 auto;
-            padding: 0 32px;
-        }
-
-        /* ===== HEADER ===== */
         .header {
-            padding: 80px 0 60px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
+            padding: 80px 0 52px; text-align: center;
+            border-bottom: 1px solid var(--rule-light);
         }
-
         .header-label {
-            font-size: 10px;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            margin-bottom: 28px;
+            font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase;
+            color: var(--light); margin-bottom: 24px;
         }
-
         .header h1 {
-            font-size: clamp(36px, 6vw, 54px);
-            font-weight: 400;
-            letter-spacing: 0.12em;
-            color: var(--text-bright);
-            text-transform: uppercase;
-            line-height: 1.2;
-            margin-bottom: 20px;
+            font-size: clamp(32px, 5vw, 48px); font-weight: 400;
+            letter-spacing: 0.06em; line-height: 1.2; margin-bottom: 18px;
         }
-
         .header .tagline {
-            font-size: clamp(17px, 2.5vw, 21px);
-            font-style: italic;
-            color: var(--text-dim);
-            max-width: 440px;
-            margin: 0 auto;
-            line-height: 1.55;
+            font-size: clamp(16px, 2.2vw, 19px); font-style: italic;
+            color: var(--mid); max-width: 420px; margin: 0 auto; line-height: 1.55;
         }
 
-        /* ===== PITCH ===== */
         .pitch {
-            padding: 52px 0;
-            border-bottom: 1px solid var(--border);
+            padding: 44px 0; border-bottom: 1px solid var(--rule-light);
         }
-
         .pitch p {
-            max-width: 620px;
-            margin: 0 auto;
-            text-align: center;
-            font-size: 18px;
-            line-height: 1.8;
+            max-width: 580px; margin: 0 auto; text-align: center;
+            font-size: 1.05rem; line-height: 1.8; color: var(--mid);
         }
+        .pitch .accent { color: var(--ink); font-weight: 500; }
 
-        .pitch .accent {
-            color: var(--text-bright);
-            font-weight: 500;
-        }
-
-        /* ===== PROTOTYPES GRID ===== */
         .prototypes {
-            padding: 56px 0 48px;
-            border-bottom: 1px solid var(--border);
+            padding: 48px 0 40px; border-bottom: 1px solid var(--rule-light);
         }
-
         .section-label {
-            font-size: 10px;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            text-align: center;
-            margin-bottom: 40px;
+            font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase;
+            color: var(--light); text-align: center; margin-bottom: 36px;
         }
-
         .proto-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0;
         }
-
         .proto-item {
-            padding: 28px 32px;
-            border: 1px solid var(--border);
-            margin: -0.5px;
-            position: relative;
-            transition: background 0.3s ease;
+            padding: 24px 28px; border: 1px solid var(--rule-light);
+            margin: -0.5px; transition: background 0.2s;
         }
-
-        .proto-item:hover {
-            background: rgba(255,255,255,0.015);
-        }
-
+        .proto-item:hover { background: rgba(28,25,23,0.01); }
         .proto-num {
-            font-size: 9px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 6px;
+            font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--dim); margin-bottom: 4px;
         }
-
         .proto-name {
-            font-size: 22px;
-            font-weight: 400;
-            letter-spacing: 0.06em;
-            margin-bottom: 4px;
+            font-size: 1.2rem; font-weight: 400; letter-spacing: 0.04em;
+            margin-bottom: 3px;
         }
-
         .proto-method {
-            font-size: 10px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 12px;
+            font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--light); margin-bottom: 10px;
         }
-
         .proto-desc {
-            font-size: 15px;
-            color: var(--text-dim);
-            line-height: 1.65;
+            font-size: 0.85rem; color: var(--mid); line-height: 1.6;
         }
-
         .proto-link {
-            display: inline-block;
-            margin-top: 10px;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-decoration: none;
-            transition: opacity 0.3s;
-            opacity: 0.5;
+            display: inline-block; margin-top: 8px; font-size: 0.7rem;
+            letter-spacing: 2px; text-transform: uppercase;
+            text-decoration: none; color: var(--light); transition: color 0.2s;
         }
+        .proto-link:hover { color: var(--ink); }
 
-        .proto-link:hover {
-            opacity: 1;
-        }
-
-        /* Colors */
-        .proto-piano .proto-num,
-        .proto-piano .proto-name,
-        .proto-piano .proto-method,
-        .proto-piano .proto-link { color: var(--piano); }
-
-        .proto-miro .proto-num,
-        .proto-miro .proto-name,
-        .proto-miro .proto-method,
-        .proto-miro .proto-link { color: var(--miro); }
-
-        .proto-assembly .proto-num,
-        .proto-assembly .proto-name,
-        .proto-assembly .proto-method,
-        .proto-assembly .proto-link { color: var(--assembly); }
-
-        .proto-parliament .proto-num,
-        .proto-parliament .proto-name,
-        .proto-parliament .proto-method,
-        .proto-parliament .proto-link { color: var(--parliament); }
-
-        .proto-choreo .proto-num,
-        .proto-choreo .proto-name,
-        .proto-choreo .proto-method,
-        .proto-choreo .proto-link { color: var(--choreo); }
-
-        .proto-epoch .proto-num,
-        .proto-epoch .proto-name,
-        .proto-epoch .proto-method,
-        .proto-epoch .proto-link { color: var(--epoch); }
-
-        .proto-meanmode .proto-num,
-        .proto-meanmode .proto-name,
-        .proto-meanmode .proto-method,
-        .proto-meanmode .proto-link { color: var(--meanmode); }
-
-        /* ===== VISION ===== */
         .vision {
-            padding: 56px 0;
-            border-bottom: 1px solid var(--border);
+            padding: 48px 0; border-bottom: 1px solid var(--rule-light);
         }
-
         .vision-columns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 48px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+        }
+        .vision-col h3 {
+            font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--light); margin-bottom: 14px; font-weight: 400;
+        }
+        .vision-col p, .vision-col li {
+            font-size: 0.9rem; color: var(--mid); line-height: 1.7;
+        }
+        .vision-col ul {
+            list-style: none; padding: 0;
+        }
+        .vision-col ul li {
+            padding-left: 20px; position: relative; margin-bottom: 6px;
+        }
+        .vision-col ul li::before {
+            content: '—'; position: absolute; left: 0; color: var(--dim);
         }
 
-        .vision h3 {
-            font-size: 10px;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            margin-bottom: 20px;
-            font-weight: 400;
-        }
-
-        .vision p {
-            font-size: 16px;
-            line-height: 1.7;
-        }
-
-        .vision ul {
-            list-style: none;
-            font-size: 16px;
-            line-height: 1.7;
-        }
-
-        .vision ul li {
-            padding-left: 18px;
-            position: relative;
-            margin-bottom: 6px;
-        }
-
-        .vision ul li::before {
-            content: '—';
-            position: absolute;
-            left: 0;
-            color: var(--text-dim);
-        }
-
-        /* ===== LINKS ===== */
         .links-bar {
-            padding: 40px 0;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
+            padding: 36px 0; text-align: center;
+            border-bottom: 1px solid var(--rule-light);
         }
-
         .links-bar a {
-            display: inline-block;
-            font-size: 12px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            text-decoration: none;
-            margin: 0 20px;
-            transition: color 0.3s;
+            display: inline-block; font-size: 0.7rem; letter-spacing: 3px;
+            text-transform: uppercase; color: var(--light);
+            text-decoration: none; margin: 0 18px; transition: color 0.2s;
         }
+        .links-bar a:hover { color: var(--ink); }
 
-        .links-bar a:hover {
-            color: var(--text-bright);
-        }
-
-        /* ===== FOOTER ===== */
         .footer {
-            padding: 48px 0 64px;
-            text-align: center;
+            padding: 44px 0 60px; text-align: center;
         }
-
         .footer-title {
-            font-size: 13px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            margin-bottom: 8px;
+            font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--light); margin-bottom: 6px;
         }
-
         .footer-contact {
-            font-size: 15px;
-            color: var(--text);
-            font-style: italic;
+            font-size: 0.9rem; color: var(--mid); font-style: italic;
         }
-
+        .footer-contact a { color: var(--mid); text-decoration: none; }
+        .footer-contact a:hover { color: var(--ink); }
         .footer-year {
-            font-size: 11px;
-            letter-spacing: 3px;
-            color: #444;
-            margin-top: 24px;
+            font-size: 0.65rem; letter-spacing: 3px; color: var(--dim); margin-top: 20px;
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 600px) {
             .page { padding: 0 24px; }
-            .header { padding: 56px 0 44px; }
+            .header { padding: 48px 0 40px; }
             .proto-list { grid-template-columns: 1fr; }
-            .vision-columns { grid-template-columns: 1fr; gap: 32px; }
-            .links-bar a { display: block; margin: 0 0 10px; }
-        }
-
-        /* ===== FADE IN ===== */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(16px);
-            animation: fadeUp 0.8s ease forwards;
-        }
-
-        .fade-in:nth-child(2) { animation-delay: 0.1s; }
-        .fade-in:nth-child(3) { animation-delay: 0.2s; }
-        .fade-in:nth-child(4) { animation-delay: 0.3s; }
-        .fade-in:nth-child(5) { animation-delay: 0.4s; }
-        .fade-in:nth-child(6) { animation-delay: 0.5s; }
-        .fade-in:nth-child(7) { animation-delay: 0.6s; }
-
-        @keyframes fadeUp {
-            to { opacity: 1; transform: translateY(0); }
+            .vision-columns { grid-template-columns: 1fr; gap: 28px; }
+            .links-bar a { display: block; margin: 0 0 8px; }
         }
     </style>
 </head>
 <body>
-
 <div class="page">
 
-    <!-- HEADER -->
-    <div class="header fade-in">
+    <div class="header">
         <div class="header-label">Project Overview · 2026</div>
         <h1>Democracy<br>in Music</h1>
-        <p class="tagline">
-            Models for how large groups of people might create and own music together using democratic decision-making.
-        </p>
+        <p class="tagline">Models for how large groups of people might create and own music together using democratic decision-making.</p>
     </div>
 
-    <!-- PITCH -->
-    <div class="pitch fade-in">
-        <p>
-            What follows is a set of working prototypes for communal composition. Each explores a different democratic mechanism applied to the creation of music: averaging, spatial voting, quadratic voting, electoral systems, embodied movement, generational ownership. They run in a browser. You can play them. None are finished pieces of music. They are instruments you can play.
-        </p>
+    <div class="pitch">
+        <p>What follows is a set of working prototypes for communal composition. Each explores a different democratic mechanism applied to the creation of music: averaging, spatial voting, quadratic voting, electoral systems, embodied movement, generational ownership. They run in a browser. You can play them. None are finished pieces of music. They are instruments you can play.</p>
     </div>
 
-    <!-- PROTOTYPES -->
-    <div class="prototypes fade-in">
+    <div class="prototypes">
         <div class="section-label">Seven Prototypes</div>
-
         <div class="proto-list">
-            <div class="proto-item proto-piano">
+            <div class="proto-item">
                 <div class="proto-num">I</div>
                 <div class="proto-name">Piano</div>
                 <div class="proto-method">Democratic Instrument</div>
-                <div class="proto-desc">
-                    30,000 people sit at a piano. Each plays a note. The note you hear is the democratic result of every choice. The simplest model is pure democratic averaging applied to pitch. Chords allow you to create harmony from proportional representation.
-                </div>
-                <a class="proto-link" href="piano.html">Play →</a>
+                <div class="proto-desc">30,000 people sit at a piano. Each plays a note. The note you hear is the democratic result of every choice. Chords allow you to create harmony from proportional representation.</div>
+                <a class="proto-link" href="piano.html">Play &#8594;</a>
             </div>
-
-            <div class="proto-item proto-meanmode">
-                <div class="proto-num">I-b</div>
+            <div class="proto-item">
+                <div class="proto-num">I&#8209;b</div>
                 <div class="proto-name">Mean Mode</div>
                 <div class="proto-method">Continuous Pitch</div>
-                <div class="proto-desc">
-                    An extension of the Piano model to create continuous sound. Switch between mean, mode, and chord to hear how the same votes produce different music depending on the aggregation method.
-                </div>
-                <a class="proto-link" href="meanmode.html">Play →</a>
+                <div class="proto-desc">An extension of the Piano model to create continuous sound. Switch between mean, mode, and chord to hear how the same votes produce different music.</div>
+                <a class="proto-link" href="meanmode.html">Play &#8594;</a>
             </div>
-
-            <div class="proto-item proto-miro">
+            <div class="proto-item">
                 <div class="proto-num">II</div>
-                <div class="proto-name">Miro</div>
+                <div class="proto-name">MIRO</div>
                 <div class="proto-method">Spatial Voting</div>
-                <div class="proto-desc">
-                    A shared canvas where each touch becomes a vote. Overlapping choices form peaks in a 3D landscape. The topography is sonified to create a piece of music. Inspired by Miró's <em>Bleu II</em>.
-                </div>
-                <a class="proto-link" href="miro.html">Play →</a>
+                <div class="proto-desc">A shared canvas where each touch becomes a vote. Overlapping choices form peaks in a 3D landscape. The topography is sonified. Inspired by Mir&#x00F3;&#x2019;s <em>Bleu II</em>.</div>
+                <a class="proto-link" href="miro.html">Play &#8594;</a>
             </div>
-
-            <div class="proto-item proto-assembly">
+            <div class="proto-item">
                 <div class="proto-num">III</div>
                 <div class="proto-name">Assembly</div>
                 <div class="proto-method">Quadratic Voting</div>
-                <div class="proto-desc">
-                    Five layers of pre-composed musical blocks. Participants spend voice credits to vote on which blocks to play. Concentrating votes costs quadratically more, so the output reflects not just majority preference but intensity of feeling.
-                </div>
-                <a class="proto-link" href="assembly.html">Play →</a>
+                <div class="proto-desc">Five layers of pre-composed musical blocks. Participants spend voice credits to vote on which blocks to play. Concentrating votes costs quadratically more.</div>
+                <a class="proto-link" href="assembly.html">Play &#8594;</a>
             </div>
-
-            <div class="proto-item proto-parliament">
+            <div class="proto-item">
                 <div class="proto-num">IV</div>
                 <div class="proto-name">Parliament</div>
                 <div class="proto-method">Electoral Systems</div>
-                <div class="proto-desc">
-                    Vote for one of seven parties alongside 300 simulated citizens. Toggle between first past the post, proportional representation, and coalition. The votes stay the same. The system changes.
-                </div>
-                <a class="proto-link" href="parliament.html">Play →</a>
+                <div class="proto-desc">Vote for one of seven parties alongside 300 simulated citizens. Toggle between first past the post, proportional representation, and coalition.</div>
+                <a class="proto-link" href="parliament.html">Play &#8594;</a>
             </div>
-
-            <div class="proto-item proto-choreo">
+            <div class="proto-item">
                 <div class="proto-num">V</div>
                 <div class="proto-name">Choreography</div>
                 <div class="proto-method">Body as Instrument</div>
-                <div class="proto-desc">
-                    Democracy as physical representation, as being seen, on the record. Cameras track dancers' movements and transcribe them into sound in real time. Dancers become co-composers of the resulting piece.
-                </div>
-                <a class="proto-link" href="choreography.html">Play →</a>
+                <div class="proto-desc">Cameras track dancers&#x2019; movements and transcribe them into sound in real time. Dancers become co-composers of the resulting piece.</div>
+                <a class="proto-link" href="choreography.html">Play &#8594;</a>
             </div>
-
-            <div class="proto-item proto-epoch">
+            <div class="proto-item">
                 <div class="proto-num">VI</div>
                 <div class="proto-name">Epoch</div>
                 <div class="proto-method">Generational Ownership</div>
-                <div class="proto-desc">
-                    A composition that accumulates over days, months, generations. A neighbourhood might build a shared piece over a decade. A digital community of 50,000 in viral waves. A city of half a million over half a century. The literal ownership of cultural history.
-                </div>
-                <a class="proto-link" href="epoch.html">Play →</a>
+                <div class="proto-desc">A composition that accumulates over days, months, generations. A neighbourhood might build a shared piece over a decade. The literal ownership of cultural history.</div>
+                <a class="proto-link" href="epoch.html">Play &#8594;</a>
             </div>
         </div>
     </div>
 
-    <!-- VISION -->
-    <div class="vision fade-in">
+    <div class="vision">
         <div class="vision-columns">
             <div class="vision-col">
                 <h3>Core Idea</h3>
-                <p>
-                    Music has always been communal but its creation and ownership rarely are. These prototypes explore what happens when democratic governance is applied directly to the act of making music. The process of creation becomes as democratic as the outcome.
-                </p>
+                <p>Music has always been communal but its creation and ownership rarely are. These prototypes explore what happens when democratic governance is applied directly to the act of making music. The process of creation becomes as democratic as the outcome.</p>
             </div>
             <div class="vision-col">
                 <h3>Next Steps</h3>
@@ -461,21 +233,18 @@
         </div>
     </div>
 
-    <!-- LINKS -->
-    <div class="links-bar fade-in">
+    <div class="links-bar">
         <a href="guide.html">Guide</a>
         <a href="index.html">All Prototypes</a>
     </div>
 
-    <!-- FOOTER -->
-    <div class="footer fade-in">
+    <div class="footer">
         <div class="footer-title">Contact</div>
-        <div class="footer-contact">samuelvancelaw@gmail.com</div>
-        <div class="footer-contact"><a href="https://samvancelaw.com" style="color: inherit; text-decoration: none;">samvancelaw.com</a></div>
-        <div class="footer-year">Democracy in Music · 2026</div>
+        <div class="footer-contact"><a href="mailto:samuelvancelaw@gmail.com">samuelvancelaw@gmail.com</a></div>
+        <div class="footer-contact"><a href="https://samvancelaw.com">samvancelaw.com</a></div>
+        <div class="footer-year">Democracy in Music &#183; 2026</div>
     </div>
 
 </div>
-
 </body>
 </html>

@@ -10,8 +10,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Georgia', serif;
-            background: #0a0a0a;
-            color: #e0e0e0;
+            background: #F7F4EE;
+            color: #1C1917;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -25,8 +25,17 @@
         }
 
         #header { text-align: center; padding: 24px 20px 6px; }
+        
+        #header h2 {
+            font-size: 24px; font-weight: 400; color: #1C1917;
+            line-height: 1.3; margin-top: 4px;
+        }
+        .header-rule {
+            width: 40px; height: 1px; background: #D6D3D1;
+            margin: 18px auto 0;
+        }
         #header h1 {
-            font-size: 28px; letter-spacing: 10px; font-weight: 300; color: #fff;
+            font-size: 15px; letter-spacing: 3px; font-weight: 400; color: #9C9590; text-transform: uppercase;
         }
         #header p {
             font-size: 13px; font-style: italic; color: #aaa; margin-top: 6px;
@@ -52,7 +61,7 @@
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            background: rgba(5, 5, 10, 0.7);
+            background: rgba(247,244,238,0.88);
             z-index: 10; cursor: crosshair;
             transition: opacity 0.8s;
         }
@@ -62,7 +71,7 @@
             text-transform: uppercase; margin-bottom: 6px;
         }
         .prompt-sub {
-            font-size: 11px; color: #999; font-style: italic;
+            font-size: 11px; color: #9C9590; font-style: italic;
             letter-spacing: 1px;
         }
 
@@ -85,9 +94,9 @@
             display: flex; align-items: center; justify-content: space-between;
             padding: 4px 14px;
             font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
-            color: #666;
-            border-left: 1px solid rgba(255,255,255,0.08);
-            border-right: 1px solid rgba(255,255,255,0.08);
+            color: #9C9590;
+            border-left: 1px solid #D6D3D1;
+            border-right: 1px solid #D6D3D1;
         }
 
         /* Ownership bar */
@@ -97,20 +106,20 @@
         #ownership-inner {
             display: flex; align-items: center; justify-content: space-between;
             padding: 8px 14px;
-            background: rgba(255, 255, 255, 0.03);
-            border-left: 1px solid rgba(255,255,255,0.08);
-            border-right: 1px solid rgba(255,255,255,0.08);
+            background: rgba(28,25,23,0.02);
+            border-left: 1px solid #D6D3D1;
+            border-right: 1px solid #D6D3D1;
         }
         #ownership-label {
             font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-            color: #999;
+            color: #9C9590;
         }
         #ownership-val {
             font-size: 16px; letter-spacing: 1px;
             font-variant-numeric: tabular-nums;
         }
         #ownership-note {
-            font-size: 9px; color: #777; font-style: italic;
+            font-size: 9px; color: #9C9590; font-style: italic;
             letter-spacing: 0.5px;
         }
 
@@ -121,7 +130,7 @@
             display: flex; align-items: center; justify-content: center;
         }
         #narrator-text {
-            font-size: 11px; color: #999; letter-spacing: 1px;
+            font-size: 11px; color: #9C9590; letter-spacing: 1px;
             transition: opacity 0.5s;
         }
         #narrator-text.fade { opacity: 0; }
@@ -143,12 +152,12 @@
         }
         #timeline-labels {
             display: flex; justify-content: space-between;
-            font-size: 9px; color: #999; letter-spacing: 1px;
+            font-size: 9px; color: #9C9590; letter-spacing: 1px;
             margin-bottom: 4px; padding: 0 2px;
         }
         #timeline-slider {
             -webkit-appearance: none; appearance: none;
-            width: 100%; height: 4px; background: #1a1a1a;
+            width: 100%; height: 4px; background: #E7E5E4;
             border-radius: 2px; outline: none;
         }
         #timeline-slider::-webkit-slider-thumb {
@@ -176,7 +185,7 @@
 
         /* Info */
         #info {
-            text-align: center; font-size: 11px; color: #777;
+            text-align: center; font-size: 11px; color: #9C9590;
             padding: 10px 20px 24px; letter-spacing: 0.5px;
             max-width: 560px; line-height: 1.7;
         }
@@ -187,7 +196,8 @@
 
     <div id="header">
         <h1>EPOCH</h1>
-        <p>Communal ownership from years to generations</p>
+        <h2>Communal ownership from years to generations</h2>
+        <div class="header-rule"></div>
     </div>
 
     <div id="community-toggle">
@@ -350,15 +360,15 @@
 
             // CSS custom property approach via direct style
             document.querySelectorAll('.comm-btn').forEach(function(b) {
-                b.style.borderColor = '#444';
-                b.style.color = '#bbb';
+                b.style.borderColor = '#D6D3D1';
+                b.style.color = '#9C9590';
                 b.style.background = 'none';
             });
             var activeBtn = document.querySelector('.comm-btn.active');
             if (activeBtn) {
                 activeBtn.style.background = hex;
                 activeBtn.style.borderColor = hex;
-                activeBtn.style.color = '#0a0a0a';
+                activeBtn.style.color = '#F7F4EE';
             }
 
             homeLink.style.color = hex;
@@ -395,15 +405,7 @@
         var noiseCanvas = document.createElement('canvas');
         noiseCanvas.width = W; noiseCanvas.height = H;
         var noiseCtx = noiseCanvas.getContext('2d');
-        (function generateNoise() {
-            var img = noiseCtx.createImageData(W, H);
-            var d = img.data;
-            for (var i = 0; i < d.length; i += 4) {
-                var v = Math.floor(Math.random() * 12);
-                d[i] = v; d[i+1] = v; d[i+2] = v; d[i+3] = 255;
-            }
-            noiseCtx.putImageData(img, 0, 0);
-        })();
+        
 
         function render2D() {
             var col = COMM_COLORS[currentComm].accent;
@@ -438,7 +440,7 @@
                 var ux = (userTouch.col + 0.5) / GRID_COLS * W;
                 var uy = (userTouch.row + 0.5) / GRID_ROWS * H;
                 ctx.beginPath(); ctx.arc(ux, uy, 4, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.fillStyle = 'rgba(28, 25, 23, 0.5)';
                 ctx.fill();
             }
         }
@@ -450,7 +452,7 @@
         var cam3 = new THREE.PerspectiveCamera(50, 900/500, 0.1, 100);
         var ren3 = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         ren3.setSize(900, 500); ren3.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        ren3.setClearColor(0x0a0a0a, 1); terrainDiv.appendChild(ren3.domElement);
+        ren3.setClearColor(0xFEFDFB, 1); terrainDiv.appendChild(ren3.domElement);
 
         var plW = 12, plD = 5;
         var geo = new THREE.PlaneGeometry(plW, plD, GRID_COLS-1, GRID_ROWS-1);
@@ -611,8 +613,8 @@
         var specGains = [];
 
         function ensureAudio() {
-            if (masterGain) return; // graph already built
-            if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+            if (audioCtx) return;
+            audioCtx = new (window.AudioContext||window.webkitAudioContext)();
             compressor = audioCtx.createDynamicsCompressor();
             compressor.threshold.value=-20; compressor.ratio.value=6; compressor.knee.value=10;
             compressor.connect(audioCtx.destination);
@@ -631,7 +633,7 @@
         function buildSpectrum() {
             // Create oscillators mapped to canvas columns
             killSpectrum();
-            if (!audioCtx || !masterGain) return;
+            if (!audioCtx) return;
             var t = audioCtx.currentTime;
 
             // Frequency range: 50 Hz to 900 Hz — warm register
@@ -702,7 +704,7 @@
 
         // Bell tone for individual touches
         function sonifyTouch(col, row) {
-            if (!audioCtx || !masterGain) return;
+            if (!audioCtx) return;
             var now = audioCtx.currentTime;
             if (now - lastSonifyTime < 0.03) return; lastSonifyTime = now;
 
@@ -732,34 +734,28 @@
             col = clamp(col, 0, GRID_COLS - 1); row = clamp(row, 0, GRID_ROWS - 1);
 
             userTouch = { col: col, row: row }; hasPlaced = true;
+            ensureAudio(); if (audioCtx.state === 'suspended') audioCtx.resume();
 
-            // Visuals IMMEDIATELY
             applyTouch(col, row, COMMUNITIES[currentComm].touchIntensity); render2D(); updateTerrain();
+
+            // User touch tone — mapped to position
+            var freq = 50 * Math.pow(900/50, col/GRID_COLS);
+            var now = audioCtx.currentTime;
+            var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.type = 'sine'; o.frequency.value = freq;
+            g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(0.12, now + 0.04);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 2);
+            o.connect(g); g.connect(masterGain); g.connect(reverbNode);
+            o.start(now); o.stop(now + 2.5);
+
             overlay.classList.add('hidden'); canvas.style.cursor = 'default';
             playBtn.disabled = false;
             ownershipVal.textContent = '1 / 1';
             ownershipNote.textContent = 'sole author';
+
+            // Prime: show what's about to unfold
             var cfg = COMMUNITIES[currentComm];
             setNarrator(cfg.totalVoices.toLocaleString() + ' people · ' + cfg.years + ' years');
-
-            // Audio: build graph and play tone ONLY after context is running
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            var onRunning = function() {
-                ensureAudio();
-                var freq = 50 * Math.pow(900/50, col/GRID_COLS);
-                var now = audioCtx.currentTime;
-                var o = audioCtx.createOscillator(), g = audioCtx.createGain();
-                o.type = 'sine'; o.frequency.value = freq;
-                g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(0.12, now + 0.04);
-                g.gain.exponentialRampToValueAtTime(0.001, now + 2);
-                o.connect(g); g.connect(masterGain); g.connect(reverbNode);
-                o.start(now); o.stop(now + 2.5);
-            };
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume().then(onRunning).catch(function(){});
-            } else {
-                onRunning();
-            }
         }
 
         canvas.addEventListener('mousedown', handleTouch);

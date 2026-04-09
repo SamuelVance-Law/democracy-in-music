@@ -5,52 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Piano — Democracy in Music</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B0E1A'/%3E%3Ccircle cx='11' cy='9' r='5' fill='%23d4a842'/%3E%3Ccircle cx='21' cy='8' r='4' fill='%2346d2d2'/%3E%3Ccircle cx='15' cy='18' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23' r='3.5' fill='%23d25a6e'/%3E%3Ccircle cx='23' cy='22' r='2.8' fill='%236aa860'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #F7F4EE;
+            --ink: #1C1917;
+            --mid: #57534E;
+            --light: #9C9590;
+            --dim: #C8C3BD;
+            --rule: #D6D3D1;
+            --rule-light: #E7E5E4;
+            --accent: #1C1917;
+            --user: #1C1917;
+            --result: #1C1917;
+        }
+
+        html { font-size: 16px; }
         body {
-            font-family: 'EB Garamond', 'Georgia', serif;
-            background: #0a0a12;
-            color: #c8c4bc;
+            font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--ink);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
         }
+
+        ::selection { background: rgba(28,25,23,0.12); }
 
         a.home-link {
-            position: fixed; top: 12px; left: 16px;
-            font-size: 12px; color: #887a60; text-decoration: none;
-            letter-spacing: 2px; z-index: 99; font-family: 'EB Garamond', Georgia, serif;
+            position: fixed; top: 14px; left: 18px;
+            font-size: 13px; color: var(--light); text-decoration: none;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-style: italic;
         }
-        a.home-link:hover { color: #d4a842; }
+        a.home-link:hover { color: var(--ink); }
 
+        /* ── Header ── */
         #header {
             text-align: center;
-            padding: 28px 20px 8px;
+            padding: 36px 20px 0;
+            max-width: 480px;
         }
         #header h1 {
-            font-size: 30px;
-            letter-spacing: 10px;
+            font-size: 15px;
+            letter-spacing: 3px;
             font-weight: 400;
-            color: #ede8df;
+            color: var(--light);
+            text-transform: uppercase;
+            margin-bottom: 6px;
         }
-        #header p {
-            font-size: 14px;
-            font-style: italic;
-            color: #a09888;
-            margin-top: 6px;
+        #header h2 {
+            font-size: 28px;
+            font-weight: 400;
+            color: var(--ink);
+            line-height: 1.3;
+        }
+        .header-rule {
+            width: 40px; height: 1px;
+            background: var(--rule);
+            margin: 20px auto 0;
         }
 
-        /* ===== SETUP PANEL ===== */
+        /* ── Setup ── */
         #setup-panel {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 24px;
-            margin: 18px 0 10px;
+            gap: 28px;
+            margin: 22px 0 14px;
             flex-wrap: wrap;
         }
         .setup-group {
@@ -60,212 +90,207 @@
         }
         .setup-group label {
             font-size: 12px;
-            color: #c8c4bc;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            color: var(--mid);
+            letter-spacing: 1px;
         }
         .setup-group .val {
             font-size: 12px;
-            color: #d4a842;
-            min-width: 44px;
+            color: var(--ink);
+            min-width: 40px;
             text-align: right;
             font-variant-numeric: tabular-nums;
+            font-weight: 500;
         }
 
-        /* ===== MODE TOGGLE ===== */
-        #mode-toggle {
-            display: flex;
-            gap: 0;
-        }
+        /* ── Mode Toggle ── */
+        #mode-toggle { display: flex; gap: 0; }
         .mode-btn {
-            padding: 7px 24px;
+            padding: 6px 20px;
             background: none;
-            border: 1px solid #3a3528;
-            color: #a09888;
+            border: 1px solid var(--rule);
+            color: var(--mid);
             font-family: 'EB Garamond', Georgia, serif;
-            font-size: 12px;
-            letter-spacing: 2px;
+            font-size: 13px;
             cursor: pointer;
-            transition: all 0.2s;
-            text-transform: uppercase;
+            transition: all 0.15s;
         }
-        .mode-btn:first-child { border-radius: 3px 0 0 3px; }
-        .mode-btn:last-child { border-radius: 0 3px 3px 0; border-left: none; }
+        .mode-btn:first-child { border-radius: 2px 0 0 2px; }
+        .mode-btn:last-child { border-radius: 0 2px 2px 0; border-left: none; }
         .mode-btn.active {
-            background: #d4a842;
-            border-color: #d4a842;
-            color: #0a0a12;
+            background: var(--ink);
+            border-color: var(--ink);
+            color: var(--bg);
         }
 
-        /* ===== STATUS ===== */
+        /* ── Status ── */
         #status {
             text-align: center;
             font-size: 14px;
-            color: #c8c4bc;
-            letter-spacing: 1px;
-            margin: 12px 0 8px;
+            color: var(--mid);
+            margin: 8px 0;
             min-height: 22px;
+            font-style: italic;
         }
-        #status .note-name { color: #d4a842; font-weight: 500; }
-        #status .round-num { color: #ede8df; }
+        #status .note-name { color: var(--ink); font-weight: 500; font-style: normal; }
+        #status .round-num { color: var(--ink); font-style: normal; }
 
-        /* ===== RESULT DISPLAY ===== */
+        /* ── Result Display ── */
         #result-display {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 24px;
             margin-bottom: 10px;
             min-height: 48px;
         }
         .result-box { text-align: center; }
         .result-box .label {
-            font-size: 10px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #a09888;
-            margin-bottom: 4px;
+            font-size: 11px;
+            color: var(--light);
+            margin-bottom: 3px;
+            font-style: italic;
         }
         .result-box .value {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 400;
-            color: #d4a842;
-            letter-spacing: 1px;
+            color: var(--ink);
             min-width: 50px;
+            transition: color 0.3s;
         }
-        .result-box .value.your { color: #7ab0e8; }
-        .result-arrow { color: #4a4538; font-size: 18px; }
+        .result-box .value.your { color: var(--ink); }
+        .result-arrow { color: var(--dim); font-size: 16px; }
 
-        /* ===== PIANO ===== */
+        /* ── Piano ── */
         #piano-container {
             position: relative;
             width: 100%;
-            max-width: 720px;
-            padding: 0 16px;
-            margin-bottom: 6px;
+            max-width: 640px;
+            padding: 0 24px;
+            margin-bottom: 2px;
         }
         #piano {
             position: relative;
-            height: 160px;
+            height: 140px;
             display: flex;
             width: 100%;
+            border: 1px solid var(--rule);
+            border-top: none;
+            background: var(--bg);
         }
         .white-key {
             flex: 1;
-            background: #ddd8ce;
-            border: 1px solid #b5b0a5;
-            border-radius: 0 0 4px 4px;
+            background: #FEFDFB;
+            border-right: 1px solid var(--rule);
+            border-radius: 0 0 2px 2px;
             cursor: pointer;
             position: relative;
-            transition: background 0.08s;
+            transition: background 0.06s;
             z-index: 1;
         }
-        .white-key:hover { background: #ccc8be; }
-        .white-key.user-pressed { background: #7ab0e8; border-color: #5a90c8; }
-        .white-key.result-note { background: #d4a842; border-color: #b08a34; }
+        .white-key:last-child { border-right: none; }
+        .white-key:hover { background: #F5F2EC; }
+        .white-key.user-pressed { background: #E8E5DF; }
+        .white-key.result-note { background: #d4a842; border-color: #b08a34; transition: background 0.3s; }
         .white-key.user-pressed.result-note { background: #d4a842; }
-        .white-key.disabled { pointer-events: none; opacity: 0.4; }
+        .white-key.disabled { pointer-events: none; opacity: 0.5; }
         .white-key .key-label {
             position: absolute;
-            bottom: 8px;
+            bottom: 6px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 9px;
-            color: #888;
-            letter-spacing: 1px;
+            font-size: 8px;
+            color: var(--dim);
+            font-family: 'EB Garamond', Georgia, serif;
         }
-        .white-key.user-pressed .key-label,
+        .white-key.user-pressed .key-label { color: var(--mid); }
         .white-key.result-note .key-label { color: #fff; }
 
         .black-key {
-            width: 60%;
-            height: 100px;
-            background: #1a1820;
-            border: 1px solid #0e0d12;
-            border-radius: 0 0 3px 3px;
+            width: 58%;
+            height: 88px;
+            background: var(--ink);
+            border: none;
+            border-radius: 0 0 2px 2px;
             position: absolute;
             top: 0;
             z-index: 2;
             cursor: pointer;
-            transition: background 0.08s;
+            transition: background 0.06s;
         }
-        .black-key:hover { background: #2a2830; }
-        .black-key.user-pressed { background: #5a90c8; }
+        .black-key:hover { background: #3a3632; }
+        .black-key.user-pressed { background: var(--user); }
         .black-key.result-note { background: #b08a34; }
         .black-key.user-pressed.result-note { background: #b08a34; }
         .black-key.disabled { pointer-events: none; opacity: 0.4; }
 
-        /* ===== VOTE HISTOGRAM (live cascade) ===== */
+        /* ── Histogram ── */
         #histogram {
             width: 100%;
-            max-width: 720px;
-            padding: 0 16px;
-            margin-bottom: 14px;
+            max-width: 640px;
+            padding: 0 24px;
+            margin-bottom: 8px;
         }
         #histogram canvas {
             width: 100%;
-            height: 60px;
+            height: 50px;
             display: block;
         }
 
-        /* ===== SCORE MAP ===== */
+        /* ── Score ── */
         #score-section {
             width: 100%;
-            max-width: 720px;
-            padding: 0 16px;
-            margin-bottom: 16px;
+            max-width: 640px;
+            padding: 0 24px;
+            margin-bottom: 12px;
         }
         #score-section .section-label {
-            font-size: 11px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: #a09888;
-            margin-bottom: 6px;
+            font-size: 12px;
+            color: var(--light);
+            margin-bottom: 4px;
+            font-style: italic;
         }
         #score-wrap {
             position: relative;
             width: 100%;
-            border: 1px solid #1e1c24;
-            border-radius: 4px;
+            border: 1px solid var(--rule);
             overflow: hidden;
-            background: #08080e;
+            background: #FEFDFB;
         }
         #scoreCanvas {
             width: 100%;
             display: block;
         }
 
-        /* ===== PLAYBACK CONTROLS ===== */
+        /* ── Controls ── */
         #playback-controls {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 16px;
-            padding: 12px 20px;
+            padding: 8px 20px 4px;
             flex-wrap: wrap;
         }
         button.ctrl-btn {
-            padding: 8px 22px;
+            padding: 6px 18px;
             background: none;
-            border: 1px solid #d4a842;
-            color: #d4a842;
+            border: 1px solid var(--ink);
+            color: var(--ink);
             font-family: 'EB Garamond', Georgia, serif;
-            font-size: 12px;
-            letter-spacing: 1px;
+            font-size: 13px;
             cursor: pointer;
-            border-radius: 3px;
-            transition: all 0.2s;
+            border-radius: 2px;
+            transition: all 0.15s;
         }
-        button.ctrl-btn:hover { background: #d4a842; color: #0a0a12; }
-        button.ctrl-btn.active-btn { background: #d4a842; color: #0a0a12; }
-        button.ctrl-btn:disabled { opacity: 0.25; cursor: not-allowed; }
-        button.ctrl-btn:disabled:hover { background: none; color: #d4a842; }
+        button.ctrl-btn:hover { background: var(--ink); color: var(--bg); }
+        button.ctrl-btn.active-btn { background: var(--ink); color: var(--bg); }
+        button.ctrl-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+        button.ctrl-btn:disabled:hover { background: none; color: var(--ink); }
 
         button.ctrl-btn.danger {
-            border-color: #6a4040;
-            color: #a06060;
+            border-color: var(--light);
+            color: var(--light);
         }
-        button.ctrl-btn.danger:hover { background: #6a4040; color: #e0d0d0; }
+        button.ctrl-btn.danger:hover { background: var(--light); color: var(--bg); }
 
         .ctrl-group {
             display: flex;
@@ -273,82 +298,94 @@
             gap: 6px;
         }
         .ctrl-group label {
-            font-size: 11px;
-            color: #c8c4bc;
-            letter-spacing: 1px;
+            font-size: 12px;
+            color: var(--mid);
         }
         .ctrl-group .val {
-            font-size: 11px;
-            color: #d4a842;
+            font-size: 12px;
+            color: var(--ink);
             min-width: 24px;
             text-align: right;
+            font-weight: 500;
         }
 
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
             width: 80px;
-            height: 3px;
-            background: #1e1c24;
-            border-radius: 2px;
+            height: 1px;
+            background: var(--rule);
+            border-radius: 0;
             outline: none;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 14px; height: 14px;
+            width: 12px; height: 12px;
             border-radius: 50%;
-            background: #d4a842;
+            background: var(--ink);
             cursor: pointer;
         }
         input[type="range"]::-moz-range-thumb {
-            width: 14px; height: 14px;
+            width: 12px; height: 12px;
             border-radius: 50%;
-            background: #d4a842;
+            background: var(--ink);
             cursor: pointer;
             border: none;
         }
 
-        /* ===== INFO ===== */
+        /* ── Info ── */
         #info {
             text-align: center;
-            padding: 8px 24px 32px;
+            padding: 8px 28px 36px;
             font-size: 13px;
-            color: #887a60;
+            color: var(--light);
             line-height: 1.8;
-            max-width: 560px;
+            max-width: 520px;
+            font-style: italic;
         }
-        #info strong { color: #c8c4bc; }
+        #info strong { color: var(--mid); font-weight: 500; font-style: normal; }
 
-        /* ===== GRAIN OVERLAY ===== */
-        #grain {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.03;
-        }
-
-        /* ===== PLAYBACK INDICATOR ON SCORE ===== */
+        /* ── Playback line ── */
         #playback-line {
             position: absolute;
             top: 0;
-            width: 2px;
+            width: 1px;
             height: 100%;
-            background: #ede8df;
+            background: var(--ink);
             z-index: 5;
             display: none;
-            box-shadow: 0 0 8px rgba(237, 232, 223, 0.4);
+        }
+
+        /* ── Active state: color kicks in during voting/playback ── */
+        body.active .white-key.user-pressed { background: #C5D8EB; }
+        body.active .white-key.result-note { background: #d4a842; border-color: #b08a34; }
+        body.active .white-key.user-pressed.result-note { background: #d4a842; }
+        body.active .white-key.result-note .key-label { color: #fff; }
+        body.active .white-key.user-pressed .key-label { color: #4A7FB5; }
+
+        body.active .black-key.user-pressed { background: #5a90c8; }
+        body.active .black-key.result-note { background: #b08a34; }
+        body.active .black-key.user-pressed.result-note { background: #b08a34; }
+
+        body.active .result-box .value.your { color: #7ab0e8; }
+        body.active .result-box .value.result-val { color: #d4a842; }
+        body.active #status .note-name { color: #d4a842; }
+        body.active .result-arrow { color: var(--light); }
+
+        @media (max-width: 600px) {
+            #header h2 { font-size: 22px; }
+            #piano { height: 120px; }
+            .black-key { height: 74px; }
         }
     </style>
 </head>
 <body>
-    <canvas id="grain"></canvas>
     <a class="home-link" href="index.html">&larr; Home</a>
 
     <div id="header">
-        <h1>PIANO</h1>
-        <p>30,000 people sit down at a piano</p>
+        <h1>Piano</h1>
+        <h2>30,000 People Sit Down<br>at a Piano</h2>
+        <div class="header-rule"></div>
     </div>
 
     <div id="setup-panel">
@@ -378,7 +415,7 @@
         <div class="result-arrow">&rarr;</div>
         <div class="result-box">
             <div class="label">Everyone hears</div>
-            <div class="value" id="resultNote">&mdash;</div>
+            <div class="value result-val" id="resultNote">&mdash;</div>
         </div>
     </div>
 
@@ -387,13 +424,13 @@
     </div>
 
     <div id="histogram">
-        <canvas id="histCanvas" height="60"></canvas>
+        <canvas id="histCanvas" height="50"></canvas>
     </div>
 
     <div id="score-section">
         <div class="section-label">Score &mdash; <span id="roundCount">0</span> rounds</div>
         <div id="score-wrap">
-            <canvas id="scoreCanvas" height="180"></canvas>
+            <canvas id="scoreCanvas" height="160"></canvas>
             <div id="playback-line"></div>
         </div>
     </div>
@@ -410,16 +447,15 @@
     </div>
 
     <div id="info">
-        Choose a note. The other voters cast their votes over 2 seconds, then the result sounds.<br>
+        Choose a note. The other voters cast their votes over two seconds, then the result sounds.
         In <strong>Mean</strong>, everyone hears the average pitch.
-        In <strong>Mode</strong>, the majority note wins — raise <strong>Voices</strong> to hear the top votes as chords.<br>
-        Build a score round by round, then press <strong>Play</strong> to hear your composition.<br>
+        In <strong>Mode</strong>, the majority note wins — raise <strong>Voices</strong> to hear the top votes as chords.
+        Build a score round by round, then press <strong>Play</strong> to hear your composition.
         Click anywhere on the score to start playback from that point.
     </div>
 
     <script>
     (function() {
-        // ===== NOTE DATA =====
         var KEY_DATA = [
             { note: 'C3',  freq: 130.81, type: 'white' },
             { note: 'C\u266F3', freq: 138.59, type: 'black' },
@@ -450,7 +486,6 @@
         var NUM_KEYS = KEY_DATA.length;
         var whiteKeys = KEY_DATA.filter(function(k) { return k.type === 'white'; });
 
-        // ===== STATE =====
         var demoMode = 'mean';
         var numVoters = 12;
         var numVoices = 1;
@@ -464,7 +499,6 @@
         var audioCtx = null;
         var MAX_ROUNDS = 64;
 
-        // ===== DOM =====
         var pianoEl = document.getElementById('piano');
         var statusEl = document.getElementById('status');
         var yourNoteEl = document.getElementById('yourNote');
@@ -487,21 +521,15 @@
         var voterValEl = document.getElementById('voterVal');
         var modeBtns = document.querySelectorAll('.mode-btn');
 
-        // ===== GRAIN =====
-        (function() {
-            var gc = document.getElementById('grain');
-            gc.width = window.innerWidth; gc.height = window.innerHeight;
-            var gctx = gc.getContext('2d');
-            var gi = gctx.createImageData(gc.width, gc.height);
-            var gd = gi.data;
-            for (var i = 0; i < gd.length; i += 4) {
-                var v = Math.floor(Math.random() * 255);
-                gd[i] = gd[i+1] = gd[i+2] = v; gd[i+3] = 255;
-            }
-            gctx.putImageData(gi, 0, 0);
-        })();
+        // Colors for canvas drawing (sachlich palette)
+        var C_BG = '#FEFDFB';
+        var C_INK = '#1C1917';
+        var C_MID = '#57534E';
+        var C_LIGHT = '#9C9590';
+        var C_DIM = '#C8C3BD';
+        var C_RULE = '#D6D3D1';
+        var C_USER = '#7ab0e8';
 
-        // ===== VOTER SLIDER (logarithmic) =====
         function voterSliderToCount(val) {
             var minLog = Math.log(2), maxLog = Math.log(30000);
             var scale = (val - 2) / (30000 - 2);
@@ -517,7 +545,7 @@
             }
         }
 
-        // ===== BUILD PIANO =====
+        // Build piano
         var keyElements = [];
         whiteKeys.forEach(function(k) {
             var idx = KEY_DATA.indexOf(k);
@@ -561,7 +589,7 @@
         positionBlackKeys();
         window.addEventListener('resize', function() { positionBlackKeys(); drawScore(); });
 
-        // ===== AUDIO =====
+        // Audio
         function ensureAudio() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -596,7 +624,7 @@
             freqs.forEach(function(f) { playNote(f, duration, vol); });
         }
 
-        // ===== VOTERS =====
+        // Voters
         function initVoters() {
             voterChoices = [];
             for (var i = 0; i < numVoters; i++)
@@ -604,15 +632,12 @@
         }
 
         function driftVoters() {
-            // At high voter counts, ensure broad distribution
             var rerandRate = numVoters > 500 ? 40 : numVoters > 50 ? 25 : 15;
             voterChoices.forEach(function(choice, i) {
                 var roll = Math.random() * 100;
                 if (roll < rerandRate) {
-                    // Fully re-randomize
                     voterChoices[i] = Math.floor(Math.random() * NUM_KEYS);
                 } else if (roll < rerandRate + 30) {
-                    // Drift with bounce
                     var shift = Math.floor(Math.random() * 5) + 1;
                     if (Math.random() > 0.5) shift = -shift;
                     var newIdx = choice + shift;
@@ -625,7 +650,6 @@
 
         function ensureVoterCount() {
             if (voterChoices.length === 0 || Math.abs(voterChoices.length - numVoters) > voterChoices.length * 0.5) {
-                // Large change — fresh uniform distribution
                 voterChoices = [];
                 for (var i = 0; i < numVoters; i++)
                     voterChoices.push(Math.floor(Math.random() * NUM_KEYS));
@@ -637,10 +661,9 @@
             }
         }
 
-        // ===== COMPUTATION =====
+        // Computation
         function computeResult(allVotes) {
             if (allVotes.length === 0) return null;
-
             var counts = new Array(NUM_KEYS).fill(0);
             allVotes.forEach(function(idx) { counts[idx]++; });
 
@@ -665,30 +688,20 @@
                     if (b.idx === previousWinnerIdx) return 1;
                     return a.idx - b.idx;
                 });
-
                 var winnerIdx = entries[0].idx;
                 var winnerCount = entries[0].count;
                 var tiedAtTop = entries.filter(function(e) { return e.count === winnerCount; });
-                var tiebreakReason = '';
-                if (tiedAtTop.length > 1) {
-                    tiebreakReason = (winnerIdx === previousWinnerIdx) ? 'incumbency' : 'lowest note';
-                }
-
                 var voiceIndices = [];
                 for (var v = 0; v < Math.min(numVoices, entries.length); v++) {
                     voiceIndices.push(entries[v].idx);
                 }
-
                 previousWinnerIdx = winnerIdx;
-
                 return {
                     freq: KEY_DATA[winnerIdx].freq,
                     nearestIdx: winnerIdx,
                     exactFreq: false,
                     counts: counts,
                     tied: tiedAtTop.length > 1,
-                    tiedCount: tiedAtTop.length,
-                    tiebreakReason: tiebreakReason,
                     winnerCount: winnerCount,
                     voices: voiceIndices,
                     totalVotes: allVotes.length
@@ -696,11 +709,8 @@
             }
         }
 
-        // Recompute voices for playback with adjustable slider
         function recomputeVoices(round, voices) {
-            if (round.mode === 'mean') {
-                return round.result;
-            }
+            if (round.mode === 'mean') return round.result;
             var counts = round.counts;
             var entries = [];
             for (var i = 0; i < NUM_KEYS; i++) {
@@ -717,33 +727,29 @@
             return { voices: voiceIndices, freq: KEY_DATA[entries[0].idx].freq, nearestIdx: entries[0].idx };
         }
 
-        // ===== KEY PRESS =====
+        // Key press
         function pressKey(idx) {
             if (voting || playing) return;
             if (roundLog.length >= MAX_ROUNDS) {
                 statusEl.innerHTML = 'Maximum ' + MAX_ROUNDS + ' rounds reached. Press <span class="note-name">Play</span>.';
                 return;
             }
-
             ensureAudio();
             voting = true;
+            document.body.classList.add('active');
             setKeysDisabled(true);
-
             yourNoteEl.textContent = KEY_DATA[idx].note;
             resultNoteEl.innerHTML = '&mdash;';
-
             clearKeyHighlights();
             if (keyElements[idx]) keyElements[idx].classList.add('user-pressed');
 
             var roundNum = roundLog.length + 1;
-            statusEl.innerHTML = 'Round <span class="round-num">' + roundNum + '</span> — votes incoming\u2026';
-
+            statusEl.innerHTML = 'Round <span class="round-num">' + roundNum + '</span> \u2014 votes incoming\u2026';
             ensureVoterCount();
             driftVoters();
 
             runCascade(idx, function(allVotes, counts) {
                 var result = computeResult(allVotes);
-
                 roundLog.push({
                     userIdx: idx,
                     votes: allVotes.slice(),
@@ -751,7 +757,6 @@
                     result: result,
                     mode: demoMode
                 });
-
                 if (result) {
                     var dur = 0.8;
                     if (demoMode === 'mode' && result.voices.length > 1) {
@@ -760,15 +765,15 @@
                         playNote(result.freq, dur);
                     }
                 }
-
                 showResult(result);
                 drawScore();
                 roundCountEl.textContent = roundLog.length;
                 sonifyBtn.disabled = false;
-
                 voting = false;
                 setKeysDisabled(false);
-
+                setTimeout(function() {
+                    if (!voting && !playing) document.body.classList.remove('active');
+                }, 1500);
                 if (roundLog.length >= MAX_ROUNDS) {
                     statusEl.innerHTML = 'Score complete (' + MAX_ROUNDS + ' rounds). Press <span class="note-name">Play</span> to hear it.';
                 } else {
@@ -777,21 +782,18 @@
             });
         }
 
-        // ===== CASCADE ANIMATION =====
+        // Cascade
         function runCascade(userIdx, callback) {
             var DURATION = 2000;
             var STEPS = 50;
             var stepMs = DURATION / STEPS;
-
             var allVotes = voterChoices.slice();
             allVotes.push(userIdx);
-
             var totalVoters = allVotes.length;
-            var revealedCount = 1; // user already counted
+            var revealedCount = 1;
             var liveCounts = new Array(NUM_KEYS).fill(0);
             liveCounts[userIdx] = 1;
 
-            // Shuffle voter order for staggered reveal
             var voterOrder = [];
             for (var i = 0; i < voterChoices.length; i++) voterOrder.push(i);
             for (var i = voterOrder.length - 1; i > 0; i--) {
@@ -810,11 +812,9 @@
                     liveCounts[voterChoices[vi]]++;
                     revealedCount++;
                 }
-
                 drawLiveHistogram(liveCounts, userIdx);
-
                 var pct = Math.min(100, Math.round((revealedCount / totalVoters) * 100));
-                statusEl.innerHTML = 'Round <span class="round-num">' + (roundLog.length + 1) + '</span> — ' + formatNum(revealedCount) + ' of ' + formatNum(totalVoters) + ' votes (' + pct + '%)';
+                statusEl.innerHTML = 'Round <span class="round-num">' + (roundLog.length + 1) + '</span> \u2014 ' + formatNum(revealedCount) + ' of ' + formatNum(totalVoters) + ' votes (' + pct + '%)';
 
                 if (step >= STEPS) {
                     clearInterval(timer);
@@ -831,29 +831,40 @@
             return n;
         }
 
-        // ===== LIVE HISTOGRAM =====
+        // Histogram — sachlich style: thin outlined bars
         function drawLiveHistogram(counts, userIdx) {
             var dpr = window.devicePixelRatio || 1;
             var rect = histCanvas.getBoundingClientRect();
             histCanvas.width = rect.width * dpr;
-            histCanvas.height = 60 * dpr;
+            histCanvas.height = 50 * dpr;
             histCtx.scale(dpr, dpr);
-            var w = rect.width, h = 60;
+            var w = rect.width, h = 50;
             histCtx.clearRect(0, 0, w, h);
 
             var maxCount = Math.max.apply(null, counts);
             if (maxCount === 0) return;
 
             var barW = w / NUM_KEYS;
+            var isActive = document.body.classList.contains('active');
             for (var i = 0; i < NUM_KEYS; i++) {
                 if (counts[i] === 0) continue;
-                var barH = (counts[i] / maxCount) * (h - 4);
-                histCtx.fillStyle = (i === userIdx) ? 'rgba(122, 176, 232, 0.6)' : 'rgba(212, 168, 66, 0.35)';
-                histCtx.fillRect(i * barW + 1, h - barH, barW - 2, barH);
+                var barH = (counts[i] / maxCount) * (h - 6);
+                if (i === userIdx) {
+                    histCtx.fillStyle = isActive ? 'rgba(122,176,232,0.35)' : 'rgba(28,25,23,0.08)';
+                    histCtx.strokeStyle = isActive ? 'rgba(122,176,232,0.7)' : 'rgba(28,25,23,0.25)';
+                } else {
+                    histCtx.fillStyle = isActive ? 'rgba(212,168,66,0.25)' : 'rgba(28,25,23,0.08)';
+                    histCtx.strokeStyle = isActive ? 'rgba(212,168,66,0.5)' : 'rgba(28,25,23,0.25)';
+                }
+                histCtx.lineWidth = 1;
+                var x = i * barW + 2;
+                var bw = barW - 4;
+                histCtx.fillRect(x, h - barH, bw, barH);
+                histCtx.strokeRect(x, h - barH, bw, barH);
             }
         }
 
-        // ===== DISPLAY =====
+        // Display
         function clearKeyHighlights() {
             KEY_DATA.forEach(function(k, i) {
                 if (keyElements[i]) keyElements[i].classList.remove('user-pressed', 'result-note');
@@ -872,7 +883,6 @@
         function showResult(result) {
             if (!result) return;
             clearKeyHighlights();
-
             if (result.voices && result.voices.length > 1) {
                 result.voices.forEach(function(vi) {
                     if (keyElements[vi]) keyElements[vi].classList.add('result-note');
@@ -881,29 +891,29 @@
             } else {
                 if (keyElements[result.nearestIdx]) keyElements[result.nearestIdx].classList.add('result-note');
                 if (demoMode === 'mean') {
-                    resultNoteEl.innerHTML = '\u2248 ' + KEY_DATA[result.nearestIdx].note + ' <span style="color:#a09888;font-size:14px;">(' + Math.round(result.freq) + ' Hz)</span>';
+                    resultNoteEl.innerHTML = '\u2248 ' + KEY_DATA[result.nearestIdx].note + ' <span style="color:' + C_LIGHT + ';font-size:14px;">(' + Math.round(result.freq) + ' Hz)</span>';
                 } else {
                     resultNoteEl.textContent = KEY_DATA[result.nearestIdx].note;
                 }
             }
         }
 
-        // ===== SCORE MAP =====
+        // Score — sachlich: cream bg, thin rules, ink dots
         function drawScore() {
             var dpr = window.devicePixelRatio || 1;
             var rect = scoreCanvas.getBoundingClientRect();
             var w = rect.width;
-            var h = 180;
+            var h = 160;
             scoreCanvas.width = w * dpr;
             scoreCanvas.height = h * dpr;
             scoreCtx.scale(dpr, dpr);
             scoreCtx.clearRect(0, 0, w, h);
 
             if (roundLog.length === 0) {
-                scoreCtx.fillStyle = '#0e0d14';
+                scoreCtx.fillStyle = C_BG;
                 scoreCtx.fillRect(0, 0, w, h);
-                scoreCtx.fillStyle = '#4a4538';
-                scoreCtx.font = '14px "EB Garamond", Georgia, serif';
+                scoreCtx.fillStyle = C_DIM;
+                scoreCtx.font = 'italic 14px "EB Garamond", Georgia, serif';
                 scoreCtx.textAlign = 'center';
                 scoreCtx.fillText('Score will appear here as you vote', w / 2, h / 2 + 5);
                 return;
@@ -916,11 +926,11 @@
             var rowH = h / NUM_KEYS;
 
             // Background
-            scoreCtx.fillStyle = '#0e0d14';
+            scoreCtx.fillStyle = C_BG;
             scoreCtx.fillRect(0, 0, w, h);
 
-            // Faint horizontal gridlines for white keys
-            scoreCtx.strokeStyle = '#161420';
+            // Gridlines for white keys
+            scoreCtx.strokeStyle = '#EEEBE5';
             scoreCtx.lineWidth = 0.5;
             for (var ni = 0; ni < NUM_KEYS; ni++) {
                 var noteIdx = NUM_KEYS - 1 - ni;
@@ -933,7 +943,7 @@
                 }
             }
 
-            // Find global max count for color scaling
+            // Find global max for scaling
             var globalMax = 0;
             roundLog.forEach(function(round) {
                 if (!round.counts) return;
@@ -941,7 +951,7 @@
                 if (mx > globalMax) globalMax = mx;
             });
 
-            // Draw heatmap
+            // Heatmap — subtle ink tones
             roundLog.forEach(function(round, ri) {
                 if (!round.counts) return;
                 var x = labelW + ri * colW;
@@ -952,36 +962,33 @@
 
                     if (count > 0) {
                         var intensity = count / globalMax;
-                        var r = Math.round(40 + intensity * 172);
-                        var g = Math.round(30 + intensity * 128);
-                        var b = Math.round(15 + intensity * 51);
-                        var a = 0.15 + intensity * 0.85;
-                        scoreCtx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+                        var a = 0.04 + intensity * 0.3;
+                        scoreCtx.fillStyle = 'rgba(212,168,66,' + a + ')';
                         scoreCtx.fillRect(x, y, colW, rowH);
                     }
                 }
 
-                // Winner outline(s)
+                // Winner outline
                 var result = round.result;
                 if (result && result.voices) {
                     result.voices.forEach(function(vi, voiceIdx) {
                         var ny = (NUM_KEYS - 1 - vi) * rowH;
-                        scoreCtx.strokeStyle = voiceIdx === 0 ? '#ede8df' : 'rgba(237,232,223,0.35)';
+                        scoreCtx.strokeStyle = voiceIdx === 0 ? C_INK : 'rgba(28,25,23,0.3)';
                         scoreCtx.lineWidth = voiceIdx === 0 ? 1.5 : 1;
                         scoreCtx.strokeRect(x + 1, ny + 1, colW - 2, rowH - 2);
                     });
                 }
 
-                // User's note: small blue dot
+                // User note: blue dot
                 var userY = (NUM_KEYS - 1 - round.userIdx) * rowH + rowH / 2;
-                scoreCtx.fillStyle = 'rgba(122, 176, 232, 0.85)';
+                scoreCtx.fillStyle = 'rgba(122,176,232,0.8)';
                 scoreCtx.beginPath();
                 scoreCtx.arc(x + colW / 2, userY, Math.max(2, colW * 0.15), 0, Math.PI * 2);
                 scoreCtx.fill();
             });
 
-            // Note labels on left
-            scoreCtx.fillStyle = '#685e4e';
+            // Note labels
+            scoreCtx.fillStyle = C_LIGHT;
             scoreCtx.font = '8px "EB Garamond", Georgia, serif';
             scoreCtx.textAlign = 'right';
             for (var ni = 0; ni < NUM_KEYS; ni++) {
@@ -992,11 +999,12 @@
             }
         }
 
-        // ===== SONIFY =====
+        // Sonify
         function startSonify(startFrom) {
             if (roundLog.length === 0) return;
             ensureAudio();
             playing = true;
+            document.body.classList.add('active');
             setKeysDisabled(true);
             sonifyBtn.disabled = true;
             sonifyBtn.classList.add('active-btn');
@@ -1011,7 +1019,6 @@
                     stopSonify();
                     return;
                 }
-
                 var round = roundLog[idx];
                 var dur = Math.min((60.0 / BPM) * 0.8, 1.5);
                 var reResult = recomputeVoices(round, numVoices);
@@ -1033,13 +1040,12 @@
                     resultNoteEl.textContent = reResult.voices.map(function(vi) { return KEY_DATA[vi].note; }).join(' + ');
                 } else if (round.mode === 'mean') {
                     var playFreq = reResult.freq || KEY_DATA[reResult.nearestIdx].freq;
-                    resultNoteEl.innerHTML = '\u2248 ' + KEY_DATA[reResult.nearestIdx].note + ' <span style="color:#a09888;font-size:14px;">(' + Math.round(playFreq) + ' Hz)</span>';
+                    resultNoteEl.innerHTML = '\u2248 ' + KEY_DATA[reResult.nearestIdx].note + ' <span style="color:' + C_LIGHT + ';font-size:14px;">(' + Math.round(playFreq) + ' Hz)</span>';
                 } else {
                     resultNoteEl.textContent = KEY_DATA[reResult.nearestIdx].note;
                 }
                 statusEl.innerHTML = 'Playing round <span class="round-num">' + (idx + 1) + '</span> of ' + roundLog.length;
 
-                // Playback line position
                 var scoreRect = scoreCanvas.getBoundingClientRect();
                 var labelW = 28;
                 var plotW = scoreRect.width - labelW;
@@ -1052,12 +1058,12 @@
                 idx++;
                 playTimer = setTimeout(playRound, interval);
             }
-
             playRound();
         }
 
         function stopSonify() {
             playing = false;
+            document.body.classList.remove('active');
             if (playTimer) { clearTimeout(playTimer); playTimer = null; }
             setKeysDisabled(false);
             sonifyBtn.disabled = roundLog.length === 0;
@@ -1068,7 +1074,7 @@
             statusEl.innerHTML = roundLog.length + ' rounds recorded. Choose another note or press <span class="note-name">Play</span>.';
         }
 
-        // ===== CONTROLS =====
+        // Controls
         modeBtns.forEach(function(btn) {
             btn.addEventListener('click', function() {
                 if (voting || playing) return;
@@ -1088,25 +1094,20 @@
         });
 
         voterSlider.addEventListener('input', updateVoterDisplay);
-
         bpmSlider.addEventListener('input', function() {
             BPM = parseInt(this.value);
             bpmValEl.textContent = BPM;
         });
-
         voicesSlider.addEventListener('input', function() {
             numVoices = parseInt(this.value);
             voicesValEl.textContent = numVoices;
         });
-
         sonifyBtn.addEventListener('click', function() {
             if (playing) return;
             startSonify();
         });
-
         stopPlayBtn.addEventListener('click', stopSonify);
 
-        // Click on score to play from that point
         scoreCanvas.style.cursor = 'pointer';
         scoreCanvas.addEventListener('click', function(e) {
             if (voting || roundLog.length === 0) return;
@@ -1118,7 +1119,6 @@
             var colW = plotW / cols;
             var roundIdx = Math.floor((clickX - labelW) / colW);
             roundIdx = Math.max(0, Math.min(roundLog.length - 1, roundIdx));
-
             if (playing) stopSonify();
             startSonify(roundIdx);
         });
@@ -1139,11 +1139,10 @@
             statusEl.textContent = 'Choose a note to begin round 1';
         });
 
-        // ===== INIT =====
+        // Init
         updateVoterDisplay();
         initVoters();
         drawScore();
-
     })();
     </script>
 </body>

@@ -10,8 +10,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Georgia', serif;
-            background: #0a0a1a;
-            color: #e0e0e0;
+            background: #F7F4EE;
+            color: #1C1917;
             overflow-x: hidden;
             min-height: 100vh;
         }
@@ -20,16 +20,25 @@
             text-align: center;
             padding: 24px 20px 8px;
         }
+        
+        #header h2 {
+            font-size: 24px; font-weight: 400; color: #1C1917;
+            line-height: 1.3; margin-top: 4px;
+        }
+        .header-rule {
+            width: 40px; height: 1px; background: #D6D3D1;
+            margin: 18px auto 0;
+        }
         #header h1 {
-            font-size: 32px;
-            letter-spacing: 12px;
-            font-weight: 300;
-            color: #fff;
+            font-size: 15px; text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 400;
+            color: #9C9590;
         }
         #header p {
             font-size: 13px;
             font-style: italic;
-            color: #777;
+            color: #57534E;
             margin-top: 6px;
         }
 
@@ -48,7 +57,7 @@
             padding: 0 20px;
         }
         #touchCanvas {
-            border: 1px solid rgba(20,80,130,0.5);
+            border: 1px solid #D6D3D1;
             cursor: crosshair;
             touch-action: none;
             max-width: 100%;
@@ -78,7 +87,7 @@
             appearance: none;
             width: 140px;
             height: 4px;
-            background: #222;
+            background: #FEFDFB;
             border-radius: 2px;
             outline: none;
         }
@@ -95,13 +104,11 @@
             width: 14px;
             height: 14px;
             border-radius: 50%;
-            background: #4a9eff;
-            cursor: pointer;
-            border: none;
+            background: #1C1917; cursor: pointer; border: none;
         }
 
         select {
-            background: #111;
+            background: #FEFDFB;
             color: #888;
             border: 1px solid #333;
             padding: 5px 10px;
@@ -128,7 +135,7 @@
         }
         button:hover {
             background: #4a9eff;
-            color: #0a0a1a;
+            color: #F7F4EE;
         }
         button:disabled {
             opacity: 0.3;
@@ -147,7 +154,7 @@
             width: 780px;
             height: 380px;
             max-width: 100%;
-            border: 1px solid rgba(100,120,140,0.15);
+            border: 1px solid #D6D3D1;
         }
         #terrainDiv canvas {
             display: block;
@@ -184,7 +191,8 @@
     <a href="index.html" style="position:fixed;top:12px;left:16px;font-size:11px;color:#333;text-decoration:none;letter-spacing:2px;z-index:99;font-family:Georgia,serif;">&larr; Home</a>
     <div id="header">
         <h1>MIRO</h1>
-        <p>We ask that you only touch the artwork once</p>
+        <h2>We ask that you only touch the artwork once</h2>
+        <div class="header-rule"></div>
     </div>
 
     <div class="section-label">Touch Canvas</div>
@@ -302,7 +310,7 @@
         var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(tWidth, tHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.setClearColor(0x0a0a1a, 1);
+        renderer.setClearColor(0xFEFDFB, 1);
         terrainDiv.appendChild(renderer.domElement);
 
         // Grid plane

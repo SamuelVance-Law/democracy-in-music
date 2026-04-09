@@ -10,8 +10,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'EB Garamond', Georgia, serif;
-            background: #08080e;
-            color: #c8c4bc;
+            background: #FEFDFB;
+            color: #1C1917;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -21,23 +21,26 @@
             user-select: none;
         }
 
-        #grain {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none; z-index: 9999; opacity: 0.025;
-        }
-
         a.home-link {
             position: fixed; top: 12px; left: 16px;
-            font-size: 12px; color: #887a60; text-decoration: none;
+            font-size: 12px; color: #9C9590; text-decoration: none;
             letter-spacing: 2px; z-index: 99;
         }
-        a.home-link:hover { color: #e07a3a; }
+        a.home-link:hover { color: #1C1917; }
 
         #header { text-align: center; padding: 22px 20px 6px; }
+        
+        #header h2 {
+            font-size: 24px; font-weight: 400; color: #1C1917;
+            line-height: 1.3; margin-top: 4px;
+        }
+        .header-rule {
+            width: 40px; height: 1px; background: #D6D3D1;
+            margin: 18px auto 0;
+        }
         #header h1 {
             font-size: 28px; letter-spacing: 10px;
-            font-weight: 400; color: #ede8df;
+            font-weight: 400; color: #1C1917;
         }
         #header p {
             font-size: 13.5px; font-style: italic;
@@ -50,7 +53,7 @@
         }
         #mainCanvas {
             width: 100%; height: auto; display: block;
-            border: 1px solid rgba(255,255,255,0.04);
+            border: 1px solid #D6D3D1;
             border-radius: 3px;
         }
 
@@ -58,18 +61,18 @@
             position: absolute; top: 0; left: 12px; right: 12px; bottom: 0;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            background: rgba(8,8,14,0.88);
+            background: rgba(247,244,238,0.92);
             border-radius: 3px; cursor: pointer;
             transition: opacity 0.9s; z-index: 5;
         }
         #start-overlay.hidden { opacity: 0; pointer-events: none; }
         .overlay-text {
             font-size: 15px; letter-spacing: 4px;
-            text-transform: uppercase; color: #e07a3a;
+            text-transform: uppercase; color: #1C1917;
             margin-bottom: 5px;
         }
         .overlay-sub {
-            font-size: 12px; color: #887a60; font-style: italic;
+            font-size: 12px; color: #9C9590; font-style: italic;
         }
 
         /* System selector */
@@ -79,7 +82,7 @@
         }
         .sys-btn {
             padding: 8px 20px; background: none;
-            border: 1px solid #2a2520; color: #887a60;
+            border: 1px solid #D6D3D1; color: #9C9590;
             font-family: 'EB Garamond', Georgia, serif;
             font-size: 12px; letter-spacing: 2px;
             cursor: pointer; transition: all 0.3s;
@@ -88,13 +91,13 @@
         .sys-btn:first-child { border-radius: 3px 0 0 3px; }
         .sys-btn:last-child { border-radius: 0 3px 3px 0; }
         .sys-btn:not(:first-child) { border-left: none; }
-        .sys-btn.active { background: #e07a3a; border-color: #e07a3a; color: #08080e; }
-        .sys-btn:hover:not(.active) { border-color: #e07a3a; color: #c09070; }
+        .sys-btn.active { background: #1C1917; border-color: #1C1917; color: #F7F4EE; }
+        .sys-btn:hover:not(.active) { border-color: #1C1917; color: #1C1917; }
 
         /* Outcome label */
         #outcome {
             text-align: center; padding: 5px 20px 0;
-            font-size: 13px; color: #e07a3a;
+            font-size: 13px; color: #57534E;
             letter-spacing: 0.5px; min-height: 22px;
             transition: opacity 0.3s;
         }
@@ -119,7 +122,7 @@
         .vote-btn.voted::after {
             content: ''; position: absolute;
             top: -4px; left: -4px; right: -4px; bottom: -4px;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid #D6D3D1;
             border-radius: 50%;
         }
 
@@ -135,29 +138,29 @@
         }
         .ctrl-btn {
             padding: 5px 16px; background: none;
-            border: 1px solid #2a2520; color: #887a60;
+            border: 1px solid #D6D3D1; color: #9C9590;
             font-family: 'EB Garamond', Georgia, serif;
             font-size: 11px; letter-spacing: 1px;
             cursor: pointer; border-radius: 3px;
             transition: all 0.2s;
         }
-        .ctrl-btn:hover { border-color: #e07a3a; color: #e07a3a; }
+        .ctrl-btn:hover { background: #1C1917; color: #F7F4EE; }
 
         #info {
             text-align: center; padding: 10px 24px 32px;
-            font-size: 13px; color: #887a60; line-height: 1.8;
+            font-size: 13px; color: #9C9590; line-height: 1.8;
             max-width: 520px;
         }
-        #info strong { color: #c8c4bc; }
+        #info strong { color: #1C1917; }
     </style>
 </head>
 <body>
-    <canvas id="grain"></canvas>
     <a class="home-link" href="index.html">&larr; Home</a>
 
     <div id="header">
         <h1>PARLIAMENT</h1>
-        <p>The same people, heard differently</p>
+        <h2>The same people, heard differently</h2>
+        <div class="header-rule"></div>
     </div>
 
     <div id="canvas-wrap">
@@ -236,6 +239,18 @@
     var canvas = document.getElementById('mainCanvas');
     var ctx = canvas.getContext('2d');
     var W = 820, H = 520;
+    var dpr = window.devicePixelRatio || 1;
+
+    function resizeCanvas() {
+        var rect = canvas.getBoundingClientRect();
+        W = rect.width;
+        H = rect.height || Math.round(W * 520 / 820);
+        canvas.width = W * dpr;
+        canvas.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
     var overlay = document.getElementById('start-overlay');
     var outcomeEl = document.getElementById('outcome');
     var voteRow = document.getElementById('vote-row');
@@ -268,20 +283,8 @@
     var STEPS = 8;
 
     // ==========================================
-    // GRAIN
-    // ==========================================
-    (function() {
-        var gc = document.getElementById('grain');
-        gc.width = window.innerWidth; gc.height = window.innerHeight;
-        var gctx = gc.getContext('2d');
-        var gi = gctx.createImageData(gc.width, gc.height);
-        var gd = gi.data;
-        for (var i = 0; i < gd.length; i += 4) {
-            var v = Math.floor(Math.random() * 255);
-            gd[i] = gd[i+1] = gd[i+2] = v; gd[i+3] = 255;
-        }
-        gctx.putImageData(gi, 0, 0);
-    })();
+        // ==========================================
+    
 
     // ==========================================
     // ELECTION
@@ -396,7 +399,7 @@
     // AUDIO
     // ==========================================
     function buildAudio() {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         masterComp = audioCtx.createDynamicsCompressor();
         masterComp.threshold.value = -20;
@@ -494,7 +497,7 @@
     }
 
     function advanceStep() {
-        if (!audioCtx || voiceNodes.length === 0) return;
+        if (!audioCtx) return;
         var t = audioCtx.currentTime;
 
         for (var i = 0; i < N; i++) {
@@ -526,7 +529,7 @@
     }
 
     function updateAudioGains(dt) {
-        if (!audioCtx || voiceNodes.length === 0) return;
+        if (!audioCtx) return;
         var t = audioCtx.currentTime;
         for (var i = 0; i < N; i++) {
             // Smooth interpolation
@@ -541,7 +544,7 @@
     // RENDERING
     // ==========================================
     function render(t) {
-        ctx.fillStyle = '#08080e';
+        ctx.fillStyle = '#FEFDFB';
         ctx.fillRect(0, 0, W, H);
 
         // Draw particles
@@ -752,7 +755,7 @@
             if (playing) {
                 audioCtx.resume();
                 updateVoiceTargets();
-            } else if (voiceNodes.length > 0) {
+            } else {
                 // Fade all voices to zero
                 var t = audioCtx.currentTime;
                 for (var i = 0; i < N; i++) {
@@ -765,36 +768,25 @@
     });
 
     // Start
-    function beginExperience() {
+    overlay.addEventListener('click', function() {
         if (started) return;
         started = true;
         overlay.classList.add('hidden');
+        buildAudio();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
 
-        // Visuals start IMMEDIATELY
+        // Pre-populate an election for visual interest
         runElection();
         createParticles();
         updateParticleTargets();
+        updateVoiceTargets();
+
         lastStepTime = performance.now();
         tick(performance.now());
-
-        // Audio: create context and build graph ONLY after confirmed running
-        // (MIRO pattern — proven to work on mobile)
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        var onRunning = function() {
-            buildAudio();
-            updateVoiceTargets();
-            for (var i = 0; i < N; i++) {
-                voiceCurrentGains[i] = voiceTargetGains[i];
-            }
-        };
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume().then(onRunning).catch(function(){});
-        } else {
-            onRunning();
-        }
-    }
-    overlay.addEventListener('click', beginExperience);
-    overlay.addEventListener('touchend', beginExperience);
+    });
+    overlay.addEventListener('touchstart', function(e) {
+        e.preventDefault(); overlay.click();
+    }, { passive: false });
 
     // ==========================================
     // MAIN LOOP
@@ -824,7 +816,7 @@
     }
 
     // Initial render
-    ctx.fillStyle = '#08080e';
+    ctx.fillStyle = '#FEFDFB';
     ctx.fillRect(0, 0, W, H);
 
 })();
