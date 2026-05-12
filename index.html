@@ -219,6 +219,10 @@
         .nav a {
             display: block; text-decoration: none; padding: 14px 28px;
             text-align: center; transition: color 0.2s;
+            /* Equal min-width keeps both anchors the same size so the
+               divider lands on the page centerline regardless of label
+               or sub-label width. */
+            min-width: 180px;
         }
         .nav a .label {
             font-size: 1.15rem; font-weight: 400; color: var(--ink);
@@ -227,6 +231,9 @@
         .nav a .sub {
             font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase;
             color: var(--light); margin-top: 2px;
+            /* Compensate for letter-spacing trailing space so the sub
+               visually centers under the label above it. */
+            text-indent: 2px;
         }
         .nav a:hover .label { color: var(--mid); }
         
@@ -357,11 +364,6 @@
             <div class="sub">Full document</div>
         </a>
         <div class="nav-divider"></div>
-        <a href="onesheet.html">
-            <div class="label">Overview</div>
-            <div class="sub">One sheet</div>
-        </a>
-        <div class="nav-divider"></div>
         <a href="https://github.com/SamuelVance-Law/democracy-in-music">
             <div class="label">Source</div>
             <div class="sub">GitHub</div>
@@ -377,37 +379,37 @@
                 <div class="proto-code">DP·01</div>
                 <div class="proto-name">Piano</div>
                 <div class="proto-method">Democratic Instrument</div>
-                <div class="proto-desc">A digital piano played by many at once. Each person picks a note; the keyboard plays back the mean, the mode, or a chord of every choice.</div>
+                <div class="proto-desc">A digital piano that only works with two or more players. Everyone picks a note; you hear the most popular choice, or a chord of the top votes.</div>
             </a>
             <a class="proto-card" href="meanmode.html" style="--card-c: var(--c-meanmode)">
                 <div class="proto-code">MM·01</div>
                 <div class="proto-name">Mean Mode</div>
                 <div class="proto-method">Continuous Pitch</div>
-                <div class="proto-desc">The same idea, freed from the keys. A river of votes on a continuous pitch line, heard as a single mean, a cluster of modes, or a chord.</div>
+                <div class="proto-desc">Like the piano, but on a continuous pitch line. You can watch the collective swing from one position to another, and hear it as the mean, the most popular bin, or a chord.</div>
             </a>
             <a class="proto-card" href="miro.html" style="--card-c: var(--c-miro)">
                 <div class="proto-code">MI·01</div>
                 <div class="proto-name">Miro</div>
                 <div class="proto-method">Spatial Voting</div>
-                <div class="proto-desc">A cerulean canvas. Each touch is a vote, accumulating into peaks. A water threshold filters out the weak; the strongest peaks are sonified.</div>
+                <div class="proto-desc">A 3D voter graph seen from above, like a Joan Miró dot painting. Each touch is a vote; overlapping votes form peaks. Raise the water level and only the strongest survive.</div>
             </a>
             <a class="proto-card" href="assembly.html" style="--card-c: var(--c-assembly)">
                 <div class="proto-code">DA·01</div>
                 <div class="proto-name">Assembly</div>
                 <div class="proto-method">Layered Composition</div>
-                <div class="proto-desc">Five layers, four variations each. Preview a block, cast a vote, hear what the crowd chose. The piece builds one decision at a time.</div>
+                <div class="proto-desc">Five layers (rhythm, bass, chords, melody, texture), four variations each. Like a Musikalische Würfelspiel of the 1700s, but the audience votes instead of rolling dice.</div>
             </a>
             <a class="proto-card" href="parliament.html" style="--card-c: var(--c-parliament)">
                 <div class="proto-code">PA·01</div>
                 <div class="proto-name">Parliament</div>
                 <div class="proto-method">Redistricting</div>
-                <div class="proto-desc">Five seats. The voters never move. The districts do. Drag the seeds and watch the parliament — and its harmony — re-shape around them.</div>
+                <div class="proto-desc">Electoral systems applied to musical composition. Five seats elected from five districts, 160 fixed voters. Drag the seeds, redraw the districts, and hear the parliament shift.</div>
             </a>
             <a class="proto-card" href="choreography.html" style="--card-c: var(--c-choreo)">
                 <div class="proto-code">CH·01</div>
                 <div class="proto-name">Choreography</div>
                 <div class="proto-method">Body as Instrument</div>
-                <div class="proto-desc">Dancers, each with their own beat, drift together or apart. Their bodies are the instrument; sync is the score.</div>
+                <div class="proto-desc">The body as musical instrument. Six dancers, each with their own tempo. When they fall in step the music takes on a recognizable pattern; when they scatter, it could fall into dissonance.</div>
             </a>
         </div>
     </div>
