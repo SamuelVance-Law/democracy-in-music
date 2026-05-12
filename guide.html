@@ -6,7 +6,7 @@
     <title>A Guide to Democracy in Music</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B0E1A'/%3E%3Ccircle cx='11' cy='9' r='5' fill='%23d4a842'/%3E%3Ccircle cx='21' cy='8' r='4' fill='%2346d2d2'/%3E%3Ccircle cx='15' cy='18' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23' r='3.5' fill='%23d25a6e'/%3E%3Ccircle cx='23' cy='22' r='2.8' fill='%236aa860'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%2315140F'/%3E%3Ccircle%20cx='16'%20cy='3.6'%20r='1.6'%20fill='%23F7901E'/%3E%3Ccircle%20cx='25.5'%20cy='9.6'%20r='1.6'%20fill='%23F0C840'/%3E%3Ccircle%20cx='25.5'%20cy='22.4'%20r='1.6'%20fill='%2350C8E6'/%3E%3Ccircle%20cx='16'%20cy='28.4'%20r='1.6'%20fill='%23a78bfa'/%3E%3Ccircle%20cx='6.5'%20cy='22.4'%20r='1.6'%20fill='%23D43030'/%3E%3Ccircle%20cx='6.5'%20cy='9.6'%20r='1.6'%20fill='%23E04488'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='6.4'%20fill='%234FB85F'/%3E%3Crect%20x='15.3'%20y='10'%20width='1.4'%20height='3.6'%20fill='%2315140F'%20rx='0.6'/%3E%3C/svg%3E">
     <!-- Open Graph -->
     <meta property="og:title" content="A Guide to Democracy in Music">
     <meta property="og:description" content="What happens when we apply democratic governance to musical composition and ownership?">
@@ -14,27 +14,212 @@
     <meta property="og:url" content="https://democracyinmusic.com/guide.html">
     <meta property="og:type" content="article">
     <meta name="twitter:card" content="summary_large_image">
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@500;600;700&family=Hanken+Grotesk:wght@500;700;800;900&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --cream: #F7F4EE; --cream-warm: #F2EDE4;
-            --text: #1C1917; --text-mid: #57534E; --text-light: #78716C; --text-dim: #A8A29E;
+            --text: #1C1917; --text-mid: #57534E; --text-light: #78716C; --text-dim: #6B6660;
             --rule: #D6D3D1; --rule-light: #E7E5E4;
             --link: #57534E; --link-hover: #1C1917;
-            --piano: #d4a842; --miro: #46d2d2; --assembly: #a78bfa;
-            --choreo: #d25a6e; --epoch: #6aa860; --parliament: #e07a3a; --meanmode: #d4a842;
+            /* BBG prototype palette */
+            --c-piano:      #F7901E;
+            --c-meanmode:   #F0C840;
+            --c-miro:       #50C8E6;
+            --c-assembly:   #a78bfa;
+            --c-parliament: #D43030;
+            --c-choreo:     #E04488;
+            --c-green:      #4FB85F;
+        }
+
+        /* ===== Cover ===== */
+        .cover {
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 60px 24px;
+            position: relative;
+            background:
+                radial-gradient(ellipse at 20% 18%, rgba(255,250,235,0.45), transparent 60%),
+                radial-gradient(ellipse at 88% 92%, rgba(0,0,0,0.05), transparent 65%),
+                var(--cream);
+        }
+        .cover-card {
+            width: 100%;
+            max-width: 740px;
+            padding: clamp(36px, 6vw, 60px) clamp(28px, 5vw, 64px) clamp(34px, 5vw, 56px);
+            background: var(--cream-warm);
+            border-radius: 8px;
+            position: relative;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.7),
+                0 24px 50px rgba(0,0,0,0.10),
+                0 6px 14px rgba(0,0,0,0.05);
+        }
+        .cover-top {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: clamp(36px, 6vw, 48px);
+            min-height: 200px;
+        }
+        .selector {
+            position: relative;
+            width: clamp(170px, 28vw, 220px);
+            height: clamp(170px, 28vw, 220px);
+        }
+        .selector .ticks {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+        }
+        .selector .ticks line {
+            stroke: rgba(28,25,23,0.18);
+            stroke-width: 1.2;
+        }
+        .selector .knob {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: clamp(66px, 12vw, 86px);
+            height: clamp(66px, 12vw, 86px);
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #fff 0%, #E6DEC9 30%, #C8BD9F 70%, #A89F87 100%);
+            box-shadow:
+                inset 0 2px 3px rgba(255,255,255,0.6),
+                0 3px 5px rgba(0,0,0,0.18),
+                0 0 0 2px rgba(0,0,0,0.04);
+        }
+        .selector .knob::before {
+            content: "";
+            position: absolute; inset: 12px;
+            border-radius: 50%;
+            background: #4FB85F;
+            box-shadow:
+                inset 0 -4px 6px rgba(0,0,0,0.28),
+                inset 0 1px 2px rgba(255,255,255,0.45),
+                0 0 12px rgba(79,184,95,0.32);
+        }
+        .selector .knob::after {
+            content: "";
+            position: absolute;
+            top: 6px; left: 50%;
+            width: 4px; height: 16px;
+            background: var(--ink, #1C1917);
+            border-radius: 2px;
+            transform: translateX(-50%);
+        }
+        .selector .lbl {
+            position: absolute;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: clamp(10.5px, 1.4vw, 13.5px);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--c, var(--ink, #1C1917));
+            text-transform: uppercase;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+        }
+        .lbl-12 { top: 20px;  left: 50%; }
+        .lbl-2  { top: 32%;   left: 86%; }
+        .lbl-4  { top: 68%;   left: 86%; }
+        .lbl-6  { top: calc(100% - 20px); left: 50%; }
+        .lbl-8  { top: 68%;   left: 14%; }
+        .lbl-10 { top: 32%;   left: 14%; }
+
+        .cover-logo {
+            height: clamp(96px, 18vw, 130px);
+            width: auto;
+            align-self: center;
+            justify-self: end;
+            display: block;
+        }
+
+        .cover-title {
+            font-family: 'Hanken Grotesk', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+            font-weight: 900;
+            font-size: clamp(54px, 7vw, 82px);
+            line-height: 0.92;
+            letter-spacing: -0.03em;
+            color: var(--ink, #1C1917);
+            text-transform: uppercase;
+            margin: 0;
+        }
+        .cover-title .l { display: block; }
+
+        .cover-bottom {
+            margin-top: clamp(36px, 6vw, 56px);
+            border-top: 1px solid rgba(28,25,23,0.15);
+            padding-top: 22px;
+            display: flex; align-items: center; justify-content: space-between;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            gap: 12px;
+        }
+        .cover-bottom .os {
+            font-size: clamp(11px, 1.4vw, 13px);
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink-mid, #57534E);
+        }
+        .cover-bottom .url {
+            font-size: clamp(12px, 1.6vw, 15px);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--ink, #1C1917);
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 560px) {
+            .cover-top {
+                grid-template-columns: 1fr auto;
+                gap: 18px;
+            }
+            .cover-top > div:nth-child(2) { display: none; }
+            .selector { width: 170px; height: 170px; }
+            .cover-logo { height: 96px; }
+            .lbl { font-size: 10.5px; }
+            .cover-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .cover-bottom .os, .cover-bottom .url {
+                font-size: 11px;
+                letter-spacing: 0.12em;
+            }
+        }
+        @media (max-width: 380px) {
+            .cover-top {
+                grid-template-columns: 1fr;
+                justify-items: center;
+            }
+            .cover-logo { justify-self: center; }
         }
         html { scroll-behavior: smooth; font-size: 19px; scrollbar-width: thin; scrollbar-color: #ccc var(--cream); }
         body { font-family: 'EB Garamond', Georgia, serif; background: var(--cream); color: var(--text); line-height: 1.82; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden; }
         ::selection { background: rgba(28,25,23,0.08); color: var(--text); }
         .progress { position: fixed; top: 0; left: 0; height: 2px; z-index: 10000; width: 0; transition: width 0.1s linear; background: var(--text-dim); }
-        .cover { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 60px 28px; position: relative; }
-        .cover-rule { width: 60px; height: 1px; background: var(--rule); margin-bottom: 40px; }
-        .cover h1 { font-size: 2.4rem; font-weight: 400; letter-spacing: 0.06em; line-height: 1.3; margin-bottom: 18px; }
-        .cover .author { font-size: 1.05rem; font-style: italic; color: var(--text-mid); margin-bottom: 40px; }
-        .cover-rule-bottom { width: 60px; height: 1px; background: var(--rule); }
-        .cover .scroll-cue { position: absolute; bottom: 40px; font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); animation: gentle-pulse 3s ease-in-out infinite; }
+        
+        /* The card itself: a module on the page */
+
+        /* Module header strip */
+
+        
+
+        /* Body */
+
+        
+
+        /* Foot strip: mono metadata */
+
+        
+        @media (max-width: 600px) {
+
+            
+            
+        }
         @keyframes gentle-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
         .toc { max-width: 520px; margin: 0 auto; padding: 80px 28px 100px; }
         .toc-label { font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 32px; }
@@ -45,7 +230,20 @@
         .toc-num { font-size: 0.75rem; letter-spacing: 0.15em; color: var(--text-dim); min-width: 28px; }
         .content { max-width: 640px; margin: 0 auto; padding: 0 28px; }
         .chapter-break { padding: 100px 0 60px; text-align: center; }
-        .chapter-break .chapter-num { font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--text-dim); display: block; margin-bottom: 16px; }
+        .chapter-break .chapter-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem; letter-spacing: 0.22em;
+            text-transform: uppercase; color: var(--c-piano);
+            display: block; margin-bottom: 16px;
+            font-weight: 700;
+        }
+        .chapter-break::after {
+            content: ""; display: block;
+            width: 28px; height: 1px;
+            background: var(--c-piano);
+            margin: 22px auto 0;
+            opacity: 0.6;
+        }
         .chapter-break h2 { font-size: 1.7rem; font-weight: 400; line-height: 1.35; max-width: 480px; margin: 0 auto; }
         .chapter-rule { width: 40px; height: 1px; background: var(--rule); margin: 60px auto 0; }
         .prose { padding-bottom: 20px; }
@@ -66,10 +264,45 @@
         .card-container { display: flex; justify-content: center; padding: 120px 0 12px; }
         .card-container svg { max-width: 320px; width: 100%; height: auto; filter: drop-shadow(0 4px 20px rgba(0,0,0,0.04)); }
         .card-container + .chapter-break { padding-top: 32px; }
-        .prototype-embed { margin: 56px -60px; position: relative; }
-        .prototype-label { font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--text-dim); text-align: center; margin-bottom: 14px; }
-        .prototype-frame { width: 100%; background: var(--cream); border-radius: 4px; overflow: hidden; border: 1px solid var(--rule); }
-        .prototype-frame iframe { width: 100%; border: none; display: block; background: var(--cream); min-height: 600px; }
+        .prototype-embed {
+            position: relative;
+            margin: 64px 0;
+            /* Escape the 640px content column to span up to 1140px wide */
+            width: 100vw;
+            left: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+        }
+        .prototype-embed > * {
+            max-width: 1140px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+        .prototype-embed .prototype-frame {
+            box-sizing: border-box;
+        }
+        .prototype-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.66rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--embed-c, var(--text-dim));
+            text-align: center;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        .prototype-frame {
+            width: 100%;
+            background: var(--cream);
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--rule);
+            border-top: 2px solid var(--embed-c, var(--rule));
+            box-shadow: 0 1px 0 rgba(255,255,255,0.6), 0 16px 32px rgba(0,0,0,0.05);
+        }
+        .prototype-frame iframe { width: 100%; border: none; display: block; background: var(--cream); min-height: 860px; }
         .prototype-caption { font-size: 0.72rem; font-style: italic; color: var(--text-dim); text-align: center; margin-top: 12px; }
         .section-divider { width: 40px; height: 1px; background: var(--rule); margin: 80px auto; }
         .fn-ref { font-size: 0.7em; vertical-align: super; line-height: 0; color: var(--text-dim); text-decoration: none; cursor: pointer; transition: color 0.2s; }
@@ -84,19 +317,49 @@
         .colophon a:hover { color: var(--text-mid); }
         .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
-        @media (max-width: 740px) { .prototype-embed { margin-left: -28px; margin-right: -28px; } }
-        @media (max-width: 600px) { html { font-size: 17px; } .cover h1 { font-size: 2rem; letter-spacing: 0.04em; } .chapter-break h2 { font-size: 1.4rem; } .figure-pair { grid-template-columns: 1fr; } .prototype-embed { margin-left: -28px; margin-right: -28px; } .card-container svg { max-width: 260px; } }
+        @media (max-width: 740px) { .prototype-embed > * { padding-left: 8px; padding-right: 8px; } }
+        @media (max-width: 600px) { html { font-size: 17px; } .prototype-frame iframe { min-height: 1100px; }  .chapter-break h2 { font-size: 1.4rem; } .figure-pair { grid-template-columns: 1fr; } .prototype-embed > * { padding-left: 8px; padding-right: 8px; } .card-container svg { max-width: 260px; } }
     </style>
 </head>
 <body>
 <div class="progress" id="progress"></div>
 
 <div class="cover">
-    <div class="cover-rule"></div>
-    <h1>A Guide to<br>Democracy in Music</h1>
-    <p class="author">Sam Vance-Law</p>
-    <div class="cover-rule-bottom"></div>
-    <span class="scroll-cue">Scroll</span>
+    <div class="cover-card">
+        <div class="cover-top">
+            <div class="selector">
+                <svg class="ticks" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+                    <g>
+                        <line x1="110" y1="48" x2="110" y2="58"/>
+                        <line x1="161" y1="76" x2="155" y2="80"/>
+                        <line x1="161" y1="144" x2="155" y2="140"/>
+                        <line x1="110" y1="172" x2="110" y2="162"/>
+                        <line x1="59" y1="144" x2="65" y2="140"/>
+                        <line x1="59" y1="76" x2="65" y2="80"/>
+                    </g>
+                </svg>
+                <div class="knob"></div>
+                <span class="lbl lbl-12" style="--c: var(--c-piano)">DP·01</span>
+                <span class="lbl lbl-2"  style="--c: var(--c-meanmode)">MM·01</span>
+                <span class="lbl lbl-4"  style="--c: var(--c-miro)">MI·01</span>
+                <span class="lbl lbl-6"  style="--c: var(--c-assembly)">DA·01</span>
+                <span class="lbl lbl-8"  style="--c: var(--c-parliament)">PA·01</span>
+                <span class="lbl lbl-10" style="--c: var(--c-choreo)">CH·01</span>
+            </div>
+            <div></div>
+            <img class="cover-logo" src="svl-logo.png" alt="Sam Vance-Law">
+        </div>
+        <h1 class="cover-title">
+            <span class="l">A Guide to</span>
+            <span class="l">Democracy</span>
+            <span class="l">In Music</span>
+        </h1>
+        <div class="cover-bottom">
+            <span class="os">OPEN SOURCE &middot; FREE</span>
+            <span class="url">DEMOCRACYINMUSIC.COM</span>
+        </div>
+    </div>
+    <span class="scroll-cue">▼ Scroll</span>
 </div>
 
 <nav class="toc reveal">
@@ -135,7 +398,7 @@
     <div class="chapter-rule"></div>
 </div>
 <div class="prose reveal">
-    <p>Anita and Dev don&#x2019;t know each other and cannot see each other but both have the same digital piano in front of them. This piano only works if two or more people play it. You cannot play it alone. So Anita plays C4 and Dev plays G4, but something weird happens. Instead of hearing C4 and G4 played simultaneously, they hear E4, the note in the middle. They keep on playing, but, instead of hearing the note they played, they hear the mean note, the one right between. A few more people join the server, so now we have multiple people equally responsible for input, and the output is always the mean. Let&#x2019;s add more people until we have 30,000 people. Now we have a piece of music being written by 30,000 people simultaneously.</p>
+    <p>Anita and Dev don&#x2019;t know each other and cannot see each other but both have the same digital piano in front of them. This piano only works if two or more people play it. You cannot play it alone. So Anita plays C4 and Dev plays G4, but something weird happens. Instead of hearing C4 and G4 played simultaneously, they hear an E, the note nearest the middle.<a href="#fn1" class="fn-ref" id="fn1-ref">1</a> They keep on playing, but, instead of hearing the note they played, they hear the mean note, the one right between. A few more people join the server, so now we have multiple people equally responsible for input, and the output is always the mean. Let&#x2019;s add more people until we have 30,000 people. Now we have a piece of music being written by 30,000 people simultaneously.</p>
     <p>This music would be very boring to listen to. It would only be a melody, and using the mean would end up with everything centering around the middle of the keyboard. Let&#x2019;s put the flaws of the model to the side for the moment and talk about what just happened.</p>
 </div>
 <div class="points reveal">
@@ -143,7 +406,7 @@
     <div class="point"><span class="point-num">2.</span><p>It was democratic, in that it was equally made by all participants&#x2014;no participant&#x2019;s choice had more weight than another&#x2019;s.</p></div>
     <div class="point"><span class="point-num">3.</span><p>The resulting music is, from a songwriting perspective, equally owned. In terms of IP, this piece of music is automatically and equally owned by 30,000 people. In the EU that copyright remains with its creators.</p></div>
     <div class="point"><span class="point-num">4.</span><p>The people making the music were also its first audience. They could not know what the outcome would be. They were not only its creators but its first listeners.</p></div>
-    <div class="point"><span class="point-num">5.</span><p>The barrier to entry is low. Either it is 0 because the program is super easy to make and it is made freely available, or incredibly low because the cost is split between 30,000 participants.<a href="#fn1" class="fn-ref" id="fn1-ref">1</a></p></div>
+    <div class="point"><span class="point-num">5.</span><p>The barrier to entry is low. Either it is 0 because the program is super easy to make and it is made freely available, or incredibly low because the cost is split between 30,000 participants.<a href="#fn2" class="fn-ref" id="fn2-ref">2</a></p></div>
 </div>
 <div class="prose reveal">
     <p>Using the mean is not very practical but already demonstrates a completely novel way of making music. Using the mode as an average provides far more possibilities for composition and more closely maps to the democratic process. There is no limit to its scalability for human or machine interaction. Using the mode, players of the piano could play a note, and, tabulated within a certain timeframe, the most chosen note(s) would get heard. This method is impractical at very small scales, but useful as you get into dozens of people. Using the mode we have a new set of possibilities:</p>
@@ -158,18 +421,18 @@
     <p>There are parallels in collaborative governance in Loren Carpenter&#x2019;s <a href="https://www.youtube.com/watch?v=n3wH0W0Mj8U">&#x201C;PONG&#x201D; experiment</a>, and <a href="https://en.wikipedia.org/wiki/Twitch_Plays_Pok%C3%A9mon">Twitch Plays <em>Pok&#x00E9;mon</em></a>. Game makers have strayed into this territory before. However, it could be used to make music, paintings, games, and so much more.</p>
 </div>
 
-<div class="prototype-embed reveal">
-    <p class="prototype-label">Interactive Prototype</p>
+<div class="prototype-embed reveal" style="--embed-c: var(--c-piano)">
+    <p class="prototype-label">DP·01 · Piano</p>
     <div class="prototype-frame"><iframe src="piano.html" loading="lazy" allow="autoplay"></iframe></div>
-    <p class="prototype-caption">The &#x201C;piano&#x201D; described above. Play it and see what the outcomes are.</p>
+    <p class="prototype-caption">The democratic piano. Pick a note; hear what the crowd plays.</p>
 </div>
 <div class="prose reveal">
     <p>This is the &#x201C;piano&#x201D; that I describe above. You can play it and see what the outcomes are. Once you get used to the idea, you can move away from an instrument you already know and start looking at what this might look like as a function of voting changes over time. This next prototype follows the same concept as the piano above, but might help you get a new perspective on it.</p>
 </div>
-<div class="prototype-embed reveal">
-    <p class="prototype-label">Interactive Prototype</p>
+<div class="prototype-embed reveal" style="--embed-c: var(--c-meanmode)">
+    <p class="prototype-label">MM·01 · Mean Mode</p>
     <div class="prototype-frame"><iframe src="meanmode.html" loading="lazy" allow="autoplay"></iframe></div>
-    <p class="prototype-caption">Vote on a pitch, hear the collective.</p>
+    <p class="prototype-caption">Place your vote on a continuous pitch line; toggle between mean, mode, and chord.</p>
 </div>
 <div class="prose reveal">
     <p>Mean Mode also contains an additional element that&#x2019;s of interest to me. You can see how voting publics might swing from one position to another, how choices change as various options gain in popularity.</p>
@@ -185,27 +448,22 @@
 <div class="prose reveal">
     <p>I imagine a 3D voter graph, looked at from above, converted to something like a Joan Mir&#x00F3; dot painting (<a href="https://www.fmirobcn.org/en/colection/catalog-works/5442/p-landscape-p"><em>Landscape</em>, 1968</a>). A number of Mir&#x00F3; paintings contain dots, islands in the wider sea of the canvas. (See his <a href="https://www.theguardian.com/artanddesign/2011/apr/11/joan-miro-retrospective-reunites-triptychs"><em>Bleu</em> triptych</a> for blue islands in larger blue seas). That was one artist placing single dots on a canvas. Imagine those dots are choices made by 100,000 people. What might they mean now?</p>
     <p>You could imagine these dots representing the various choices made by voting publics. Multiple dots would represent multiple highly ranked choices representing top-n frequency selection, quite close to how proportional representation works.</p>
-    <p>I think this is quite exciting. And beautiful.<a href="#fn2" class="fn-ref" id="fn2-ref">2</a></p>
+    <p>I think this is quite exciting. And beautiful.<a href="#fn3" class="fn-ref" id="fn3-ref">3</a></p>
 </div>
 <div class="figure reveal">
     <img src="images/miro-screenshot.png" alt="Excerpted image from the MIRO prototype showing dark dots on a blue canvas">
     <p class="figure-caption">Excerpted image from the MIRO prototype</p>
 </div>
-<div class="prototype-embed reveal">
-    <p class="prototype-label">Interactive Prototype</p>
+<div class="prototype-embed reveal" style="--embed-c: var(--c-miro)">
+    <p class="prototype-label">MI·01 · Miro</p>
     <div class="prototype-frame"><iframe src="miro.html" loading="lazy" allow="autoplay"></iframe></div>
-    <p class="prototype-caption">Touch once, raise the water level.</p>
+    <p class="prototype-caption">Touch the canvas to vote; raise the water level to filter for agreement.</p>
 </div>
 <div class="prose reveal">
     <p>Let&#x2019;s talk about ownership for a moment. Currently, it is rare for a people to own their cultural history. Music is most commonly owned by the individuals or small groups who create it, corporations, or trusts. Paintings are most often owned by private collectors, trusts, or the state. As an example, all of Leonard Cohen&#x2019;s music is owned by Recognition Music Group under Blackstone, an American asset management company. Joan Mir&#x00F3;&#x2019;s <em>Bleu II</em> above is owned by the Mus&#x00E9;e National d&#x2019;Art Moderne in Paris, which is funded by the French state. Regardless of the rightness or fairness or legality of how cultural history is owned, the people who see it as their cultural history rarely have much to do with its curation or profit. The above models would change that because entire populations of all descriptions (local, digital, institutional, national, etc.) could co-create and co-own their cultural products.</p>
     <p>And this ownership could last longer than just the few years after creation. Most projects last as long as the lifetimes of their creators, if not much shorter (I had originally titled this section &#x201C;Beyonc&#x00E9; Will Die&#x201D;). However, collective projects based on the above models could last for generations, as members of these collectives pass the baton to the next generation. It could be the quite literal ownership of cultural history.</p>
-    <p>Here is what generational ownership could look like.</p>
 </div>
-<div class="prototype-embed reveal">
-    <p class="prototype-label">Interactive Prototype</p>
-    <div class="prototype-frame"><iframe src="epoch.html" loading="lazy" allow="autoplay"></iframe></div>
-    <p class="prototype-caption">Generational ownership over a 200-year timeline.</p>
-</div>
+
 <div class="prose reveal">
     <p>The legal and institutional questions involved in these ideas are genuinely hard. Who registers a piece of music owned by 30,000 people with a royalty collection service? Who negotiates a sync license? Who sues for infringement? Existing intellectual property law was built for individual authors and corporate assignees, not for collective and cumulative creation. There are emerging models, like platform cooperatives, creative commons licensing, and blockchain-based provenance systems, but none have found mainstream traction yet. Perhaps it will require an entirely new legal conception of ownership. Luckily, there are many people working on this issue, and I look forward to hearing their responses to this particular set of problems.</p>
 </div>
@@ -220,7 +478,7 @@
 <div class="prose reveal">
     <p>The above examples represent art in which the composition process is entirely democratic. However, similar systems could allow voting publics to co-create pieces with composers, producers, and pop stars. I imagine something akin to the &#x201C;Musikalische W&#x00FC;rfelspiele&#x201D; of the 1700s. In these games, composers wrote music where each bar, or set of bars, could be joined to any other bar or set to create a coherent piece of music. Players would gather together and roll dice to determine in which order the bars would be attached, creating a unique piece of music partially composed and partially created by chance.</p>
     <p>Below is a chart for one of these games (and <a href="https://gbrachetta.github.io/Musical-Dice/">here&#x2019;s one you can play yourself</a>). You will notice that the grid layout is not dissimilar to Ableton&#x2019;s Push controller (below), which allows producers to stack melodies and harmonies they have composed in advance to introduce new combinations and variations. There is a reason for this similarity. The music of the Classical period tended to be metrically and harmonically stable in comparison to the previous Baroque or later Romantic periods. Similarly, today&#x2019;s club music is almost always in 4/4 and does not deviate harmonically or by tempo, and so you can change harmonic and melodic blocks within a single composition. Pop is more nuanced (it has verses and choruses for instance), but each section is also normally relatively stable harmonically, and so adding and subtracting different elements in a mix using Push is also easy.</p>
-    <p>At the moment, these choices are made by individuals manipulating their own or other people&#x2019;s samples. What would it be like to have audiences collaborate democratically in that process, voting on chunks of sound?<a href="#fn3" class="fn-ref" id="fn3-ref">3</a></p>
+    <p>At the moment, these choices are made by individuals manipulating their own or other people&#x2019;s samples. What would it be like to have audiences collaborate democratically in that process, voting on chunks of sound?<a href="#fn4" class="fn-ref" id="fn4-ref">4</a></p>
 </div>
 <div class="figure reveal"><img src="images/dice-game.png" alt="Table des Chiffres pour le Walzer &#x2014; a musical dice game from the 1700s"></div>
 <div class="figure-pair reveal">
@@ -228,28 +486,28 @@
     <img src="images/push-hands.png" alt="Hands playing an Ableton Push controller">
     <p class="figure-pair-caption">A musical dice game and Ableton&#x2019;s Push controller</p>
 </div>
-<div class="prototype-embed reveal">
-    <p class="prototype-label">Interactive Prototype</p>
+<div class="prototype-embed reveal" style="--embed-c: var(--c-assembly)">
+    <p class="prototype-label">DA·01 · Assembly</p>
     <div class="prototype-frame"><iframe src="assembly.html" loading="lazy" allow="autoplay"></iframe></div>
-    <p class="prototype-caption">Build a piece of music, one vote at a time.</p>
+    <p class="prototype-caption">Build a piece of music, one collective vote at a time.</p>
 </div>
 <div class="prose reveal">
-    <p>In a networked version, a composer or group of musicians might create those blocks of sound. However, a generative AI model could also produce the musical phrases, the voting public responding in real time to shifting iterations. Holly Herndon created a potential blueprint for this concept with <a href="https://holly.plus/"><em>Holly+</em></a>, an AI trained on her voice that individuals can license for their work. The voice is Herndon&#x2019;s, the creative decisions belong to whoever uses it, but the chain of creation stays linked to the originating artist. Something like this could work for collective composition: not individuals licensing an artist&#x2019;s work for private use, but voting publics licensing it for collective use. An artist could make catalogues of their work or voice, beats or loops available for collective music making. Artist and voting publics retain a stake.<a href="#fn4" class="fn-ref" id="fn4-ref">4</a></p>
-    <p>There are also a few ways to think about the voting itself. Quadratic voting introduces strength of preference: you can vote multiple times for the same option, but each vote becomes more expensive.<a href="#fn5" class="fn-ref" id="fn5-ref">5</a> Connection-oriented voting gives more weight to agreement across groups that otherwise differ than to agreement within groups that already agree.<a href="#fn6" class="fn-ref" id="fn6-ref">6</a> For music, this matters: a system that flattens toward the majority produces averaged results. A system that rewards cooperation across difference produces something stranger, more plural, and more like what happens when people with genuinely different taste find common ground.</p>
-    <p>The prototypes in this guide move from simple aggregation toward more plural mechanisms. But the logical endpoint may be non-linear aggregation altogether, where collective input passes through neural networks that can read patterns in preference that voting cannot capture. In this framing, a well-trained neural network is not a black box but a more fluent form of democracy, one that can read patterns in collective intelligence.<a href="#fn7" class="fn-ref" id="fn7-ref">7</a> Whether this would still feel like democracy to the people participating is an open question, and all of the prototypes in this guide are currently designed so you can see how your input shaped the outcome.</p>
+    <p>In a networked version, a composer or group of musicians might create those blocks of sound. However, a generative AI model could also produce the musical phrases, the voting public responding in real time to shifting iterations. Holly Herndon created a potential blueprint for this concept with <a href="https://holly.plus/"><em>Holly+</em></a>, an AI trained on her voice that individuals can license for their work. The voice is Herndon&#x2019;s, the creative decisions belong to whoever uses it, but the chain of creation stays linked to the originating artist. Something like this could work for collective composition: not individuals licensing an artist&#x2019;s work for private use, but voting publics licensing it for collective use. An artist could make catalogues of their work or voice, beats or loops available for collective music making. Artist and voting publics retain a stake.<a href="#fn5" class="fn-ref" id="fn5-ref">5</a></p>
+    <p>There are also a few ways to think about the voting itself. Quadratic voting introduces strength of preference: you can vote multiple times for the same option, but each vote becomes more expensive.<a href="#fn6" class="fn-ref" id="fn6-ref">6</a> Connection-oriented voting gives more weight to agreement across groups that otherwise differ than to agreement within groups that already agree.<a href="#fn7" class="fn-ref" id="fn7-ref">7</a> For music, this matters: a system that flattens toward the majority produces averaged results. A system that rewards cooperation across difference produces something stranger, more plural, and more like what happens when people with genuinely different taste find common ground.</p>
+    <p>The prototypes in this guide move from simple aggregation toward more plural mechanisms. But the logical endpoint may be non-linear aggregation altogether, where collective input passes through neural networks that can read patterns in preference that voting cannot capture. In this framing, a well-trained neural network is not a black box but a more fluent form of democracy, one that can read patterns in collective intelligence.<a href="#fn8" class="fn-ref" id="fn8-ref">8</a> Whether this would still feel like democracy to the people participating is an open question, and all of the prototypes in this guide are currently designed so you can see how your input shaped the outcome.</p>
     <p>However, for a musician approaching these tools for the first time, those distinctions don&#x2019;t necessarily have to matter yet. The question is simply: what would it sound like if you produced the sound/loop/beat/song and gave your audiences the chance to compose it with you? What might that mean to your fans or to you?</p>
     <p>You could compose a symphony this way. An audience votes, an orchestra plays what the audience chose, and new choices emerge from what came before. Or I imagine using something like Imogen Heap&#x2019;s <a href="https://www.youtube.com/watch?v=UXxrHKgKVWo">MiMu gloves</a> to affect various parameters in a DAW, from tempo and volume to key and note choice but in concert rather than alone.</p>
     <p>Or tracking the motion of dancers. When we think about choreography, we normally think about dance set to music. In traditional choreography, a composer produces a piece, or a dance group chooses a pre-written composition (anything from Tchaikovsky to Mitski), and choreographs a dance to it. Often, there is a choreographer in charge of that choreography. Dance has a long history of pushing against this hierarchy, from Bausch&#x2019;s question-based process to Paxton&#x2019;s Contact Improvisation, but even in these cases the resulting work was either authored by the choreographer or ephemeral. Democracy is not only about casting votes. It is about being acknowledged and represented. A piece of music that is co-created by people moving through space could be, in this sense, deeply democratic.</p>
-    <p>So I imagine composers, dancers and choreographers as joint composers of a piece of music. You sit in an audience. The lights come down. A dancer comes on stage and their movements correlate perfectly with the sound you hear. Other dancers enter and the music changes, develops. When the dancers are in lock step the music takes on a recognizable pattern. When they fall out of step, the music could take on dissonance, or desync. This is dancers composing in real time. Cameras catching their movements and transcribing them into virtual representations triggering realtime changes in a preconceived aural space.<a href="#fn8" class="fn-ref" id="fn8-ref">8</a></p>
+    <p>So I imagine composers, dancers and choreographers as joint composers of a piece of music. You sit in an audience. The lights come down. A dancer comes on stage and their movements correlate perfectly with the sound you hear. Other dancers enter and the music changes, develops. When the dancers are in lock step the music takes on a recognizable pattern. When they fall out of step, the music could take on dissonance, or desync. This is dancers composing in real time. Cameras catching their movements and transcribing them into virtual representations triggering realtime changes in a preconceived aural space.<a href="#fn9" class="fn-ref" id="fn9-ref">9</a></p>
 </div>
-<div class="prototype-embed reveal">
-    <p class="prototype-label">Interactive Prototype</p>
+<div class="prototype-embed reveal" style="--embed-c: var(--c-choreo)">
+    <p class="prototype-label">CH·01 · Choreography</p>
     <div class="prototype-frame"><iframe src="choreography.html" loading="lazy" allow="autoplay"></iframe></div>
-    <p class="prototype-caption">The body as musical instrument.</p>
+    <p class="prototype-caption">Bodies in space as collective composers.</p>
 </div>
 <div class="prose reveal">
     <p>This introduces the idea of bodies in space as co-composers of pieces of music. The body as musical instrument. In other variations of this principle, partygoers at a club might modulate things like tempo, amplitude, frequency of a producer&#x2019;s set. Maybe they would also trigger various elements of a set. One could imagine a whole number of interactions along a spectrum from full co-composition to slight modulation.</p>
-    <p>I do not imagine these projects as &#x201C;interactive art.&#x201D; I see them as ways for different art forms to influence one another, and for audiences to become part owners of the work they hear. These are collaborative efforts between composer/songwriter/producer, performers, and audience that would invite new ways of understanding music-making, one that erases the line between &#x201C;product&#x201D; and &#x201C;consumer&#x201D; and makes art making a more obviously collaborative, collective, and communal process.<a href="#fn9" class="fn-ref" id="fn9-ref">9</a></p>
+    <p>I do not imagine these projects as &#x201C;interactive art.&#x201D; I see them as ways for different art forms to influence one another, and for audiences to become part owners of the work they hear. These are collaborative efforts between composer/songwriter/producer, performers, and audience that would invite new ways of understanding music-making, one that erases the line between &#x201C;product&#x201D; and &#x201C;consumer&#x201D; and makes art making a more obviously collaborative, collective, and communal process.<a href="#fn10" class="fn-ref" id="fn10-ref">10</a></p>
 </div>
 
 <div class="card-container reveal"><svg id="card-ch5" viewBox="0 0 400 520" xmlns="http://www.w3.org/2000/svg"></svg></div>
@@ -263,10 +521,10 @@
     <p>I hope you have found this as fun as I have. There is an element of this process that is simply exploratory and creative, and I hope it can be a joy to experiment with. Various thinkers have, however, suggested that democracy at large scales requires democracy at smaller scales&#x2014;that without the engagement of citizens at their local levels, large-scale democracies become bureaucratic placeholders for what would otherwise be collective decision making.</p>
     <p>Democracy is having a rough go at the moment. One of the potential side effects of this project is in allowing people to practice democracy in low-stakes settings, where deliberation is the outcome of an exciting communal discovery. I am a musician and so have chosen music. You may be a gamer or writer, a sculptor or <a href="https://en.wikipedia.org/wiki/Kasparov_versus_the_World">chess player</a>. Experiments of this kind could introduce more people to democratic concepts playfully, lightly, and in a way that makes democratic decision making, its mechanics and consequences, a felt experience for those for whom democracy might normally be a vote once every few years, or for those who have never voted at all. There is no moral claim here. It would simply be wonderful to offer the collaborative joys, rather than the polarizing stresses, of collective decision making.</p>
 </div>
-<div class="prototype-embed reveal">
-    <p class="prototype-label">Interactive Prototype</p>
+<div class="prototype-embed reveal" style="--embed-c: var(--c-parliament)">
+    <p class="prototype-label">PA·01 · Parliament</p>
     <div class="prototype-frame"><iframe src="parliament.html" loading="lazy" allow="autoplay"></iframe></div>
-    <p class="prototype-caption">Electoral systems applied to musical composition.</p>
+    <p class="prototype-caption">Drag the seeds. The voters never move; the districts do.</p>
 </div>
 
 <div class="card-container reveal"><svg id="card-ch6" viewBox="0 0 400 520" xmlns="http://www.w3.org/2000/svg"></svg></div>
@@ -285,15 +543,16 @@
 
 <div class="footnotes-section">
     <p class="footnotes-label">Notes</p>
-    <div class="footnote" id="fn1"><span class="footnote-num"><a href="#fn1-ref">1</a></span><p>It of course requires a phone/tablet/laptop and an Internet connection. These things have a cost! For a growing majority of people, however, it does not constitute an additional cost.</p></div>
-    <div class="footnote" id="fn2"><span class="footnote-num"><a href="#fn2-ref">2</a></span><p>Xenakis&#x2019;s stochastic music (<em>Pithoprakta</em>, <em>Metastasis</em>) generates sonic masses from probability distributions. MIRO does essentially the same thing, except the distribution isn&#x2019;t mathematical, it&#x2019;s through voting. The terrain is a probability density function of collective preference. The peaks and valleys are what Xenakis would have generated with equations, but here we&#x2019;re generating them with votes, replacing stochastic process with democratic process. Xenakis&#x2019;s <a href="https://en.wikipedia.org/wiki/UPIC">UPIC system</a> is much like MIRO with one participant instead of thousands. I thought up MIRO before I had heard of UPIC, but they align almost perfectly.</p></div>
-    <div class="footnote" id="fn3"><span class="footnote-num"><a href="#fn3-ref">3</a></span><p>The historical precedent here is interesting. The dice games removed the composer&#x2019;s control over sequence and handed it to chance. John Cage, two centuries later, made that removal philosophically systematic with the <em>I Ching</em> determining pitch, duration, dynamics in the <em>Music of Changes</em> (1951). What the models in this paper do is replace chance with collective decision making. Stockhausen&#x2019;s <em>Klavierst&#x00FC;ck XI</em> and Boulez&#x2019;s <em>Third Piano Sonata</em> are also corollaries: both give a single performer modular fragments and let them choose the order and manner of playing. Assembly takes that structural idea and replaces the performer&#x2019;s discretion with collective voting. The underlying architecture is akin to open form composition, democratized.</p></div>
-    <div class="footnote" id="fn4"><span class="footnote-num"><a href="#fn4-ref">4</a></span><p>This relates to work on &#x201C;Protocolism&#x201D; by Primavera De Filippi, Holly Herndon, and Mathew Dryhurst, which frames the artist&#x2019;s style or voice as a protocol that others can instantiate into new works. The prototypes in this guide could be understood as democratic mechanisms for collective protocol execution. See De Filippi&#x2019;s essay in <em>All Media is Training Data</em> (Herndon &amp; Dryhurst, Walther &amp; Franz K&#x00F6;nig Verlag, 2024).</p></div>
-    <div class="footnote" id="fn5"><span class="footnote-num"><a href="#fn5-ref">5</a></span><p>Quadratic voting was introduced in Steven Lalley and E. Glen Weyl, &#x201C;Quadratic Voting: How Mechanism Design Can Radicalize Democracy&#x201D; (2018), and extended to funding contexts in Vitalik Buterin, Zo&#x00EB; Hitzig, and E. Glen Weyl, &#x201C;A Flexible Design for Funding Public Goods,&#x201D; <em>Management Science</em> (2019). Weyl&#x2019;s <a href="https://www.radicalxchange.org/">RadicalxChange</a> community continues to develop democratic mechanism designs like this one.</p></div>
-    <div class="footnote" id="fn6"><span class="footnote-num"><a href="#fn6-ref">6</a></span><p>Connection-oriented funding and voting were developed in Joel Miller, E. Glen Weyl, and Chris Kanich, &#x201C;Fair Decisions through Plurality: Results from a Crowdfunding Platform,&#x201D; <em>EAAMO</em> (2025). The approach extends quadratic mechanisms by weighting agreement across socially diverse groups more heavily than agreement within homogeneous ones.</p></div>
-    <div class="footnote" id="fn7"><span class="footnote-num"><a href="#fn7-ref">7</a></span><p>This framing emerged from conversation with E. Glen Weyl.</p></div>
-    <div class="footnote" id="fn8"><span class="footnote-num"><a href="#fn8-ref">8</a></span><p>William Forsythe&#x2019;s improvisation technologies and Imogen Heap&#x2019;s MiMu gloves both translate physical gesture into structured creative output. The difference is that those systems serve individual expression. Here, multiple bodies collectively compose, and the resulting music belongs to everyone in the room. The tension between abandonment and responsibility to an overall structure is one that dancers, musicians, and actors already know well. Here that tension is lived out not in response to some external score, but to the other people on stage at that moment.</p></div>
-    <div class="footnote" id="fn9"><span class="footnote-num"><a href="#fn9-ref">9</a></span><p>Lutos&#x0142;awski&#x2019;s &#x201C;controlled aleatoricism&#x201D; offers a philosophical framework here. Lutos&#x0142;awski gave performers freedom within strictly defined parameters: free rhythm within fixed pitch fields for instance, or independent coordination within controlled harmonic boundaries. That&#x2019;s what the current prototypes for this project do too. Piano constrains you to a keyboard. MIRO constrains you to a canvas with defined sonification mappings. Assembly constrains you to pre-composed blocks. Choreography constrains you to movement-to-sound mappings. The participants have genuine freedom, but within a designed system. Lutos&#x0142;awski called it &#x201C;aleatoricism ad libitum.&#x201D; This is something like &#x201C;democracy ad libitum.&#x201D;</p></div>
+    <div class="footnote" id="fn1"><span class="footnote-num"><a href="#fn1-ref">1</a></span><p>Strictly speaking, the midpoint between C4 and G4 in pitch space is the geometric mean of their frequencies, <span style="white-space: nowrap;">320.25 Hz,</span> which falls a quarter-tone between Eb4 (311.13 Hz) and E4 (329.63 Hz) &#x2014; a &#x201C;neutral third&#x201D; above C4. The prototype operates on discrete equal-tempered pitches and so rounds to the nearest one, which in this case is E4.</p></div>
+    <div class="footnote" id="fn2"><span class="footnote-num"><a href="#fn2-ref">2</a></span><p>It of course requires a phone/tablet/laptop and an Internet connection. These things have a cost! For a growing majority of people, however, it does not constitute an additional cost.</p></div>
+    <div class="footnote" id="fn3"><span class="footnote-num"><a href="#fn3-ref">3</a></span><p>Xenakis&#x2019;s stochastic music (<em>Pithoprakta</em>, <em>Metastasis</em>) generates sonic masses from probability distributions. MIRO does essentially the same thing, except the distribution isn&#x2019;t mathematical, it&#x2019;s through voting. The terrain is a probability density function of collective preference. The peaks and valleys are what Xenakis would have generated with equations, but here we&#x2019;re generating them with votes, replacing stochastic process with democratic process. Xenakis&#x2019;s <a href="https://en.wikipedia.org/wiki/UPIC">UPIC system</a> is much like MIRO with one participant instead of thousands. I thought up MIRO before I had heard of UPIC, but they align almost perfectly.</p></div>
+    <div class="footnote" id="fn4"><span class="footnote-num"><a href="#fn4-ref">4</a></span><p>The historical precedent here is interesting. The dice games removed the composer&#x2019;s control over sequence and handed it to chance. John Cage, two centuries later, made that removal philosophically systematic with the <em>I Ching</em> determining pitch, duration, dynamics in the <em>Music of Changes</em> (1951). What the models in this paper do is replace chance with collective decision making. Stockhausen&#x2019;s <em>Klavierst&#x00FC;ck XI</em> and Boulez&#x2019;s <em>Third Piano Sonata</em> are also corollaries: both give a single performer modular fragments and let them choose the order and manner of playing. Assembly takes that structural idea and replaces the performer&#x2019;s discretion with collective voting. The underlying architecture is akin to open form composition, democratized.</p></div>
+    <div class="footnote" id="fn5"><span class="footnote-num"><a href="#fn5-ref">5</a></span><p>This relates to work on &#x201C;Protocolism&#x201D; by Primavera De Filippi, Holly Herndon, and Mathew Dryhurst, which frames the artist&#x2019;s style or voice as a protocol that others can instantiate into new works. The prototypes in this guide could be understood as democratic mechanisms for collective protocol execution. See De Filippi&#x2019;s essay in <em>All Media is Training Data</em> (Herndon &amp; Dryhurst, Walther &amp; Franz K&#x00F6;nig Verlag, 2024).</p></div>
+    <div class="footnote" id="fn6"><span class="footnote-num"><a href="#fn6-ref">6</a></span><p>Quadratic voting was introduced in Steven Lalley and E. Glen Weyl, &#x201C;Quadratic Voting: How Mechanism Design Can Radicalize Democracy&#x201D; (2018), and extended to funding contexts in Vitalik Buterin, Zo&#x00EB; Hitzig, and E. Glen Weyl, &#x201C;A Flexible Design for Funding Public Goods,&#x201D; <em>Management Science</em> (2019). Weyl&#x2019;s <a href="https://www.radicalxchange.org/">RadicalxChange</a> community continues to develop democratic mechanism designs like this one.</p></div>
+    <div class="footnote" id="fn7"><span class="footnote-num"><a href="#fn7-ref">7</a></span><p>Connection-oriented funding and voting were developed in Joel Miller, E. Glen Weyl, and Chris Kanich, &#x201C;Fair Decisions through Plurality: Results from a Crowdfunding Platform,&#x201D; <em>EAAMO</em> (2025). The approach extends quadratic mechanisms by weighting agreement across socially diverse groups more heavily than agreement within homogeneous ones.</p></div>
+    <div class="footnote" id="fn8"><span class="footnote-num"><a href="#fn8-ref">8</a></span><p>This framing emerged from conversation with E. Glen Weyl.</p></div>
+    <div class="footnote" id="fn9"><span class="footnote-num"><a href="#fn9-ref">9</a></span><p>William Forsythe&#x2019;s improvisation technologies and Imogen Heap&#x2019;s MiMu gloves both translate physical gesture into structured creative output. The difference is that those systems serve individual expression. Here, multiple bodies collectively compose, and the resulting music belongs to everyone in the room. The tension between abandonment and responsibility to an overall structure is one that dancers, musicians, and actors already know well. Here that tension is lived out not in response to some external score, but to the other people on stage at that moment.</p></div>
+    <div class="footnote" id="fn10"><span class="footnote-num"><a href="#fn10-ref">10</a></span><p>Lutos&#x0142;awski&#x2019;s &#x201C;controlled aleatoricism&#x201D; offers a philosophical framework here. Lutos&#x0142;awski gave performers freedom within strictly defined parameters: free rhythm within fixed pitch fields for instance, or independent coordination within controlled harmonic boundaries. That&#x2019;s what the current prototypes for this project do too. Piano constrains you to a keyboard. MIRO constrains you to a canvas with defined sonification mappings. Assembly constrains you to pre-composed blocks. Choreography constrains you to movement-to-sound mappings. The participants have genuine freedom, but within a designed system. Lutos&#x0142;awski called it &#x201C;aleatoricism ad libitum.&#x201D; This is something like &#x201C;democracy ad libitum.&#x201D;</p></div>
 </div>
 
 <div class="colophon">
@@ -308,31 +567,56 @@ function el(t,a,p){var e=document.createElementNS(ns,t);for(var k in a)e.setAttr
 function seeded(s){return function(){s=(s*9301+49297)%233280;return s/233280}}
 
 function drawFrame(svg,color,numeral){
-    el('rect',{x:0,y:0,width:400,height:520,rx:10,fill:'var(--cream-warm)'},svg);
-    el('rect',{x:2,y:2,width:396,height:516,rx:8,fill:'none',stroke:color,'stroke-width':1.8,opacity:0.9},svg);
-    el('rect',{x:12,y:12,width:376,height:496,rx:4,fill:'none',stroke:color,'stroke-width':0.6,opacity:0.45},svg);
-    el('text',{x:200,y:40,fill:color,'text-anchor':'middle','font-family':'EB Garamond,serif','font-size':17,'letter-spacing':'4',opacity:0.85},svg).textContent=numeral;
-    el('line',{x1:60,y1:52,x2:340,y2:52,stroke:color,'stroke-width':0.5,opacity:0.4},svg);
-    el('line',{x1:60,y1:470,x2:340,y2:470,stroke:color,'stroke-width':0.5,opacity:0.4},svg);
+    // Outer chassis: cream
+    el('rect',{x:0,y:0,width:400,height:520,rx:14,fill:'var(--cream-warm)'},svg);
+    // Subtle chassis edge highlight + shadow
+    el('rect',{x:1,y:1,width:398,height:518,rx:13,fill:'none',stroke:'rgba(0,0,0,0.08)','stroke-width':1},svg);
+    // Header strip: model code + chapter color dot, separated by amber rule
+    el('text',{x:24,y:42,fill:'var(--ink)','font-family':'JetBrains Mono, ui-monospace, monospace','font-size':16,'font-weight':700,'letter-spacing':'2.4'},svg).textContent='CH·'+numeral;
+    // chapter color marker dot (right side of header)
+    el('circle',{cx:374,cy:42,r:5.5,fill:color},svg);
+    el('circle',{cx:374,cy:42,r:7.5,fill:'none',stroke:color,'stroke-width':1,opacity:0.35},svg);
+    // amber rule under header
+    el('rect',{x:12,y:60,width:376,height:2,fill:'#F7901E'},svg);
+    // dark screen body (the phosphor canvas)
+    el('rect',{x:12,y:62,width:376,height:446,rx:0,fill:'#0E160C'},svg);
+    // subtle inset shadow on the screen
+    el('rect',{x:12,y:62,width:376,height:446,rx:0,fill:'url(#screenShade)'},svg);
+    // very faint scan-line pattern overlay (drawn as lines for SVG portability)
+    var g=el('g',{opacity:0.06},svg);
+    for(var y=64;y<506;y+=3){el('line',{x1:12,y1:y,x2:388,y2:y,stroke:'#000','stroke-width':1},g)}
+    // bottom-of-screen mono coordinate label
+    el('text',{x:24,y:495,fill:color,'font-family':'JetBrains Mono, monospace','font-size':9,'font-weight':600,'letter-spacing':'1.5',opacity:0.55},svg).textContent='SIG · '+numeral;
+    el('text',{x:376,y:495,fill:color,'text-anchor':'end','font-family':'JetBrains Mono, monospace','font-size':9,'font-weight':600,'letter-spacing':'1.5',opacity:0.55},svg).textContent='● LIVE';
 }
 
+// Defs (gradient for screen inset shading), only added once
+(function(){
+    var hostSvg=document.getElementById('card-ch1');
+    if(!hostSvg) return;
+    var defs=el('defs',{},hostSvg);
+    var lg=el('radialGradient',{id:'screenShade',cx:'50%',cy:'40%',r:'70%'},defs);
+    el('stop',{offset:'0%','stop-color':'#000','stop-opacity':'0'},lg);
+    el('stop',{offset:'100%','stop-color':'#000','stop-opacity':'0.5'},lg);
+})();
+
 // CH I — Piano perspective grid (amber)
-(function(){var svg=document.getElementById('card-ch1'),c='var(--piano)',cx=200,vy=140,rng=seeded(42);drawFrame(svg,c,'I');for(var i=0;i<16;i++){var t=i/15,y=vy+t*260,sp=4+t*165;el('line',{x1:cx-sp,y1:y,x2:cx+sp,y2:y,stroke:c,'stroke-width':0.7,opacity:0.25+t*0.3},svg)}for(var i=-7;i<=7;i++){el('line',{x1:cx,y1:vy,x2:cx+i*24,y2:400,stroke:c,'stroke-width':0.6,opacity:0.15+Math.abs(i)*0.025},svg)}for(var i=0;i<60;i++){var cl=rng()>0.5,dx=(cl?-55:55)+(rng()-0.5)*80,dy=220+rng()*160,t2=(dy-vy)/260,sp2=4+t2*165;if(Math.abs(dx)<sp2)el('circle',{cx:cx+dx,cy:dy,r:1.5+rng()*2.5,fill:c,opacity:0.45+rng()*0.35},svg)}el('line',{x1:cx,y1:vy+20,x2:cx,y2:410,stroke:c,'stroke-width':1.5,opacity:0.65,'stroke-dasharray':'4 6'},svg)})();
+(function(){var svg=document.getElementById('card-ch1'),c='var(--c-piano)',cx=200,vy=140,rng=seeded(42);drawFrame(svg,c,'I');for(var i=0;i<16;i++){var t=i/15,y=vy+t*260,sp=4+t*165;el('line',{x1:cx-sp,y1:y,x2:cx+sp,y2:y,stroke:c,'stroke-width':1.0,opacity:0.45+t*0.3},svg)}for(var i=-7;i<=7;i++){el('line',{x1:cx,y1:vy,x2:cx+i*24,y2:400,stroke:c,'stroke-width':0.8,opacity:0.27+Math.abs(i)*0.025},svg)}for(var i=0;i<60;i++){var cl=rng()>0.5,dx=(cl?-55:55)+(rng()-0.5)*80,dy=220+rng()*160,t2=(dy-vy)/260,sp2=4+t2*165;if(Math.abs(dx)<sp2)el('circle',{cx:cx+dx,cy:dy,r:1.5+rng()*2.5,fill:c,opacity:0.81+rng()*0.35},svg)}el('line',{x1:cx,y1:vy+20,x2:cx,y2:410,stroke:c,'stroke-width':2.1,opacity:0.95,'stroke-dasharray':'4 6'},svg)})();
 
 // CH II — MIRO topographic contours (teal)
-(function(){var svg=document.getElementById('card-ch2'),c='var(--miro)',rng=seeded(77);drawFrame(svg,c,'II');var pks=[{x:150,y:230},{x:260,y:280}];pks.forEach(function(pk){for(var r=0;r<8;r++){var bR=14+r*16,d='',pts=60;for(var i=0;i<=pts;i++){var a=(i/pts)*Math.PI*2,w=bR*(1+Math.sin(a*3+r*1.2)*0.12+Math.sin(a*5+r*0.7)*0.06),px=pk.x+Math.cos(a)*w,py=pk.y+Math.sin(a)*w;d+=(i===0?'M':'L')+px.toFixed(1)+' '+py.toFixed(1)}d+='Z';el('path',{d:d,fill:'none',stroke:c,'stroke-width':r%3===0?1.5:0.8,opacity:0.35+r*0.05},svg)}el('circle',{cx:pk.x,cy:pk.y,r:5,fill:c,opacity:0.75},svg)});for(var i=0;i<35;i++){var px=pks[i%2];el('circle',{cx:px.x+(rng()-0.5)*120,cy:px.y+(rng()-0.5)*100,r:1.5+rng()*2,fill:c,opacity:0.35+rng()*0.3},svg)}})();
+(function(){var svg=document.getElementById('card-ch2'),c='var(--c-miro)',rng=seeded(77);drawFrame(svg,c,'II');var pks=[{x:150,y:230},{x:260,y:280}];pks.forEach(function(pk){for(var r=0;r<8;r++){var bR=14+r*16,d='',pts=60;for(var i=0;i<=pts;i++){var a=(i/pts)*Math.PI*2,w=bR*(1+Math.sin(a*3+r*1.2)*0.12+Math.sin(a*5+r*0.7)*0.06),px=pk.x+Math.cos(a)*w,py=pk.y+Math.sin(a)*w;d+=(i===0?'M':'L')+px.toFixed(1)+' '+py.toFixed(1)}d+='Z';el('path',{d:d,fill:'none',stroke:c,'stroke-width':r%3===0?1.5:0.8,opacity:0.63+r*0.05},svg)}el('circle',{cx:pk.x,cy:pk.y,r:5,fill:c,opacity:0.95},svg)});for(var i=0;i<35;i++){var px=pks[i%2];el('circle',{cx:px.x+(rng()-0.5)*120,cy:px.y+(rng()-0.5)*100,r:1.5+rng()*2,fill:c,opacity:0.63+rng()*0.3},svg)}})();
 
-// CH III — Epoch tree rings (green)
-(function(){var svg=document.getElementById('card-ch3'),c='var(--epoch)',cx=200,cy=255;drawFrame(svg,c,'III');for(var r=0;r<14;r++){var bR=12+r*12,d='',pts=72;for(var i=0;i<=pts;i++){var a=(i/pts)*Math.PI*2,w=bR*(1+Math.sin(a*3+r*0.9)*0.08+Math.sin(a*5+r*1.7)*0.04+Math.sin(a*7+r*0.3)*0.02),px=cx+Math.cos(a)*w,py=cy+Math.sin(a)*w;d+=(i===0?'M':'L')+px.toFixed(1)+' '+py.toFixed(1)}d+='Z';el('path',{d:d,fill:'none',stroke:c,'stroke-width':r%3===0?2:0.9,opacity:r%3===0?0.6:0.28+r*0.02},svg)}el('circle',{cx:cx,cy:cy,r:4,fill:c,opacity:0.8},svg);el('line',{x1:100,y1:415,x2:300,y2:415,stroke:c,'stroke-width':1.2,opacity:0.5},svg);el('line',{x1:293,y1:411,x2:300,y2:415,stroke:c,'stroke-width':1.2,opacity:0.5},svg);el('line',{x1:293,y1:419,x2:300,y2:415,stroke:c,'stroke-width':1.2,opacity:0.5},svg);for(var i=0;i<8;i++)el('line',{x1:110+i*25,y1:412,x2:110+i*25,y2:418,stroke:c,'stroke-width':0.8,opacity:0.4},svg)})();
+// CH III — generational tree rings (green) — illustrates cultural ownership over time
+(function(){var svg=document.getElementById('card-ch3'),c='var(--c-green)',cx=200,cy=255;drawFrame(svg,c,'III');for(var r=0;r<14;r++){var bR=12+r*12,d='',pts=72;for(var i=0;i<=pts;i++){var a=(i/pts)*Math.PI*2,w=bR*(1+Math.sin(a*3+r*0.9)*0.08+Math.sin(a*5+r*1.7)*0.04+Math.sin(a*7+r*0.3)*0.02),px=cx+Math.cos(a)*w,py=cy+Math.sin(a)*w;d+=(i===0?'M':'L')+px.toFixed(1)+' '+py.toFixed(1)}d+='Z';el('path',{d:d,fill:'none',stroke:c,'stroke-width':r%3===0?2:0.9,opacity:r%3===0?0.6:0.28+r*0.02},svg)}el('circle',{cx:cx,cy:cy,r:4,fill:c,opacity:0.95},svg);el('line',{x1:100,y1:415,x2:300,y2:415,stroke:c,'stroke-width':1.7,opacity:0.90},svg);el('line',{x1:293,y1:411,x2:300,y2:415,stroke:c,'stroke-width':1.7,opacity:0.90},svg);el('line',{x1:293,y1:419,x2:300,y2:415,stroke:c,'stroke-width':1.7,opacity:0.90},svg);for(var i=0;i<8;i++)el('line',{x1:110+i*25,y1:412,x2:110+i*25,y2:418,stroke:c,'stroke-width':1.1,opacity:0.72},svg)})();
 
 // CH IV — Assembly weighted grid (violet)
-(function(){var svg=document.getElementById('card-ch4'),c='var(--assembly)',rng=seeded(123);drawFrame(svg,c,'IV');var gx=80,gy=100,cs=30,hs=[[2,3],[5,5],[3,6],[6,1]];for(var r=0;r<8;r++)for(var co=0;co<8;co++){var x=gx+co*cs,y=gy+r*cs,hot=hs.some(function(h){return Math.abs(h[0]-co)+Math.abs(h[1]-r)<=1}),op=hot?0.55+rng()*0.3:0.1+rng()*0.15;el('rect',{x:x+1,y:y+1,width:cs-2,height:cs-2,rx:2,fill:c,opacity:op},svg);el('rect',{x:x,y:y,width:cs,height:cs,fill:'none',stroke:c,'stroke-width':0.5,opacity:0.3},svg)}hs.forEach(function(h){var hx=gx+h[0]*cs+cs/2,hy=gy+h[1]*cs+cs/2;for(var a=0;a<8;a++){var ang=(a/8)*Math.PI*2,len=18+rng()*14;el('line',{x1:hx+Math.cos(ang)*16,y1:hy+Math.sin(ang)*16,x2:hx+Math.cos(ang)*len,y2:hy+Math.sin(ang)*len,stroke:c,'stroke-width':0.7,opacity:0.35},svg)}});var cd='M80 420';for(var i=0;i<=160;i++){var t=i/160;cd+=' L'+(80+i)+' '+(420-Math.pow(t,2)*60).toFixed(1)}el('path',{d:cd,fill:'none',stroke:c,'stroke-width':1.5,opacity:0.65},svg)})();
+(function(){var svg=document.getElementById('card-ch4'),c='var(--c-assembly)',rng=seeded(123);drawFrame(svg,c,'IV');var gx=80,gy=100,cs=30,hs=[[2,3],[5,5],[3,6],[6,1]];for(var r=0;r<8;r++)for(var co=0;co<8;co++){var x=gx+co*cs,y=gy+r*cs,hot=hs.some(function(h){return Math.abs(h[0]-co)+Math.abs(h[1]-r)<=1}),op=hot?0.55+rng()*0.3:0.1+rng()*0.15;el('rect',{x:x+1,y:y+1,width:cs-2,height:cs-2,rx:2,fill:c,opacity:op},svg);el('rect',{x:x,y:y,width:cs,height:cs,fill:'none',stroke:c,'stroke-width':0.7,opacity:0.54},svg)}hs.forEach(function(h){var hx=gx+h[0]*cs+cs/2,hy=gy+h[1]*cs+cs/2;for(var a=0;a<8;a++){var ang=(a/8)*Math.PI*2,len=18+rng()*14;el('line',{x1:hx+Math.cos(ang)*16,y1:hy+Math.sin(ang)*16,x2:hx+Math.cos(ang)*len,y2:hy+Math.sin(ang)*len,stroke:c,'stroke-width':1.0,opacity:0.63},svg)}});var cd='M80 420';for(var i=0;i<=160;i++){var t=i/160;cd+=' L'+(80+i)+' '+(420-Math.pow(t,2)*60).toFixed(1)}el('path',{d:cd,fill:'none',stroke:c,'stroke-width':2.1,opacity:0.95},svg)})();
 
 // CH V — Parliament hemicycle (orange)
-(function(){var svg=document.getElementById('card-ch5'),c='var(--parliament)',cx=200,cy=310,rng=seeded(456);drawFrame(svg,c,'V');var pa=[],tot=0;for(var i=0;i<7;i++){var s=8+rng()*20;pa.push(s);tot+=s}var ca=Math.PI;for(var i=0;i<7;i++){var a=(pa[i]/tot)*Math.PI;ca-=a;el('line',{x1:cx,y1:cy,x2:cx+Math.cos(ca)*170,y2:cy+Math.sin(ca)*170,stroke:c,'stroke-width':1,opacity:0.5},svg)}for(var arc=0;arc<5;arc++){var r=60+arc*28;ca=Math.PI;for(var p=0;p<7;p++){var span=(pa[p]/tot)*Math.PI,seats=Math.max(2,Math.floor(span/0.08));for(var s=0;s<seats;s++){var a2=ca-span*(s+0.5)/seats,sx=cx+Math.cos(a2)*r,sy=cy+Math.sin(a2)*r;if(sy<cy+5)el('circle',{cx:sx.toFixed(1),cy:sy.toFixed(1),r:4.5,fill:c,opacity:0.5+(p%3)*0.12+rng()*0.12},svg)}ca-=span}}el('path',{d:'M 30 '+cy+' A 170 170 0 0 1 370 '+cy,fill:'none',stroke:c,'stroke-width':1.2,opacity:0.55},svg)})();
+(function(){var svg=document.getElementById('card-ch5'),c='var(--c-parliament)',cx=200,cy=310,rng=seeded(456);drawFrame(svg,c,'V');var pa=[],tot=0;for(var i=0;i<7;i++){var s=8+rng()*20;pa.push(s);tot+=s}var ca=Math.PI;for(var i=0;i<7;i++){var a=(pa[i]/tot)*Math.PI;ca-=a;el('line',{x1:cx,y1:cy,x2:cx+Math.cos(ca)*170,y2:cy+Math.sin(ca)*170,stroke:c,'stroke-width':1.4,opacity:0.90},svg)}for(var arc=0;arc<5;arc++){var r=60+arc*28;ca=Math.PI;for(var p=0;p<7;p++){var span=(pa[p]/tot)*Math.PI,seats=Math.max(2,Math.floor(span/0.08));for(var s=0;s<seats;s++){var a2=ca-span*(s+0.5)/seats,sx=cx+Math.cos(a2)*r,sy=cy+Math.sin(a2)*r;if(sy<cy+5)el('circle',{cx:sx.toFixed(1),cy:sy.toFixed(1),r:4.5,fill:c,opacity:0.90+(p%3)*0.12+rng()*0.12},svg)}ca-=span}}el('path',{d:'M 30 '+cy+' A 170 170 0 0 1 370 '+cy,fill:'none',stroke:c,'stroke-width':1.7,opacity:0.95},svg)})();
 
 // CH VI — Interwoven waveforms (coral)
-(function(){var svg=document.getElementById('card-ch6'),c='var(--choreo)',rng=seeded(789);drawFrame(svg,c,'VI');var waves=[{freq:0.018,amp:60,phase:0,cy:180,sw:1.5,op:0.6},{freq:0.024,amp:50,phase:2.1,cy:230,sw:1.2,op:0.5},{freq:0.015,amp:70,phase:4.2,cy:290,sw:1.5,op:0.6},{freq:0.03,amp:40,phase:1.0,cy:340,sw:1,op:0.45},{freq:0.02,amp:55,phase:3.5,cy:250,sw:1.2,op:0.5}];waves.forEach(function(w){var d='';for(var x=30;x<=370;x+=2){var y=w.cy+Math.sin(x*w.freq*Math.PI*2+w.phase)*w.amp+Math.sin(x*w.freq*0.5*Math.PI*2+w.phase*1.3)*w.amp*0.3;d+=(x===30?'M':'L')+x+' '+y.toFixed(1)}el('path',{d:d,fill:'none',stroke:c,'stroke-width':w.sw,opacity:w.op,'stroke-linecap':'round'},svg)});for(var i=0;i<waves.length;i++){for(var j=i+1;j<waves.length;j++){var wi=waves[i],wj=waves[j];for(var x=40;x<360;x+=3){var yi=wi.cy+Math.sin(x*wi.freq*Math.PI*2+wi.phase)*wi.amp+Math.sin(x*wi.freq*0.5*Math.PI*2+wi.phase*1.3)*wi.amp*0.3;var yj=wj.cy+Math.sin(x*wj.freq*Math.PI*2+wj.phase)*wj.amp+Math.sin(x*wj.freq*0.5*Math.PI*2+wj.phase*1.3)*wj.amp*0.3;if(Math.abs(yi-yj)<4){el('circle',{cx:x,cy:((yi+yj)/2).toFixed(1),r:3+rng()*2,fill:c,opacity:0.55+rng()*0.25},svg);x+=25}}}}})();
+(function(){var svg=document.getElementById('card-ch6'),c='var(--c-choreo)',rng=seeded(789);drawFrame(svg,c,'VI');var waves=[{freq:0.018,amp:60,phase:0,cy:180,sw:1.5,op:0.6},{freq:0.024,amp:50,phase:2.1,cy:230,sw:1.2,op:0.5},{freq:0.015,amp:70,phase:4.2,cy:290,sw:1.5,op:0.6},{freq:0.03,amp:40,phase:1.0,cy:340,sw:1,op:0.45},{freq:0.02,amp:55,phase:3.5,cy:250,sw:1.2,op:0.5}];waves.forEach(function(w){var d='';for(var x=30;x<=370;x+=2){var y=w.cy+Math.sin(x*w.freq*Math.PI*2+w.phase)*w.amp+Math.sin(x*w.freq*0.5*Math.PI*2+w.phase*1.3)*w.amp*0.3;d+=(x===30?'M':'L')+x+' '+y.toFixed(1)}el('path',{d:d,fill:'none',stroke:c,'stroke-width':w.sw,opacity:w.op,'stroke-linecap':'round'},svg)});for(var i=0;i<waves.length;i++){for(var j=i+1;j<waves.length;j++){var wi=waves[i],wj=waves[j];for(var x=40;x<360;x+=3){var yi=wi.cy+Math.sin(x*wi.freq*Math.PI*2+wi.phase)*wi.amp+Math.sin(x*wi.freq*0.5*Math.PI*2+wi.phase*1.3)*wi.amp*0.3;var yj=wj.cy+Math.sin(x*wj.freq*Math.PI*2+wj.phase)*wj.amp+Math.sin(x*wj.freq*0.5*Math.PI*2+wj.phase*1.3)*wj.amp*0.3;if(Math.abs(yi-yj)<4){el('circle',{cx:x,cy:((yi+yj)/2).toFixed(1),r:3+rng()*2,fill:c,opacity:0.95+rng()*0.25},svg);x+=25}}}}})();
 
 // SCROLL REVEAL
 var ro=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.08,rootMargin:'0px 0px -40px 0px'});

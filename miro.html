@@ -3,903 +3,2091 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>MIRO — Democracy in Music</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B0E1A'/%3E%3Ccircle cx='11' cy='9' r='5' fill='%23d4a842'/%3E%3Ccircle cx='21' cy='8' r='4' fill='%2346d2d2'/%3E%3Ccircle cx='15' cy='18' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23' r='3.5' fill='%23d25a6e'/%3E%3Ccircle cx='23' cy='22' r='2.8' fill='%236aa860'/%3E%3C/svg%3E">
+    <title>MI·SYSTEM — Miro · Democracy in Music</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2315140F'/%3E%3Ccircle cx='9.5' cy='10' r='5' fill='%23F7901E'/%3E%3Ccircle cx='22' cy='9' r='4' fill='%23F0C840'/%3E%3Ccircle cx='15.5' cy='19' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23.5' r='3' fill='%23D43030'/%3E%3Ccircle cx='24' cy='22.5' r='3.2' fill='%234FB85F'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
+        :root {
+            --cream:        #E8E2D0;
+            --cream-deep:   #D6CFB8;
+            --cream-edge:   #C4BCA1;
+            --cream-shadow: #A89F87;
+            --canvas-blue:       #1a7abf;
+            --canvas-blue-light: #1590d8;
+            --canvas-blue-dark:  #0e6aa8;
+            --water-blue:        #2196d6;
+            --ink:          #15140F;
+            --ink-soft:     #2A2823;
+            --ink-mid:      #4A463E;
+            --table:        #C7C0AC;
+
+            --scope-bg:     #0E160C;
+            --scope-phos:   #7FE558;
+
+            --rec-bg:       #1A1206;
+            --rec-phos:     #F0C040;
+
+            --te-orange:    #FF5A1F;
+            --te-yellow:    #F5D026;
+            --te-blue:      #3D7DCC;
+            --te-green:     #5FAF52;
+            --te-red:       #D4322A;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Georgia', serif;
-            background: #F7F4EE;
-            color: #1C1917;
-            overflow-x: hidden;
+
+        html, body {
+            font-family: 'Hanken Grotesk', system-ui, sans-serif;
+            background: var(--table);
+            background-image:
+                radial-gradient(ellipse at top, rgba(255,255,255,0.18), transparent 60%),
+                radial-gradient(ellipse at bottom, rgba(0,0,0,0.10), transparent 60%);
+            color: var(--ink);
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            font-feature-settings: "tnum" on;
+            overflow-x: hidden;
         }
 
-        #header {
-            text-align: center;
-            padding: 24px 20px 8px;
-        }
-        
-        #header h2 {
-            font-size: 24px; font-weight: 400; color: #1C1917;
-            line-height: 1.3; margin-top: 4px;
-        }
-        .header-rule {
-            width: 40px; height: 1px; background: #D6D3D1;
-            margin: 18px auto 0;
-        }
-        #header h1 {
-            font-size: 15px; text-transform: uppercase;
-            letter-spacing: 3px;
-            font-weight: 400;
-            color: #9C9590;
-        }
-        #header p {
-            font-size: 13px;
-            font-style: italic;
-            color: #57534E;
-            margin-top: 6px;
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 16px 56px;
         }
 
-        .section-label {
-            text-align: center;
-            font-size: 10px;
-            letter-spacing: 4px;
+        a.home-link {
+            position: fixed; top: 14px; left: 16px;
+            font-size: 10px; color: var(--ink-mid); text-decoration: none;
+            letter-spacing: 2px; z-index: 99;
+            font-weight: 700; text-transform: uppercase;
+        }
+        a.home-link:hover { color: var(--ink); }
+        /* ===== MANUAL ===== */
+        .manual-toggle {
+            position: fixed; top: 12px; right: 16px;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 10px; font-weight: 700; letter-spacing: 2px;
             text-transform: uppercase;
-            color: #444;
-            padding: 14px 0 6px;
+            color: var(--ink);
+            background: var(--cream);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.55),
+                inset 0 -1px 0 rgba(0,0,0,0.05),
+                0 1px 2px rgba(0,0,0,0.18);
+            display: inline-flex; align-items: center; gap: 7px;
+            transition: background 0.15s;
         }
-
-        #canvas-container {
-            display: flex;
-            justify-content: center;
-            padding: 0 20px;
-        }
-        #touchCanvas {
-            border: 1px solid #D6D3D1;
-            cursor: crosshair;
-            touch-action: none;
-            max-width: 100%;
-            height: auto;
-        }
-
-        #controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            padding: 14px 20px;
-            flex-wrap: wrap;
-        }
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        label {
-            font-size: 11px;
-            color: #888;
-            letter-spacing: 1px;
-        }
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 140px;
-            height: 4px;
-            background: #FEFDFB;
-            border-radius: 2px;
-            outline: none;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 14px;
-            height: 14px;
+        .manual-toggle:hover { background: #efe9d6; }
+        .manual-toggle .qmark {
+            display: inline-block;
+            width: 14px; height: 14px;
             border-radius: 50%;
-            background: #4a9eff;
-            cursor: pointer;
+            background: var(--ink);
+            color: var(--cream);
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 14px;
+            text-align: center;
         }
-        input[type="range"]::-moz-range-thumb {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #1C1917; cursor: pointer; border: none;
+        .manual-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15,18,12,0.62);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: none;
+            align-items: center; justify-content: center;
+            z-index: 200;
+            padding: 24px 16px;
+            opacity: 0;
+            transition: opacity 0.18s;
         }
-
-        select {
-            background: #FEFDFB;
-            color: #888;
-            border: 1px solid #333;
-            padding: 5px 10px;
-            font-family: 'Georgia', serif;
-            font-size: 11px;
-            letter-spacing: 1px;
-            border-radius: 2px;
-            cursor: pointer;
-            outline: none;
+        .manual-overlay.open { display: flex; opacity: 1; }
+        .manual-card {
+            background: var(--cream);
+            border-radius: 14px;
+            max-width: 560px;
+            width: 100%;
+            max-height: calc(100vh - 48px);
+            overflow-y: auto;
+            position: relative;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.65),
+                0 24px 48px rgba(0,0,0,0.35),
+                0 4px 12px rgba(0,0,0,0.18);
+            transform: translateY(8px);
+            transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        select:focus { border-color: #4a9eff; }
-
-        button {
-            padding: 7px 20px;
-            background: none;
-            border: 1px solid #4a9eff;
-            color: #4a9eff;
-            font-family: 'Georgia', serif;
-            font-size: 11px;
-            letter-spacing: 1px;
-            cursor: pointer;
-            border-radius: 2px;
-            transition: all 0.2s;
+        .manual-overlay.open .manual-card { transform: translateY(0); }
+        .manual-card::before {
+            content: ""; position: absolute; inset: 0; border-radius: 14px;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.012) 0px, rgba(0,0,0,0.012) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
         }
-        button:hover {
-            background: #4a9eff;
-            color: #F7F4EE;
-        }
-        button:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            background: none;
-            color: #4a9eff;
-        }
-
-        #terrain-container {
-            display: flex;
-            justify-content: center;
-            padding: 0 20px;
+        .manual-header {
+            padding: 18px 28px 12px 28px;
+            display: flex; align-items: baseline; gap: 10px;
+            border-bottom: 1px dashed rgba(0,0,0,0.18);
             position: relative;
         }
-        #terrainDiv {
-            width: 780px;
-            height: 380px;
-            max-width: 100%;
-            border: 1px solid #D6D3D1;
+        .manual-header .model {
+            font-size: 16px; font-weight: 800; letter-spacing: 0.5px; color: var(--ink);
         }
-        #terrainDiv canvas {
+        .manual-header .model-name {
+            font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
+            color: var(--ink-mid); text-transform: uppercase;
+        }
+        .manual-close {
+            position: absolute;
+            z-index: 5;
+            top: 12px; right: 14px;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: var(--cream-deep);
+            color: var(--ink);
+            font-size: 16px; line-height: 1;
+            cursor: pointer;
+            font-family: 'Hanken Grotesk', sans-serif;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 2px rgba(0,0,0,0.15);
+            transition: background 0.12s;
+        }
+        .manual-close:hover { background: var(--cream-edge); }
+        .manual-body {
+            padding: 18px 28px 26px 28px;
+            position: relative; z-index: 1;
+        }
+        .manual-body .intro {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-style: italic;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--ink-soft);
+            margin-bottom: 20px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        .manual-body h3 {
+            font-size: 9px; font-weight: 800; letter-spacing: 2.4px;
+            text-transform: uppercase;
+            color: var(--ink-mid);
+            margin: 18px 0 9px 0;
+            font-family: 'Hanken Grotesk', sans-serif;
+        }
+        .manual-body h3:first-child { margin-top: 0; }
+        .manual-body p {
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            margin-bottom: 9px;
+        }
+        .manual-body ol {
+            margin: 0 0 9px 0;
+            padding-left: 22px;
+        }
+        .manual-body ol li {
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            margin-bottom: 4px;
+        }
+        .manual-body .ctrl {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 4px 14px;
+            margin-bottom: 9px;
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+        }
+        .manual-body .ctrl .k {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 11px;
+            color: var(--ink);
+            letter-spacing: 0.5px;
+            padding-top: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .manual-body b { color: var(--ink); font-weight: 700; }
+        @media (max-width: 520px) {
+            .manual-toggle { padding: 7px 11px; font-size: 9px; }
+            .manual-header { padding: 16px 20px 10px 20px; }
+            .manual-body { padding: 16px 20px 22px 20px; }
+            .manual-body .intro { font-size: 15px; }
+        }
+
+
+        .rack-shell {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 8px;
+        }
+        .rack {
+            width: 1240px;
+            height: 940px;
             display: block;
-            width: 100% !important;
-            height: 100% !important;
+            position: relative;
+            flex-shrink: 0;
         }
 
-        #stats {
-            text-align: center;
-            padding: 10px 20px 4px;
-            font-size: 11px;
-            color: #444;
-            letter-spacing: 1px;
+        .module {
+            width: auto;
+            background: var(--cream);
+            border-radius: 14px;
+            position: absolute;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.65),
+                inset 0 -2px 0 rgba(0,0,0,0.04),
+                0 1px 0 rgba(255,255,255,0.5),
+                0 12px 28px rgba(0,0,0,0.18),
+                0 2px 8px rgba(0,0,0,0.10);
+            transition: box-shadow 0.18s;
+            will-change: transform;
         }
-
-        #info {
-            text-align: center;
-            padding: 16px 20px 30px;
-            font-size: 11px;
-            color: #3a3a3a;
-            line-height: 1.7;
+        .module.dragging {
+            z-index: 50;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.7),
+                inset 0 -2px 0 rgba(0,0,0,0.04),
+                0 1px 0 rgba(255,255,255,0.5),
+                0 22px 44px rgba(0,0,0,0.32),
+                0 6px 14px rgba(0,0,0,0.18);
         }
-
-        #terrain-hint {
-            text-align: center;
+        .module-header { cursor: grab; user-select: none; -webkit-user-select: none; }
+        .module-header:active { cursor: grabbing; }
+        #dp01 { width: 720px; }
+        #dp02 { width: 540px; }
+        #dp03 { width: 540px; }
+        .module::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.012) 0px, rgba(0,0,0,0.012) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+        }
+        .module-header {
+            padding: 14px 28px 10px 28px;
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+            border-bottom: 1px dashed rgba(0,0,0,0.18);
+        }
+        .module-header .model {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--ink);
+        }
+        .module-header .model-name {
             font-size: 10px;
-            color: #333;
-            padding: 4px 0 0;
-            letter-spacing: 1px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+        }
+
+        /* INSTRUMENT */
+        .instrument .chassis {
+            padding: 18px 28px 22px 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .control-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            gap: 22px;
+        }
+
+        .votes-counter {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.8px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+        }
+        .votes-counter .k {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+        .votes-counter .v {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+        .votes-counter .sep {
+            opacity: 0.4;
+            font-size: 12px;
+            margin: 0 2px;
+        }
+
+        .mode-rocker {
+            display: flex;
+            background: var(--cream-deep);
+            border-radius: 8px;
+            padding: 3px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.4);
+        }
+        .rocker-btn {
+            border: none;
+            background: transparent;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.6px;
+            padding: 9px 14px;
+            cursor: pointer;
+            color: var(--ink-mid);
+            border-radius: 6px;
+            transition: all 0.15s;
+            position: relative;
+            text-transform: uppercase;
+        }
+        .rocker-btn.active {
+            background: var(--ink);
+            color: var(--te-yellow);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .rocker-btn.active::before {
+            content: "";
+            position: absolute;
+            top: 4px; right: 5px;
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: var(--te-yellow);
+            box-shadow: 0 0 3px var(--te-yellow);
+        }
+
+        .knob-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .knob-wrap {
+            position: relative;
+            width: 56px; height: 56px;
+        }
+        .knob {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #fff 0%, var(--cream-deep) 25%, var(--cream-edge) 70%, var(--cream-shadow) 100%);
+            box-shadow:
+                inset 0 1px 2px rgba(255,255,255,0.6),
+                0 2px 4px rgba(0,0,0,0.18),
+                0 0 0 2px rgba(0,0,0,0.04);
+            cursor: ns-resize;
+            position: relative;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+        .knob .cap {
+            position: absolute;
+            inset: 8px;
+            border-radius: 50%;
+            background: var(--knob-color, var(--te-blue));
+            box-shadow: inset 0 -2px 4px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.4);
+            transition: transform 0.04s;
+        }
+        .knob .indicator {
+            position: absolute;
+            top: 4px; left: 50%;
+            width: 2.5px; height: 12px;
+            background: var(--ink);
+            border-radius: 1px;
+            transform: translateX(-50%);
+            transform-origin: 50% 24px;
+        }
+        .knob[data-color="blue"]   { --knob-color: var(--te-blue); }
+
+        .knob-tickring { position: absolute; inset: -7px; pointer-events: none; }
+        .knob-tickring .tick {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 2px; height: 2px;
+            border-radius: 50%;
+            background: var(--ink-mid);
+            opacity: 0.5;
+        }
+        .knob-label {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.8px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+        }
+        .knob-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-top: -2px;
+        }
+
+        /* LCD */
+        .lcd {
+            justify-self: end;
+            background: linear-gradient(180deg, #131611 0%, #0c0e0a 100%);
+            border-radius: 6px;
+            padding: 8px 14px;
+            min-width: 200px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.7), 0 1px 0 rgba(255,255,255,0.3);
+            position: relative;
+            border: 1px solid #050604;
+        }
+        .lcd::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 6px;
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.18) 2px, rgba(0,0,0,0.18) 3px);
+            pointer-events: none;
+        }
+        .lcd-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-family: 'VT323', monospace;
+            font-size: 17px;
+            color: #C4E558;
+            text-shadow: 0 0 4px rgba(196,229,88,0.55), 0 0 1px rgba(196,229,88,0.9);
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+        }
+        .lcd-row .key {
+            font-size: 10px;
+            color: rgba(196,229,88,0.55);
+            letter-spacing: 1.5px;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-weight: 700;
+            min-width: 38px;
+        }
+        .lcd-row .val { font-size: 17px; }
+
+        /* COMPOSITION AREA: canvas + water fader side-by-side */
+        .composition {
+            display: block;
+            margin-bottom: 22px;
+        }
+        .canvas-wrap {
+            position: relative;
+            background: linear-gradient(180deg, var(--cream-deep) 0%, var(--cream-edge) 100%);
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), 0 1px 0 rgba(255,255,255,0.4);
+        }
+        .draw-canvas {
+            display: block;
+            width: 100%;
+            height: 280px;
+            background: var(--canvas-blue);
+            border-radius: 4px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.25), inset 0 0 30px rgba(0,0,0,0.15);
+            cursor: crosshair;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .draw-prompt {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'EB Garamond', Georgia, serif;
+            font-style: italic;
+            font-size: 14px;
+            color: rgba(255,255,255,0.45);
+            pointer-events: none;
+            transition: opacity 0.25s;
+            letter-spacing: 0.2px;
+        }
+        .canvas-wrap.has-marks .draw-prompt { opacity: 0; }
+
+        /* WATER FADER */
+        .water-fader-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .water-fader {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            border-radius: 6px;
+            background: linear-gradient(180deg, #cfc8b3 0%, #b9b39c 100%);
+            box-shadow:
+                inset 0 2px 4px rgba(0,0,0,0.20),
+                inset 0 -1px 0 rgba(255,255,255,0.3),
+                0 1px 0 rgba(255,255,255,0.4);
+            overflow: hidden;
+            cursor: ns-resize;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+        .water-fader-fill {
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 0%;
+            background: linear-gradient(180deg,
+                rgba(33,150,214,0.92) 0%,
+                rgba(26,122,191,0.95) 60%,
+                rgba(14,106,168,1) 100%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
+            transition: height 0.08s linear;
+        }
+        .water-fader-fill::before {
+            /* shimmering top edge */
+            content: "";
+            position: absolute;
+            top: -1px; left: 0; right: 0;
+            height: 2px;
+            background: rgba(255,255,255,0.6);
+        }
+        .water-fader-ticks {
+            position: absolute;
+            top: 8px; bottom: 8px;
+            right: 5px;
+            width: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+        .water-fader-ticks span {
+            width: 4px; height: 1px;
+            background: var(--ink-mid);
+            opacity: 0.32;
+        }
+        .water-fader-handle {
+            position: absolute;
+            left: -2px; right: -2px;
+            height: 12px;
+            transform: translateY(50%);
+            background: linear-gradient(180deg, var(--cream) 0%, var(--cream-deep) 50%, var(--cream-edge) 100%);
+            border-radius: 3px;
+            box-shadow:
+                0 1px 2px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.6),
+                inset 0 -1px 0 rgba(0,0,0,0.15);
+            pointer-events: none;
+        }
+        .water-fader-handle::before, .water-fader-handle::after {
+            content: "";
+            position: absolute;
+            left: 4px; right: 4px;
+            height: 1px;
+            background: rgba(0,0,0,0.18);
+        }
+        .water-fader-handle::before { top: 4px; }
+        .water-fader-handle::after { bottom: 4px; }
+        .water-fader-label {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.8px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+        }
+        .water-fader-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-top: -2px;
+        }
+
+        /* Water fader as it appears inside the scope module:
+           dark chassis, green phosphor fill, glowing handle */
+        .scope .water-fader-wrap {
+            justify-content: stretch;
+        }
+        .scope .water-fader-label {
+            color: var(--scope-phos);
+            opacity: 0.78;
+            text-shadow: 0 0 4px rgba(127,229,88,0.4);
+        }
+        .scope .water-fader {
+            background: linear-gradient(180deg, #0a1208 0%, #060a05 100%);
+            box-shadow:
+                inset 0 2px 4px rgba(0,0,0,0.55),
+                inset 0 -1px 0 rgba(127,229,88,0.08),
+                inset 0 0 0 1px rgba(127,229,88,0.18),
+                0 1px 0 rgba(255,255,255,0.06);
+        }
+        .scope .water-fader-fill {
+            background: linear-gradient(180deg,
+                rgba(127,229,88,0.78) 0%,
+                rgba(96,200,68,0.85) 60%,
+                rgba(58,160,40,0.95) 100%);
+            box-shadow:
+                inset 0 1px 0 rgba(180,255,140,0.45),
+                0 0 8px rgba(127,229,88,0.35);
+        }
+        .scope .water-fader-fill::before {
+            background: rgba(200,255,160,0.75);
+            box-shadow: 0 0 6px rgba(127,229,88,0.6);
+        }
+        .scope .water-fader-ticks span {
+            background: var(--scope-phos);
+            opacity: 0.22;
+        }
+        .scope .water-fader-handle {
+            background: linear-gradient(180deg, #d4f0c0 0%, #a8d890 50%, #7fc068 100%);
+            box-shadow:
+                0 1px 3px rgba(0,0,0,0.6),
+                0 0 6px rgba(127,229,88,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.55),
+                inset 0 -1px 0 rgba(0,0,0,0.18);
+        }
+        .scope .water-fader-handle::before,
+        .scope .water-fader-handle::after {
+            background: rgba(0,40,10,0.32);
+        }
+        .scope .water-fader-value {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--scope-phos);
+            text-shadow: 0 0 3px rgba(127,229,88,0.5);
+        }
+
+        /* Layout: screen + side-mounted fader */
+        .scope .screen-and-fader {
+            display: grid;
+            grid-template-columns: 1fr 56px;
+            gap: 14px;
+            align-items: stretch;
+        }
+        .scope .screen-and-fader .scope-screen { margin: 0; }
+        .scope .scope-water {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .scope .scope-water .water-fader { flex: 1; width: 100%; }
+        @media (max-width: 800px) {
+            .scope .screen-and-fader { grid-template-columns: 1fr 44px; gap: 10px; }
+        }
+
+        /* transport */
+        .transport {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+        .trans-btn {
+            background: var(--cream-deep);
+            border: none;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.6px;
+            padding: 12px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--ink);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 2px rgba(0,0,0,0.18);
+            position: relative;
+            min-width: 70px;
+            transition: all 0.1s;
+            text-transform: uppercase;
+        }
+        .trans-btn:hover { background: var(--cream-edge); }
+        .trans-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        .trans-btn .led {
+            position: absolute;
+            top: 5px; right: 5px;
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: var(--ink-mid);
+            opacity: 0.3;
+            transition: all 0.15s;
+        }
+        .trans-btn.live .led { background: var(--te-green); opacity: 1; box-shadow: 0 0 4px var(--te-green); }
+        .trans-btn.alarm { color: var(--te-red); }
+        .trans-btn.alarm .led { background: var(--te-red); opacity: 0.7; }
+
+        .transport-rule {
+            flex: 1;
+            height: 1px;
+            background: rgba(0,0,0,0.08);
+            margin: 0 8px;
+        }
+
+        .status-strip {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--ink-mid);
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 360px;
+        }
+        .status-strip .acc { color: var(--ink); font-weight: 700; }
+
+        .output-jacks {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+        }
+        .patch-jack {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            min-width: 56px;
+            position: relative;
+        }
+        .patch-jack .socket {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 50%, #0a0908 0%, #0a0908 35%, #423d33 38%, #6e6856 60%, #4a4538 100%);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.7), 0 1px 0 rgba(255,255,255,0.5);
+            position: relative;
+        }
+        .patch-jack .socket::before {
+            content: "";
+            position: absolute; inset: 6px;
+            border-radius: 50%;
+            background: #050403;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.9);
+        }
+        .patch-jack.lit .socket::after {
+            content: "";
+            position: absolute;
+            top: -2px; right: -2px;
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--te-green);
+            box-shadow: 0 0 4px var(--te-green);
+        }
+        .patch-jack .label {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+        .patch-jack.out .label { color: var(--ink); }
+
+        /* CABLE OVERLAY */
+        .cable-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: visible;
+            z-index: 10;
+        }
+        .gap { height: 28px; }
+        @media (max-width: 800px) { .gap { height: 20px; } }
+
+        /* DISPLAY MODULES */
+        .display .chassis {
+            padding: 18px 28px 22px 28px;
+            position: relative;
+            z-index: 1;
+        }
+        .display .top-row {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            flex-wrap: wrap;
+        }
+        .display .top-row .in-jack {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+        .display .top-row .in-jack .label {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+        }
+        .display .top-row .meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--ink-mid);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+        .display .top-row .meta .acc { color: var(--ink); font-weight: 700; }
+        .display .top-row .mini-led {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.6px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+        }
+        .display .top-row .mini-led .dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--ink-mid);
+            opacity: 0.3;
+        }
+        .scope .top-row .mini-led.on .dot {
+            background: var(--scope-phos);
+            opacity: 1;
+            box-shadow: 0 0 5px var(--scope-phos);
+        }
+        .tape .top-row .mini-led.on .dot {
+            background: var(--rec-phos);
+            opacity: 1;
+            box-shadow: 0 0 5px var(--rec-phos);
+        }
+
+        .screen {
+            position: relative;
+            border-radius: 8px;
+            padding: 8px;
+            background: linear-gradient(180deg, #1a1814 0%, #0e0c08 100%);
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.4);
+            box-sizing: border-box;
+        }
+        .screen-inner {
+            position: relative;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: inset 0 0 24px rgba(0,0,0,0.5);
+            height: 100%;
+            width: 100%;
+        }
+        .scope .screen-inner { background: var(--scope-bg); }
+        .tape  .screen-inner { background: var(--rec-bg); }
+
+        .screen canvas, .screen .three-host {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .screen .three-host {
+            position: relative;
+            cursor: grab;
+        }
+        .screen .three-host.dragging { cursor: grabbing; }
+        .screen-inner::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.18) 2px, rgba(0,0,0,0.18) 3px);
+            pointer-events: none;
+            border-radius: 4px;
+        }
+
+        .screen-label {
+            position: absolute;
+            font-family: 'VT323', monospace;
+            font-size: 14px;
+            letter-spacing: 0.6px;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .scope .screen-label { color: var(--scope-phos); text-shadow: 0 0 4px rgba(127,229,88,0.5); }
+        .tape  .screen-label { color: var(--rec-phos);  text-shadow: 0 0 4px rgba(240,192,64,0.5); }
+
+        .scope-screen { height: 280px; }
+        .tape-screen  { height: 220px; }
+
+        .tape-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.18);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.8px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .tape-footer .seg { display: flex; align-items: center; gap: 6px; }
+        .tape-footer .seg .acc { color: var(--ink); font-weight: 700; }
+
+        @media (max-width: 800px) {
+            body { padding: 18px 8px 36px; }
+            .module-header { padding: 12px 18px 8px 18px; }
+            .instrument .chassis,
+            .display .chassis { padding: 14px 18px; }
+            .control-strip {
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
+                row-gap: 18px;
+            }
+            .mode-rocker { grid-column: span 2; justify-self: start; }
+            .knob, .knob-wrap { width: 48px; height: 48px; }
+            .knob .indicator { transform-origin: 50% 20px; }
+            .draw-canvas { height: 220px; }
+            .scope-screen { height: 220px; }
+            .tape-screen  { height: 180px; }
+            .display .top-row { gap: 12px; }
+        }
+        @media (max-width: 520px) {
+            .draw-canvas { height: 180px; }
+            .knob, .knob-wrap { width: 42px; height: 42px; }
+            .knob .indicator { transform-origin: 50% 17px; }
+            .knob .cap { inset: 6px; }
+            .patch-jack { min-width: 44px; }
+            .patch-jack .socket { width: 18px; height: 18px; }
+            .transport { flex-wrap: wrap; }
+            .trans-btn { padding: 10px 14px; min-width: 56px; }
+        }
+
+        .start-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,18,12,0.78);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .start-card {
+            background: var(--cream);
+            border-radius: 12px;
+            padding: 28px 36px 24px;
+            text-align: center;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.65), 0 18px 40px rgba(0,0,0,0.45);
+            max-width: 380px;
+            margin: 0 16px;
+        }
+        .start-card .h {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+            color: var(--ink);
+            margin-bottom: 6px;
+        }
+        .start-card .s {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.6px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+        .start-card p {
+            font-size: 13px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            margin-bottom: 20px;
+        }
+        .start-card button {
+            background: var(--ink);
+            color: var(--te-yellow);
+            border: none;
+            padding: 12px 22px;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
-    <a href="index.html" style="position:fixed;top:12px;left:16px;font-size:11px;color:#333;text-decoration:none;letter-spacing:2px;z-index:99;font-family:Georgia,serif;">&larr; Home</a>
-    <div id="header">
-        <h1>MIRO</h1>
-        <h2>We ask that you only touch the artwork once</h2>
-        <div class="header-rule"></div>
-    </div>
 
-    <div class="section-label">Touch Canvas</div>
-    <div id="canvas-container">
-        <canvas id="touchCanvas" width="780" height="320"></canvas>
-    </div>
+<a class="home-link" href="index.html">← HOME</a>
 
-    <div id="stats">
-        <span id="touchCount">0</span> touches · peak intensity: <span id="peakDisplay">0</span>
-    </div>
+<button class="manual-toggle" id="manualToggle" aria-label="Open manual">
+    <span class="qmark">?</span><span>manual</span>
+</button>
 
-    <div id="controls">
-        <div class="control-group">
-            <label>Water Level</label>
-            <input type="range" id="waterLevel" min="0" max="100" value="0">
-            <span id="waterValue" style="font-size:11px;color:#555;min-width:28px;">0%</span>
+<div class="manual-overlay" id="manualOverlay" role="dialog" aria-modal="true" aria-labelledby="manualHeading">
+    <div class="manual-card">
+        <button class="manual-close" id="manualClose" aria-label="Close">×</button>
+        <div class="manual-header" id="manualHeading">
+            <span class="model">MI·01</span>
+            <span class="model-name">miro · manual</span>
         </div>
-        <div class="control-group">
-            <label>Sound</label>
-            <select id="soundSelect">
-                <option value="bells">Bells</option>
-                <option value="strings">Strings</option>
-                <option value="pad">Warm Pad</option>
-                <option value="sine">Pure Sine</option>
-            </select>
+        <div class="manual-body">
+            <p class="intro">A spatial composition surface where each touch is a vote on where to place sound. Marks accumulate where people agree; raise the water to filter out the weakly-supported regions.</p>
+
+            <h3>How to play</h3>
+            <ol>
+                <li>Tap or drag on the canvas to vote. Each touch adds intensity at that location.</li>
+                <li>Multiple votes in the same region grow into a darker, larger blob.</li>
+                <li>Drag the WATER fader (on the SCOPE module) up to filter out everything below a threshold of agreement; the canvas and terrain update together.</li>
+                <li>Press <b>SCAN</b> to play the surviving marks as a left-to-right musical score.</li>
+            </ol>
+
+            <h3>Controls</h3>
+            <div class="ctrl"><span class="k">Voice</span><span><b>Sine</b>, <b>bell</b>, or <b>strings</b>: the timbre used when the score plays.</span></div>
+            <div class="ctrl"><span class="k">Water</span><span>A vote-intensity threshold. At zero, every faint trace counts; at full, only the strongest collective gestures survive.</span></div>
+
+            <h3>What this demonstrates</h3>
+            <p>A nod to Joan Miró's <i>Bleu II</i>: black blobs on cerulean. Each canvas position is a vote; intensity is agreement. Water is a quorum threshold: when only the strongest peaks survive, the resulting score is unambiguously what the collective chose. The 3D scope shows the same data as a vote-density terrain: the same composition you see from above on the canvas, viewed as a landscape with peaks.</p>
         </div>
-        <button id="sonifyBtn">&#9835; Sonify</button>
-        <button id="clearBtn">Clear</button>
     </div>
+</div>
 
-    <div class="section-label">Terrain</div>
-    <div id="terrain-container">
-        <div id="terrainDiv"></div>
+<div class="start-overlay" id="startOverlay">
+    <div class="start-card">
+        <div class="h">MI·SYSTEM</div>
+        <div class="s">a spatial composer · model 03</div>
+        <p>Each touch is a vote. Overlapping touches build peaks. Lift the water level to reveal only the strongest choices, then scan to hear the terrain sung.</p>
+        <button id="startBtn">power on</button>
     </div>
-    <div id="terrain-hint">Click and drag to rotate</div>
+</div>
 
-    <div id="info">
-        Each touch represents a voice. Overlapping touches build peaks.<br>
-        Raise the water level to reveal only the strongest choices. Sonify to hear the terrain.
-    </div>
+<div class="rack-shell">
+<div class="rack" id="rack">
+    <svg class="cable-overlay" id="cableOverlay"></svg>
 
-    <script>
-    (function() {
-        // ==========================================
-        // CONFIGURATION
-        // ==========================================
-        var GRID_COLS = 78;
-        var GRID_ROWS = 32;
-        var TOUCH_RADIUS = 3;
-        var TOUCH_INTENSITY = 1.0;
-        var SCAN_DURATION = 10;
+    <!-- DP—01 INSTRUMENT -->
+    <section class="module instrument" id="dp01" data-x="260" data-y="20" style="transform: translate(260px, 20px);">
+        <header class="module-header">
+            <span class="model">MI·01</span>
+            <span class="model-name">miro</span>
+        </header>
+        <div class="chassis">
 
-        // Scales
-        var SCALES = {
-            amin: [110.00, 130.81, 146.83, 164.81, 196.00,
-                   220.00, 261.63, 293.66, 329.63, 392.00,
-                   440.00, 523.25, 587.33, 659.25, 783.99, 880.00]
-        };
+            <div class="control-strip">
+                <div class="mode-rocker" id="modeRocker">
+                    <button class="rocker-btn active" data-mode="sine">sine</button>
+                    <button class="rocker-btn" data-mode="bells">bell</button>
+                    <button class="rocker-btn" data-mode="strings">strg</button>
+                </div>
+                <div class="votes-counter">
+                    <span class="k">votes</span>
+                    <span class="v" id="lcdVotes">000</span>
+                    <span class="sep">/</span>
+                    <span class="k">above water</span>
+                    <span class="v" id="lcdAbove">000</span>
+                </div>
+            </div>
 
-        // Pre-generate canvas texture patches for consistent rendering
-        var texPatches = [];
-        for (var tp = 0; tp < 40; tp++) {
-            texPatches.push({
-                x: Math.random() * 780,
-                y: Math.random() * 320,
-                w: 30 + Math.random() * 80,
-                h: 20 + Math.random() * 60,
-                light: Math.random() > 0.5
-            });
+            <div class="composition">
+                <div class="canvas-wrap" id="canvasWrap">
+                    <canvas class="draw-canvas" id="drawCanvas"></canvas>
+                    <div class="draw-prompt">touch or drag to compose</div>
+                </div>
+            </div>
+
+            <div class="transport">
+                <button class="trans-btn" id="playBtn"><span class="led"></span>▶ SCAN</button>
+                <button class="trans-btn" id="stopBtn"><span class="led"></span>■ STOP</button>
+                <div class="transport-rule"></div>
+                <button class="trans-btn alarm" id="clearBtn"><span class="led"></span>CLEAR</button>
+            </div>
+
+            <div class="output-jacks" id="patchOuts">
+                <div class="patch-jack out lit" data-id="scope-out">
+                    <div class="socket"></div>
+                    <div class="label">scope out</div>
+                </div>
+                <div class="patch-jack out lit" data-id="tape-out">
+                    <div class="socket"></div>
+                    <div class="label">tape out</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DP—02 SCOPE (3D wireframe terrain) -->
+    <section class="module display scope" id="dp02" data-x="60" data-y="510" style="transform: translate(60px, 510px);">
+        <header class="module-header">
+            <span class="model">MI·02</span>
+            <span class="model-name">scope</span>
+        </header>
+        <div class="chassis">
+            <div class="top-row">
+                <div class="in-jack" id="scopeInJack">
+                    <div class="patch-jack lit"><div class="socket"></div></div>
+                    <div class="label">in · from MI·01</div>
+                </div>
+                <div class="meta">VIEW · <span class="acc">3D WIREFRAME</span></div>
+                <div class="meta">PEAK · <span class="acc" id="scopePeak">0.0</span></div>
+                <div class="meta">DRAG TO ROTATE</div>
+                <div class="mini-led on" id="scopeLive">
+                    <div class="dot"></div>
+                    <span>signal</span>
+                </div>
+            </div>
+
+            <div class="screen-and-fader">
+                <div class="screen scope-screen">
+                    <div class="screen-inner">
+                        <div class="three-host" id="threeHost"></div>
+                        <div class="screen-label" style="top:8px; left:10px;">TERRAIN · 3D</div>
+                        <div class="screen-label" style="top:8px; right:10px;" id="scopeReadout">— —</div>
+                    </div>
+                </div>
+                <div class="scope-water water-fader-wrap">
+                    <div class="water-fader-label">water</div>
+                    <div class="water-fader" id="waterFader">
+                        <div class="water-fader-fill" id="waterFill"></div>
+                        <div class="water-fader-ticks">
+                            <span></span><span></span><span></span><span></span>
+                            <span></span><span></span><span></span><span></span>
+                            <span></span><span></span><span></span>
+                        </div>
+                        <div class="water-fader-handle" id="waterHandle"></div>
+                    </div>
+                    <div class="water-fader-value" id="lcdWater">0%</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DP—03 TAPE (sonification score) -->
+    <section class="module display tape" id="dp03" data-x="640" data-y="510" style="transform: translate(640px, 510px);">
+        <header class="module-header">
+            <span class="model">MI·03</span>
+            <span class="model-name">tape</span>
+        </header>
+        <div class="chassis">
+            <div class="top-row">
+                <div class="in-jack" id="tapeInJack">
+                    <div class="patch-jack lit"><div class="socket"></div></div>
+                    <div class="label">in · from MI·01</div>
+                </div>
+                <div class="meta">SCALE · <span class="acc">A MIN</span></div>
+                <div class="meta">SCAN · <span class="acc" id="tapeScan">10S</span></div>
+                <div class="mini-led" id="tapeRec">
+                    <div class="dot"></div>
+                    <span id="tapeRecLabel">stand by</span>
+                </div>
+            </div>
+
+            <div class="screen tape-screen">
+                <div class="screen-inner">
+                    <canvas id="tapeCanvas"></canvas>
+                    <div class="screen-label" style="top:8px; left:10px;">SCORE · ROLL</div>
+                    <div class="screen-label" style="top:8px; right:10px;" id="tapePos">0.0S / 10S</div>
+                </div>
+            </div>
+
+            <div class="tape-footer">
+                <div class="seg">notes light up as the scan reaches each column</div>
+            </div>
+        </div>
+    </section>
+
+</div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    // ============== CONSTANTS ==============
+    var GRID_COLS = 64;
+    var GRID_ROWS = 24;
+    var TOUCH_RADIUS = 3;
+    var TOUCH_INTENSITY = 1.0;
+    var SCAN_DURATION = 10; // seconds
+    var SCALE_AMIN = [110.00, 130.81, 146.83, 164.81, 196.00,
+                      220.00, 261.63, 293.66, 329.63, 392.00,
+                      440.00, 523.25, 587.33, 659.25, 783.99, 880.00];
+    var SCALE_NAMES = ['A2','C3','D3','E3','G3','A3','C4','D4','E4','G4','A4','C5','D5','E5','G5','A5'];
+
+    // ============== STATE ==============
+    var soundType = 'sine';
+    var waterLevel = 0;
+    var grid = new Float32Array(GRID_COLS * GRID_ROWS);
+    var colorSeeds = new Float32Array(GRID_COLS * GRID_ROWS);
+    for (var i = 0; i < colorSeeds.length; i++) colorSeeds[i] = Math.random();
+    var maxIntensity = 0;
+    var voteCount = 0;
+    var scanProgress = -1;     // -1 = not scanning, 0..1 = active
+    var sonifying = false;
+    var audioCtx = null;
+    var scanAnimStart = 0;
+    var animFrame = null;
+
+    // ============== DOM ==============
+    var modeRocker = document.getElementById('modeRocker');
+    var modeBtns = modeRocker.querySelectorAll('.rocker-btn');
+    var lcdVotes = document.getElementById('lcdVotes');
+    var lcdAbove = document.getElementById('lcdAbove');
+    var playBtn = document.getElementById('playBtn');
+    var stopBtn = document.getElementById('stopBtn');
+    var clearBtn = document.getElementById('clearBtn');
+    var canvasWrap = document.getElementById('canvasWrap');
+    var drawCanvas = document.getElementById('drawCanvas');
+    var tapeCanvas = document.getElementById('tapeCanvas');
+    var threeHost = document.getElementById('threeHost');
+    var startOverlay = document.getElementById('startOverlay');
+    var startBtn = document.getElementById('startBtn');
+    var scopePeak = document.getElementById('scopePeak');
+    var scopeReadout = document.getElementById('scopeReadout');
+    var scopeLive = document.getElementById('scopeLive');
+    var tapeRec = document.getElementById('tapeRec');
+    var tapeRecLabel = document.getElementById('tapeRecLabel');
+    var tapePos = document.getElementById('tapePos');
+
+    function pad3(n) { return ('000' + n).slice(-3); }
+
+    // ============== WATER FADER ==============
+    var waterFader = document.getElementById('waterFader');
+    var waterHandle = document.getElementById('waterHandle');
+    var waterFill = document.getElementById('waterFill');
+    var lcdWater = document.getElementById('lcdWater');
+
+    function setWaterLevel(v) {
+        waterLevel = Math.max(0, Math.min(1, v));
+        var pct = Math.round(waterLevel * 100);
+        // fill height
+        waterFill.style.height = (waterLevel * 100) + '%';
+        // handle position: 0 = bottom, 1 = top of fader
+        waterHandle.style.bottom = (waterLevel * 100) + '%';
+        lcdWater.textContent = pct + '%';
+        updateAboveCount();
+        render2D();
+        updateTerrainColors();
+        drawTape();
+    }
+
+    (function attachWaterFader() {
+        var dragging = false;
+        function setFromY(clientY) {
+            var rect = waterFader.getBoundingClientRect();
+            // y=0 at top of fader, y=rect.height at bottom
+            // water level inverted: top = 100%, bottom = 0%
+            var y = clientY - rect.top;
+            var f = 1 - (y / rect.height);
+            setWaterLevel(f);
+        }
+        waterFader.addEventListener('pointerdown', function(e) {
+            dragging = true;
+            try { waterFader.setPointerCapture(e.pointerId); } catch(_) {}
+            setFromY(e.clientY);
+            e.preventDefault();
+        });
+        waterFader.addEventListener('pointermove', function(e) {
+            if (!dragging) return;
+            setFromY(e.clientY);
+        });
+        var up = function() { dragging = false; };
+        waterFader.addEventListener('pointerup', up);
+        waterFader.addEventListener('pointercancel', up);
+        waterFader.addEventListener('lostpointercapture', up);
+        waterFader.addEventListener('dblclick', function() { setWaterLevel(0); });
+        // initialize
+        setWaterLevel(0);
+    })();
+
+    // ============== MODE ROCKER ==============
+    modeBtns.forEach(function(b) {
+        b.addEventListener('click', function() {
+            modeBtns.forEach(function(x) { x.classList.remove('active'); });
+            b.classList.add('active');
+            soundType = b.dataset.mode;
+        });
+    });
+
+    // ============== CANVAS HELPERS ==============
+    function setupCanvas(c) {
+        var dpr = window.devicePixelRatio || 1;
+        var rect = c.getBoundingClientRect();
+        c.width  = Math.floor(rect.width  * dpr);
+        c.height = Math.floor(rect.height * dpr);
+        var ctx = c.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx: ctx, w: rect.width, h: rect.height };
+    }
+
+    // ============== DRAW CANVAS ==============
+    function gridIdx(c, r) { return r * GRID_COLS + c; }
+
+    function addTouch(cx, cy) {
+        var rect = drawCanvas.getBoundingClientRect();
+        var cellW = rect.width / GRID_COLS;
+        var cellH = rect.height / GRID_ROWS;
+        var col = Math.floor(cx / cellW);
+        var row = Math.floor(cy / cellH);
+
+        for (var dy = -TOUCH_RADIUS; dy <= TOUCH_RADIUS; dy++) {
+            for (var dx = -TOUCH_RADIUS; dx <= TOUCH_RADIUS; dx++) {
+                var c = col + dx;
+                var r = row + dy;
+                if (c < 0 || c >= GRID_COLS || r < 0 || r >= GRID_ROWS) continue;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > TOUCH_RADIUS) continue;
+                var falloff = Math.exp(-(dist * dist) / (TOUCH_RADIUS * 0.6));
+                var idx = gridIdx(c, r);
+                grid[idx] += TOUCH_INTENSITY * falloff;
+                if (grid[idx] > maxIntensity) maxIntensity = grid[idx];
+            }
+        }
+        voteCount++;
+        canvasWrap.classList.add('has-marks');
+    }
+
+    function drawBlob(ctx, cx, cy, r, seed1, seed2) {
+        ctx.beginPath();
+        var pts = 6 + Math.floor(seed1 * 4);
+        for (var i = 0; i <= pts; i++) {
+            var a = (i / pts) * Math.PI * 2;
+            var rv = r * (0.85 + (((seed1 * 7 + i * 13) % 1) * 0.30));
+            var x = cx + Math.cos(a) * rv;
+            var y = cy + Math.sin(a) * rv;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+    }
+
+    function render2D() {
+        var s = setupCanvas(drawCanvas);
+        var ctx = s.ctx, W = s.w, H = s.h;
+        var cellW = W / GRID_COLS;
+        var cellH = H / GRID_ROWS;
+        ctx.clearRect(0, 0, W, H);
+
+        // Miró cerulean texture: irregular patches of lighter and darker blue
+        // (canvas already has --canvas-blue background; we paint variation on top)
+        for (var t = 0; t < 32; t++) {
+            var seed = colorSeeds[t * 7 + 1] || 0.5;
+            var px = ((colorSeeds[t * 13] || 0.5) * W);
+            var py = ((colorSeeds[t * 13 + 7] || 0.5) * H);
+            var pw = 30 + ((colorSeeds[t * 13 + 1] || 0.5) * 80);
+            var ph = 20 + ((colorSeeds[t * 13 + 2] || 0.5) * 60);
+            ctx.fillStyle = seed > 0.5 ? 'rgba(21,144,216,0.04)' : 'rgba(14,106,168,0.05)';
+            ctx.fillRect(px, py, pw, ph);
         }
 
-        // ==========================================
-        // STATE
-        // ==========================================
-        var grid = new Float32Array(GRID_COLS * GRID_ROWS);
-        // Store a color seed per cell
-        var colorSeeds = new Float32Array(GRID_COLS * GRID_ROWS);
-        for (var i = 0; i < colorSeeds.length; i++) colorSeeds[i] = Math.random();
+        if (maxIntensity === 0) return;
 
-        var maxIntensity = 0;
-        var waterLevel = 0;
-        var isSonifying = false;
-        var scanProgress = -1;
-        var audioCtx = null;
-        var touchCount = 0;
-        var animFrameId = null;
+        for (var r = 0; r < GRID_ROWS; r++) {
+            for (var c = 0; c < GRID_COLS; c++) {
+                var idx = gridIdx(c, r);
+                var val = grid[idx];
+                if (val <= 0) continue;
+                var norm = val / maxIntensity;
+                if (norm < waterLevel) continue;
 
-        // ==========================================
-        // DOM
-        // ==========================================
-        var touchCanvas = document.getElementById('touchCanvas');
-        var tCtx = touchCanvas.getContext('2d');
-        var waterSlider = document.getElementById('waterLevel');
-        var waterValueEl = document.getElementById('waterValue');
-        var sonifyBtn = document.getElementById('sonifyBtn');
-        var clearBtn = document.getElementById('clearBtn');
-        var soundSelect = document.getElementById('soundSelect');
-        var touchCountEl = document.getElementById('touchCount');
-        var peakDisplayEl = document.getElementById('peakDisplay');
+                var seed1 = colorSeeds[idx];
+                var seed2 = colorSeeds[(idx + 13) % colorSeeds.length];
+                var minR = cellW * 0.30;
+                var maxR = cellW * 3.5;
+                var radius = minR + (maxR - minR) * Math.pow(norm, 0.6);
+                var cx = c * cellW + cellW / 2 + (seed1 - 0.5) * cellW * 0.4;
+                var cy = r * cellH + cellH / 2 + (seed2 - 0.5) * cellH * 0.4;
 
-        var cellW = touchCanvas.width / GRID_COLS;
-        var cellH = touchCanvas.height / GRID_ROWS;
+                // Black blobs (Bleu II style) with intensity-modulated alpha
+                var alpha = 0.55 + 0.40 * Math.pow(norm, 0.5);
+                ctx.fillStyle = 'rgba(8,8,12,' + alpha + ')';
+                drawBlob(ctx, cx, cy, radius, seed1, seed2);
+                ctx.fill();
 
-        // ==========================================
-        // THREE.JS TERRAIN SETUP
-        // ==========================================
-        var terrainDiv = document.getElementById('terrainDiv');
-        var tWidth = 780, tHeight = 380;
+                if (norm > 0.5) {
+                    ctx.save();
+                    ctx.globalAlpha = 0.18 * norm;
+                    ctx.fillStyle = '#000';
+                    drawBlob(ctx, cx + radius * 0.10, cy + radius * 0.15, radius * 1.05, seed1, seed2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        }
 
-        var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(45, tWidth / tHeight, 0.1, 1000);
-        camera.position.set(0, 6, 10);
+        // scan line — bright on blue
+        if (scanProgress >= 0 && scanProgress <= 1) {
+            var sx = scanProgress * W;
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(sx, 0); ctx.lineTo(sx, H);
+            ctx.stroke();
+            ctx.restore();
+        }
+    }
+
+    // pointer drawing
+    var drawing = false;
+    var lastCol = -1, lastRow = -1;
+    function canvasCoords(e) {
+        var rect = drawCanvas.getBoundingClientRect();
+        if (e.touches && e.touches[0]) {
+            return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+        }
+        return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+    drawCanvas.addEventListener('pointerdown', function(e) {
+        drawing = true;
+        try { drawCanvas.setPointerCapture(e.pointerId); } catch(_) {}
+        var p = canvasCoords(e);
+        addTouch(p.x, p.y);
+        var rect = drawCanvas.getBoundingClientRect();
+        lastCol = Math.floor(p.x / (rect.width / GRID_COLS));
+        lastRow = Math.floor(p.y / (rect.height / GRID_ROWS));
+        afterEdit();
+        e.preventDefault();
+    });
+    drawCanvas.addEventListener('pointermove', function(e) {
+        if (!drawing) return;
+        var p = canvasCoords(e);
+        var rect = drawCanvas.getBoundingClientRect();
+        var col = Math.floor(p.x / (rect.width / GRID_COLS));
+        var row = Math.floor(p.y / (rect.height / GRID_ROWS));
+        if (col !== lastCol || row !== lastRow) {
+            addTouch(p.x, p.y);
+            lastCol = col; lastRow = row;
+            afterEdit();
+        }
+    });
+    var endDraw = function() { drawing = false; lastCol = lastRow = -1; };
+    drawCanvas.addEventListener('pointerup', endDraw);
+    drawCanvas.addEventListener('pointercancel', endDraw);
+    drawCanvas.addEventListener('lostpointercapture', endDraw);
+
+    function afterEdit() {
+        lcdVotes.textContent = pad3(Math.min(999, voteCount));
+        scopePeak.textContent = maxIntensity.toFixed(1);
+        updateAboveCount();
+        render2D();
+        updateTerrainHeights();
+        drawTape();
+        playBtn.disabled = (voteCount === 0);
+    }
+
+    function updateAboveCount() {
+        var n = 0;
+        if (maxIntensity > 0) {
+            for (var i = 0; i < grid.length; i++) {
+                var nv = grid[i] / maxIntensity;
+                if (grid[i] > 0 && nv >= waterLevel) n++;
+            }
+        }
+        lcdAbove.textContent = pad3(Math.min(999, n));
+    }
+
+    // ============== THREE.JS TERRAIN ==============
+    var scene, camera, renderer, mesh, geom, waterMesh, scanMesh, scanMat, waterMat;
+    var spherical = { theta: 0, phi: 1.05, radius: 11 };
+    function updateCamera() {
+        camera.position.x = spherical.radius * Math.sin(spherical.phi) * Math.sin(spherical.theta);
+        camera.position.y = spherical.radius * Math.cos(spherical.phi);
+        camera.position.z = spherical.radius * Math.sin(spherical.phi) * Math.cos(spherical.theta);
         camera.lookAt(0, 0, 0);
+    }
 
-        var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(tWidth, tHeight);
+    function buildThree() {
+        var rect = threeHost.getBoundingClientRect();
+        var W = rect.width, H = rect.height;
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000);
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(W, H);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.setClearColor(0xFEFDFB, 1);
-        terrainDiv.appendChild(renderer.domElement);
+        renderer.setClearColor(0x0E160C, 1);
+        threeHost.appendChild(renderer.domElement);
 
-        // Grid plane
-        var planeW = 12;
-        var planeD = 5;
-        var geom = new THREE.PlaneGeometry(planeW, planeD, GRID_COLS - 1, GRID_ROWS - 1);
+        var planeW = 12, planeD = 5;
+        geom = new THREE.PlaneGeometry(planeW, planeD, GRID_COLS - 1, GRID_ROWS - 1);
         geom.rotateX(-Math.PI / 2);
 
-        var wireMat = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
+        var mat = new THREE.MeshBasicMaterial({
+            color: 0x7FE558,
             wireframe: true,
             transparent: true,
-            opacity: 0.6,
+            opacity: 0.85,
             vertexColors: true
         });
-        // Initialize vertex colors
         var colorCount = geom.attributes.position.count;
         var colors = new Float32Array(colorCount * 3);
-        for (var ci = 0; ci < colorCount; ci++) {
-            colors[ci * 3] = 0.27;
-            colors[ci * 3 + 1] = 0.82;
-            colors[ci * 3 + 2] = 0.82;
+        for (var i = 0; i < colorCount; i++) {
+            colors[i*3]     = 0.20;
+            colors[i*3 + 1] = 0.55;
+            colors[i*3 + 2] = 0.18;
         }
         geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        var mesh = new THREE.Mesh(geom, wireMat);
+        mesh = new THREE.Mesh(geom, mat);
         scene.add(mesh);
 
-        // Scan plane (vertical, moves across)
-        var scanGeom = new THREE.PlaneGeometry(0.03, 8);
-        var scanMat = new THREE.MeshBasicMaterial({
-            color: 0x1C1917,
-            transparent: true,
-            opacity: 0.0,
-            side: THREE.DoubleSide
+        // scan plane
+        var scanGeom = new THREE.PlaneGeometry(0.04, 8);
+        scanMat = new THREE.MeshBasicMaterial({
+            color: 0xbef580, transparent: true, opacity: 0, side: THREE.DoubleSide
         });
-        var scanMesh = new THREE.Mesh(scanGeom, scanMat);
+        scanMesh = new THREE.Mesh(scanGeom, scanMat);
         scanMesh.position.set(-planeW / 2, 2, 0);
         scene.add(scanMesh);
 
-        // Water plane
+        // water plane
         var waterGeom = new THREE.PlaneGeometry(planeW * 1.3, planeD * 1.3);
         waterGeom.rotateX(-Math.PI / 2);
-        var waterMat = new THREE.MeshBasicMaterial({
-            color: 0x1a7abf,
-            transparent: true,
-            opacity: 0.0,
-            side: THREE.DoubleSide,
-            depthWrite: false
+        waterMat = new THREE.MeshBasicMaterial({
+            color: 0x1e3a14, transparent: true, opacity: 0, side: THREE.DoubleSide
         });
-        var waterMesh = new THREE.Mesh(waterGeom, waterMat);
-        waterMesh.position.y = 0;
-        waterMesh.renderOrder = 1;
+        waterMesh = new THREE.Mesh(waterGeom, waterMat);
         scene.add(waterMesh);
 
-        // Mouse orbit controls (simple)
-        var isDragging = false;
-        var prevMouse = { x: 0, y: 0 };
-        var spherical = { theta: 0.3, phi: 0.9, radius: 15 };
-
-        function updateCamera() {
-            camera.position.x = spherical.radius * Math.sin(spherical.phi) * Math.sin(spherical.theta);
-            camera.position.y = spherical.radius * Math.cos(spherical.phi);
-            camera.position.z = spherical.radius * Math.sin(spherical.phi) * Math.cos(spherical.theta);
-            camera.lookAt(0, 0, 0);
-        }
         updateCamera();
+        updateTerrainHeights();
+        renderThree();
 
-        renderer.domElement.addEventListener('mousedown', function(e) {
-            isDragging = true;
-            prevMouse.x = e.clientX;
-            prevMouse.y = e.clientY;
-        });
-        window.addEventListener('mousemove', function(e) {
-            if (!isDragging) return;
-            var dx = e.clientX - prevMouse.x;
-            var dy = e.clientY - prevMouse.y;
+        // orbit controls
+        var dragging = false, prevX = 0, prevY = 0;
+        var down = function(x, y) { dragging = true; prevX = x; prevY = y; threeHost.classList.add('dragging'); };
+        var move = function(x, y) {
+            if (!dragging) return;
+            var dx = x - prevX, dy = y - prevY;
             spherical.theta += dx * 0.005;
             spherical.phi = Math.max(0.2, Math.min(Math.PI * 0.48, spherical.phi + dy * 0.005));
+            prevX = x; prevY = y;
             updateCamera();
-            prevMouse.x = e.clientX;
-            prevMouse.y = e.clientY;
-        });
-        window.addEventListener('mouseup', function() { isDragging = false; });
-
-        // Touch orbit
+            renderThree();
+        };
+        var up = function() { dragging = false; threeHost.classList.remove('dragging'); };
+        renderer.domElement.addEventListener('mousedown', function(e) { down(e.clientX, e.clientY); });
+        renderer.domElement.addEventListener('mousemove', function(e) { move(e.clientX, e.clientY); });
+        window.addEventListener('mouseup', up);
         renderer.domElement.addEventListener('touchstart', function(e) {
-            if (e.touches.length === 1) {
-                isDragging = true;
-                prevMouse.x = e.touches[0].clientX;
-                prevMouse.y = e.touches[0].clientY;
-            }
+            if (e.touches[0]) down(e.touches[0].clientX, e.touches[0].clientY);
         }, { passive: true });
         renderer.domElement.addEventListener('touchmove', function(e) {
-            if (!isDragging || e.touches.length !== 1) return;
-            var dx = e.touches[0].clientX - prevMouse.x;
-            var dy = e.touches[0].clientY - prevMouse.y;
-            spherical.theta += dx * 0.005;
-            spherical.phi = Math.max(0.2, Math.min(Math.PI * 0.48, spherical.phi + dy * 0.005));
-            updateCamera();
-            prevMouse.x = e.touches[0].clientX;
-            prevMouse.y = e.touches[0].clientY;
+            if (e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY);
         }, { passive: true });
-        renderer.domElement.addEventListener('touchend', function() { isDragging = false; }, { passive: true });
+        renderer.domElement.addEventListener('touchend', up, { passive: true });
 
-        function updateTerrain() {
-            var positions = geom.attributes.position;
-            var colorsAttr = geom.attributes.color;
-            var heightScale = 3.5;
-            var waterHeight = waterLevel * heightScale;
+        // resize handling
+        window.addEventListener('resize', function() {
+            var rr = threeHost.getBoundingClientRect();
+            renderer.setSize(rr.width, rr.height);
+            camera.aspect = rr.width / rr.height;
+            camera.updateProjectionMatrix();
+            renderThree();
+        });
+    }
 
-            for (var r = 0; r < GRID_ROWS; r++) {
-                for (var c = 0; c < GRID_COLS; c++) {
-                    var vi = r * GRID_COLS + c;
-                    var val = grid[vi];
-                    var norm = maxIntensity > 0 ? val / maxIntensity : 0;
-                    var h = norm * heightScale;
-                    positions.setY(vi, h);
+    function updateTerrainHeights() {
+        if (!geom) return;
+        var positions = geom.attributes.position;
+        var heightScale = 3.5;
+        for (var r = 0; r < GRID_ROWS; r++) {
+            for (var c = 0; c < GRID_COLS; c++) {
+                var vi = r * GRID_COLS + c;
+                var val = grid[vi];
+                var norm = maxIntensity > 0 ? val / maxIntensity : 0;
+                positions.setY(vi, norm * heightScale);
+            }
+        }
+        positions.needsUpdate = true;
+        geom.computeVertexNormals();
+        updateTerrainColors();
+        renderThree();
+    }
 
-                    // Color: bright teal above water, dim blue-grey below
-                    if (h > waterHeight + 0.05) {
-                        // Above water: bright cyan, brighter the higher
-                        var brightness = 0.5 + 0.5 * Math.min(1, (h - waterHeight) / (heightScale - waterHeight + 0.01));
-                        colorsAttr.setXYZ(vi, 0.15 * brightness, 0.9 * brightness, 0.9 * brightness);
-                    } else if (waterLevel > 0.01) {
-                        // Below water: dim
-                        colorsAttr.setXYZ(vi, 0.08, 0.2, 0.3);
-                    } else {
-                        // No water: normal teal
-                        colorsAttr.setXYZ(vi, 0.27, 0.82, 0.82);
-                    }
+    function updateTerrainColors() {
+        if (!geom) return;
+        var heightScale = 3.5;
+        var waterHeight = waterLevel * heightScale;
+        var colorsAttr = geom.attributes.color;
+        var positions = geom.attributes.position;
+        for (var r = 0; r < GRID_ROWS; r++) {
+            for (var c = 0; c < GRID_COLS; c++) {
+                var vi = r * GRID_COLS + c;
+                var h = positions.getY(vi);
+                if (h > waterHeight + 0.05) {
+                    var b = 0.55 + 0.45 * Math.min(1, (h - waterHeight) / (heightScale - waterHeight + 0.01));
+                    colorsAttr.setXYZ(vi, 0.25 * b, 0.90 * b, 0.30 * b);
+                } else if (waterLevel > 0.01) {
+                    colorsAttr.setXYZ(vi, 0.10, 0.22, 0.10);
+                } else {
+                    colorsAttr.setXYZ(vi, 0.30, 0.70, 0.25);
                 }
             }
-            positions.needsUpdate = true;
-            colorsAttr.needsUpdate = true;
-            geom.computeVertexNormals();
-
-            // Water plane rises with water level
+        }
+        colorsAttr.needsUpdate = true;
+        if (waterMat) {
             if (waterLevel > 0.01) {
                 waterMesh.position.y = waterHeight;
-                waterMat.opacity = 0.5;
+                waterMat.opacity = 0.35;
+                waterMat.color.setRGB(0.12, 0.5, 0.18);
             } else {
-                waterMat.opacity = 0.0;
+                waterMat.opacity = 0;
             }
         }
+        renderThree();
+    }
 
-        function renderTerrain() {
-            updateTerrain();
+    function renderThree() {
+        if (!renderer) return;
+        // scan
+        if (scanProgress >= 0 && scanProgress <= 1) {
+            scanMat.opacity = 0.45;
+            scanMesh.position.x = -6 + scanProgress * 12;
+        } else if (scanMat) {
+            scanMat.opacity = 0;
+        }
+        renderer.render(scene, camera);
+    }
 
-            // Update scan plane
-            if (scanProgress >= 0 && scanProgress <= 1) {
-                scanMat.opacity = 0.6;
-                scanMesh.position.x = -planeW / 2 + scanProgress * planeW;
-            } else {
-                scanMat.opacity = 0.0;
+    // ============== TAPE (sonification piano-roll) ==============
+    function drawTape() {
+        var s = setupCanvas(tapeCanvas);
+        var ctx = s.ctx, W = s.w, H = s.h;
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = 'rgba(240,192,64,0.025)';
+        ctx.fillRect(0, 0, W, H);
+
+        var padTop = 28, padBot = 22, padL = 38, padR = 10;
+        var innerW = W - padL - padR;
+        var innerH = H - padTop - padBot;
+        var rows = SCALE_AMIN.length;
+        var rowH = innerH / rows;
+
+        // horizontal lines for octave anchor notes
+        ctx.strokeStyle = 'rgba(240,192,64,0.10)';
+        ctx.lineWidth = 1;
+        for (var i = 0; i < rows; i++) {
+            if (SCALE_NAMES[i].indexOf('A') === 0) {
+                var y = padTop + (rows - 1 - i) * rowH + rowH / 2;
+                ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
             }
-
-            renderer.render(scene, camera);
         }
-
-        // Continuous render loop for orbit
-        function animate() {
-            requestAnimationFrame(animate);
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        // ==========================================
-        // TOUCH / MOUSE HANDLING
-        // ==========================================
-        function addTouch(cx, cy) {
-            var col = Math.floor(cx / cellW);
-            var row = Math.floor(cy / cellH);
-
-            for (var dy = -TOUCH_RADIUS; dy <= TOUCH_RADIUS; dy++) {
-                for (var dx = -TOUCH_RADIUS; dx <= TOUCH_RADIUS; dx++) {
-                    var c = col + dx;
-                    var r = row + dy;
-                    if (c < 0 || c >= GRID_COLS || r < 0 || r >= GRID_ROWS) continue;
-
-                    var dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist > TOUCH_RADIUS) continue;
-
-                    var falloff = Math.exp(-(dist * dist) / (TOUCH_RADIUS * 0.6));
-                    var idx = r * GRID_COLS + c;
-                    grid[idx] += TOUCH_INTENSITY * falloff;
-                    if (grid[idx] > maxIntensity) maxIntensity = grid[idx];
+        // pitch labels
+        ctx.fillStyle = 'rgba(240,192,64,0.55)';
+        ctx.font = '11px JetBrains Mono, monospace';
+        ctx.textAlign = 'right';
+        ['A2','A3','A4','A5'].forEach(function(name) {
+            for (var i = 0; i < rows; i++) {
+                if (SCALE_NAMES[i] === name) {
+                    var y = padTop + (rows - 1 - i) * rowH + rowH / 2;
+                    ctx.fillText(name, padL - 6, y + 4);
+                    break;
                 }
             }
+        });
 
-            touchCount++;
-            touchCountEl.textContent = touchCount;
-            peakDisplayEl.textContent = maxIntensity.toFixed(1);
-            render2D();
-            updateTerrain();
+        // time tick marks
+        var totalSec = SCAN_DURATION;
+        ctx.textAlign = 'center';
+        ctx.font = '9px JetBrains Mono, monospace';
+        for (var sec = 0; sec <= totalSec; sec += 2) {
+            var fx = (sec / totalSec) * innerW;
+            var sx = padL + fx;
+            ctx.fillStyle = 'rgba(240,192,64,0.45)';
+            ctx.fillRect(sx - 0.5, H - padBot + 4, 1, 4);
+            ctx.fillText(sec + 's', sx, H - 5);
         }
 
-        function canvasCoords(e) {
-            var rect = touchCanvas.getBoundingClientRect();
-            var sx = touchCanvas.width / rect.width;
-            var sy = touchCanvas.height / rect.height;
-            if (e.touches && e.touches.length > 0) {
-                return {
-                    x: (e.touches[0].clientX - rect.left) * sx,
-                    y: (e.touches[0].clientY - rect.top) * sy
-                };
-            }
-            return {
-                x: (e.clientX - rect.left) * sx,
-                y: (e.clientY - rect.top) * sy
-            };
-        }
-
-        var drawing = false;
-        var lastCol = -1, lastRow = -1;
-
-        function handleStart(e) {
-            drawing = true;
-            lastCol = -1;
-            lastRow = -1;
-            var p = canvasCoords(e);
-            addTouch(p.x, p.y);
-            lastCol = Math.floor(p.x / cellW);
-            lastRow = Math.floor(p.y / cellH);
-        }
-
-        function handleMove(e) {
-            if (!drawing) return;
-            var p = canvasCoords(e);
-            var col = Math.floor(p.x / cellW);
-            var row = Math.floor(p.y / cellH);
-            if (col !== lastCol || row !== lastRow) {
-                addTouch(p.x, p.y);
-                lastCol = col;
-                lastRow = row;
+        // for each grid column, find rows with intensity above water and paint pills
+        var colW = innerW / GRID_COLS;
+        var colSpan = scanProgress >= 0 ? Math.min(GRID_COLS, Math.floor(scanProgress * GRID_COLS)) : GRID_COLS;
+        // collapse canvas rows down to scale rows: row r (0..GRID_ROWS-1) maps freqIdx = round((1 - r/(rows-1)) * 15)
+        var noteIntensity = new Float32Array(GRID_COLS * rows);
+        for (var col = 0; col < GRID_COLS; col++) {
+            for (var rr = 0; rr < GRID_ROWS; rr++) {
+                var idx = rr * GRID_COLS + col;
+                var val = grid[idx];
+                if (val <= 0) continue;
+                var norm = val / (maxIntensity || 1);
+                if (norm < waterLevel) continue;
+                var freqIdx = Math.round((1 - rr / (GRID_ROWS - 1)) * (rows - 1));
+                freqIdx = Math.max(0, Math.min(rows - 1, freqIdx));
+                if (norm > noteIntensity[col * rows + freqIdx]) noteIntensity[col * rows + freqIdx] = norm;
             }
         }
 
-        function handleEnd() { drawing = false; }
-
-        touchCanvas.addEventListener('mousedown', handleStart);
-        touchCanvas.addEventListener('mousemove', handleMove);
-        touchCanvas.addEventListener('mouseup', handleEnd);
-        touchCanvas.addEventListener('mouseleave', handleEnd);
-
-        touchCanvas.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            handleStart(e);
-        }, { passive: false });
-        touchCanvas.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-            handleMove(e);
-        }, { passive: false });
-        touchCanvas.addEventListener('touchend', handleEnd);
-
-        // ==========================================
-        // 2D RENDERING — BLEU II CANVAS
-        // ==========================================
-
-        // Draw an organic blob shape (smooth, slightly irregular like Miró)
-        function drawBlob(ctx, cx, cy, radius, seed1, seed2) {
-            var points = 60;
-            ctx.beginPath();
-            for (var i = 0; i <= points; i++) {
-                var angle = (i / points) * Math.PI * 2;
-                // Gentle, low-frequency wobble for smooth organic shape
-                var wobble = 1 + 0.04 * Math.sin(angle * 2 + seed1 * 20)
-                               + 0.03 * Math.cos(angle * 3 + seed2 * 15);
-                var r = radius * wobble;
-                var x = cx + Math.cos(angle) * r;
-                var y = cy + Math.sin(angle) * r;
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+        // scanned (already played) cells: bright, unscanned: faint
+        for (var col = 0; col < GRID_COLS; col++) {
+            var played = scanProgress < 0 || col < colSpan;
+            var fxStart = padL + col * colW;
+            for (var ri = 0; ri < rows; ri++) {
+                var ni = noteIntensity[col * rows + ri];
+                if (ni <= 0) continue;
+                var py = padTop + (rows - 1 - ri) * rowH + rowH / 2;
+                var pillH = Math.max(2, rowH * 0.55);
+                var alpha = 0.4 + 0.55 * ni;
+                if (!played) alpha *= 0.18;
+                ctx.shadowColor = played ? 'rgba(240,192,64,0.85)' : 'rgba(240,192,64,0.3)';
+                ctx.shadowBlur = played ? 6 : 2;
+                ctx.fillStyle = 'rgba(240,192,64,' + alpha + ')';
+                ctx.fillRect(fxStart + 0.5, py - pillH / 2, colW - 1, pillH);
+                ctx.shadowBlur = 0;
             }
-            ctx.closePath();
         }
 
-        function render2D() {
-            var w = touchCanvas.width;
-            var h = touchCanvas.height;
+        // playhead
+        if (scanProgress >= 0 && scanProgress <= 1) {
+            var px = padL + scanProgress * innerW;
+            ctx.strokeStyle = '#fff8a8';
+            ctx.lineWidth = 1.4;
+            ctx.shadowColor = 'rgba(255,240,150,0.85)';
+            ctx.shadowBlur = 6;
+            ctx.beginPath(); ctx.moveTo(px, padTop - 4); ctx.lineTo(px, H - padBot); ctx.stroke();
+            ctx.shadowBlur = 0;
+            tapePos.textContent = (scanProgress * SCAN_DURATION).toFixed(1) + 'S / ' + SCAN_DURATION + 'S';
+        } else {
+            tapePos.textContent = '0.0S / ' + SCAN_DURATION + 'S';
+        }
+    }
 
-            // Miró cerulean blue - matches Bleu II
-            tCtx.fillStyle = '#1a7abf';
-            tCtx.fillRect(0, 0, w, h);
+    // ============== AUDIO / SONIFY ==============
+    function ensureAudio(cb) {
+        if (!audioCtx) {
+            try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+            catch(e) { return; }
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume().then(function() { cb && cb(); });
+        else cb && cb();
+    }
 
-            // Subtle texture: faint brush-like variation
-            tCtx.save();
-            tCtx.globalAlpha = 0.04;
-            for (var tx = 0; tx < texPatches.length; tx++) {
-                var tp = texPatches[tx];
-                tCtx.fillStyle = tp.light ? '#1590d8' : '#0e6aa8';
-                tCtx.fillRect(tp.x, tp.y, tp.w, tp.h);
+    function createVoice(ctx, type, freq, t0, colDur, vol, master, delay) {
+        if (type === 'sine') {
+            var osc = ctx.createOscillator();
+            osc.type = 'sine'; osc.frequency.value = freq;
+            var g = ctx.createGain();
+            g.gain.setValueAtTime(0, t0);
+            g.gain.linearRampToValueAtTime(vol, t0 + 0.03);
+            g.gain.setValueAtTime(vol, t0 + colDur * 0.5);
+            g.gain.exponentialRampToValueAtTime(0.0001, t0 + colDur * 2.5);
+            osc.connect(g); g.connect(master); g.connect(delay);
+            osc.start(t0); osc.stop(t0 + colDur * 3);
+        } else if (type === 'bells') {
+            var partials = [1, 2.4, 3.0, 4.5, 6.2];
+            var pVols = [1, 0.5, 0.35, 0.2, 0.1];
+            for (var p = 0; p < partials.length; p++) {
+                var oscB = ctx.createOscillator();
+                oscB.type = 'sine'; oscB.frequency.value = freq * partials[p];
+                var gB = ctx.createGain();
+                var pv = vol * pVols[p];
+                gB.gain.setValueAtTime(0, t0);
+                gB.gain.linearRampToValueAtTime(pv, t0 + 0.005);
+                gB.gain.exponentialRampToValueAtTime(0.0001, t0 + colDur * (1.5 + p * 0.3));
+                oscB.connect(gB); gB.connect(master);
+                if (p === 0) gB.connect(delay);
+                oscB.start(t0); oscB.stop(t0 + colDur * 3);
             }
-            tCtx.restore();
+        } else { // strings
+            var oscS = ctx.createOscillator();
+            oscS.type = 'sawtooth'; oscS.frequency.value = freq;
+            var filt = ctx.createBiquadFilter();
+            filt.type = 'lowpass'; filt.frequency.value = freq * 2.5; filt.Q.value = 1;
+            var gS = ctx.createGain();
+            gS.gain.setValueAtTime(0, t0);
+            gS.gain.linearRampToValueAtTime(vol * 0.7, t0 + colDur * 0.6);
+            gS.gain.setValueAtTime(vol * 0.7, t0 + colDur);
+            gS.gain.exponentialRampToValueAtTime(0.0001, t0 + colDur * 3.5);
+            oscS.connect(filt); filt.connect(gS); gS.connect(master); gS.connect(delay);
+            oscS.start(t0); oscS.stop(t0 + colDur * 4);
+        }
+    }
 
-            if (maxIntensity === 0) {
-                tCtx.fillStyle = 'rgba(255,255,255,0.15)';
-                tCtx.font = 'italic 15px Georgia';
-                tCtx.textAlign = 'center';
-                tCtx.textBaseline = 'middle';
-                tCtx.fillText('Touch or click to create', w / 2, h / 2);
-                return;
-            }
+    function sonify() {
+        if (sonifying || voteCount === 0) return;
+        ensureAudio(function() {
+            sonifying = true;
+            playBtn.classList.add('live');
+            stopBtn.disabled = false;
+            playBtn.disabled = true;
+            tapeRec.classList.add('on');
+            tapeRecLabel.textContent = 'playing';
+            scopeLive.classList.add('on');
 
-            for (var r = 0; r < GRID_ROWS; r++) {
-                for (var c = 0; c < GRID_COLS; c++) {
+            var ctx = audioCtx;
+            var master = ctx.createGain(); master.gain.value = 0.2;
+            master.connect(ctx.destination);
+            var delay = ctx.createDelay(1.0); delay.delayTime.value = 0.3;
+            var fb = ctx.createGain(); fb.gain.value = 0.2;
+            var df = ctx.createBiquadFilter(); df.type = 'lowpass'; df.frequency.value = 2000;
+            delay.connect(df); df.connect(fb); fb.connect(delay); fb.connect(master);
+
+            var t0 = ctx.currentTime + 0.15;
+            var colDur = SCAN_DURATION / GRID_COLS;
+            for (var c = 0; c < GRID_COLS; c++) {
+                var nt = t0 + c * colDur;
+                for (var r = 0; r < GRID_ROWS; r++) {
                     var idx = r * GRID_COLS + c;
                     var val = grid[idx];
                     if (val <= 0) continue;
-
                     var norm = val / maxIntensity;
                     if (norm < waterLevel) continue;
-
-                    var seed = colorSeeds[idx];
-                    var seed2 = colorSeeds[(idx + 13) % colorSeeds.length];
-
-                    // Size varies dramatically with intensity (like Bleu II's varied dot sizes)
-                    var minRadius = cellW * 0.3;
-                    var maxRadius = cellW * 3.5;
-                    var radius = minRadius + (maxRadius - minRadius) * Math.pow(norm, 0.6);
-
-                    // Slight position jitter for organic feel
-                    var cx = c * cellW + cellW / 2 + (seed - 0.5) * cellW * 0.4;
-                    var cy = r * cellH + cellH / 2 + (seed2 - 0.5) * cellH * 0.4;
-
-                    // All dots are black/near-black, like Bleu II
-                    var base = Math.round(25 - 15 * norm);
-                    var colR = base;
-                    var colG = base;
-                    var colB = base + 5;
-                    var alpha = 0.25 + 0.75 * Math.pow(norm, 0.5);
-
-                    tCtx.fillStyle = 'rgba(' + colR + ',' + colG + ',' + colB + ',' + alpha + ')';
-                    drawBlob(tCtx, cx, cy, radius, seed, seed2);
-                    tCtx.fill();
-
-                    // At high intensity, add a subtle shadow/ground effect
-                    if (norm > 0.5) {
-                        tCtx.save();
-                        tCtx.globalAlpha = 0.08 * norm;
-                        tCtx.fillStyle = '#000';
-                        drawBlob(tCtx, cx + radius * 0.1, cy + radius * 0.15, radius * 1.05, seed, seed2);
-                        tCtx.fill();
-                        tCtx.restore();
-                    }
+                    var fi = Math.round((1 - r / (GRID_ROWS - 1)) * (SCALE_AMIN.length - 1));
+                    fi = Math.max(0, Math.min(SCALE_AMIN.length - 1, fi));
+                    createVoice(ctx, soundType, SCALE_AMIN[fi], nt, colDur, 0.06 * norm, master, delay);
                 }
             }
 
-            // Scan line - lighter for blue background
-            if (scanProgress >= 0 && scanProgress <= 1) {
-                var sx = scanProgress * w;
-                tCtx.save();
-                tCtx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-                tCtx.lineWidth = 2;
-                tCtx.setLineDash([4, 4]);
-                tCtx.beginPath();
-                tCtx.moveTo(sx, 0);
-                tCtx.lineTo(sx, h);
-                tCtx.stroke();
-                tCtx.restore();
-            }
-        }
-
-        // ==========================================
-        // SONIFICATION
-        // ==========================================
-        function createVoice(audioCtx, type, freq, noteTime, colDur, vol, master, delay) {
-            if (type === 'sine') {
-                var osc = audioCtx.createOscillator();
-                osc.type = 'sine';
-                osc.frequency.value = freq;
-                var g = audioCtx.createGain();
-                g.gain.setValueAtTime(0, noteTime);
-                g.gain.linearRampToValueAtTime(vol, noteTime + 0.03);
-                g.gain.setValueAtTime(vol, noteTime + colDur * 0.5);
-                g.gain.exponentialRampToValueAtTime(0.0001, noteTime + colDur * 2.5);
-                osc.connect(g);
-                g.connect(master);
-                g.connect(delay);
-                osc.start(noteTime);
-                osc.stop(noteTime + colDur * 3);
-            } else if (type === 'bells') {
-                // Bell: fundamental + partials with quick decay
-                var partials = [1, 2.4, 3.0, 4.5, 6.2];
-                var pVols = [1, 0.5, 0.35, 0.2, 0.1];
-                for (var p = 0; p < partials.length; p++) {
-                    var osc = audioCtx.createOscillator();
-                    osc.type = 'sine';
-                    osc.frequency.value = freq * partials[p];
-                    var g = audioCtx.createGain();
-                    var pv = vol * pVols[p];
-                    g.gain.setValueAtTime(0, noteTime);
-                    g.gain.linearRampToValueAtTime(pv, noteTime + 0.005);
-                    g.gain.exponentialRampToValueAtTime(0.0001, noteTime + colDur * (1.5 + p * 0.3));
-                    osc.connect(g);
-                    g.connect(master);
-                    if (p === 0) g.connect(delay);
-                    osc.start(noteTime);
-                    osc.stop(noteTime + colDur * 3);
-                }
-            } else if (type === 'strings') {
-                // Strings: sawtooth through low-pass filter, slow attack
-                var osc = audioCtx.createOscillator();
-                osc.type = 'sawtooth';
-                osc.frequency.value = freq;
-                var filt = audioCtx.createBiquadFilter();
-                filt.type = 'lowpass';
-                filt.frequency.value = freq * 2.5;
-                filt.Q.value = 1;
-                var g = audioCtx.createGain();
-                g.gain.setValueAtTime(0, noteTime);
-                g.gain.linearRampToValueAtTime(vol * 0.7, noteTime + colDur * 0.6);
-                g.gain.setValueAtTime(vol * 0.7, noteTime + colDur);
-                g.gain.exponentialRampToValueAtTime(0.0001, noteTime + colDur * 3.5);
-                osc.connect(filt);
-                filt.connect(g);
-                g.connect(master);
-                g.connect(delay);
-                osc.start(noteTime);
-                osc.stop(noteTime + colDur * 4);
-            } else if (type === 'pad') {
-                // Warm pad: detuned triangle waves
-                var detunes = [-7, 0, 7, 12];
-                for (var d = 0; d < detunes.length; d++) {
-                    var osc = audioCtx.createOscillator();
-                    osc.type = 'triangle';
-                    osc.frequency.value = freq;
-                    osc.detune.value = detunes[d];
-                    var g = audioCtx.createGain();
-                    var dv = vol * 0.35;
-                    g.gain.setValueAtTime(0, noteTime);
-                    g.gain.linearRampToValueAtTime(dv, noteTime + colDur * 0.8);
-                    g.gain.setValueAtTime(dv, noteTime + colDur * 1.5);
-                    g.gain.exponentialRampToValueAtTime(0.0001, noteTime + colDur * 4);
-                    osc.connect(g);
-                    g.connect(master);
-                    if (d === 0) g.connect(delay);
-                    osc.start(noteTime);
-                    osc.stop(noteTime + colDur * 5);
-                }
-            }
-        }
-
-        function sonify() {
-            if (isSonifying || maxIntensity === 0) return;
-
-            isSonifying = true;
-            sonifyBtn.disabled = true;
-            sonifyBtn.textContent = '\u266B Starting\u2026';
-
-            // Always create a fresh context on user gesture for max compatibility
-            try {
-                if (audioCtx) {
-                    audioCtx.close().catch(function(){});
-                }
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            } catch(e) {
-                isSonifying = false;
-                sonifyBtn.disabled = false;
-                sonifyBtn.textContent = '\u266B Sonify';
-                return;
-            }
-
-            // Wait for context to be running before scheduling
-            var ctx = audioCtx;
-            var startAfterResume = function() {
-                sonifyBtn.textContent = '\u266B Playing\u2026';
-
-                var soundType = soundSelect.value;
-                var scaleFreqs = SCALES.amin;
-
-                var master = ctx.createGain();
-                master.gain.value = 0.2;
-                master.connect(ctx.destination);
-
-                var delay = ctx.createDelay(1.0);
-                delay.delayTime.value = 0.3;
-                var fbGain = ctx.createGain();
-                fbGain.gain.value = 0.2;
-                var delayFilter = ctx.createBiquadFilter();
-                delayFilter.type = 'lowpass';
-                delayFilter.frequency.value = 2000;
-                delay.connect(delayFilter);
-                delayFilter.connect(fbGain);
-                fbGain.connect(delay);
-                fbGain.connect(master);
-
-                var startTime = ctx.currentTime + 0.15;
-                var colDur = SCAN_DURATION / GRID_COLS;
-
-                for (var c = 0; c < GRID_COLS; c++) {
-                    var noteTime = startTime + c * colDur;
-
-                    for (var r = 0; r < GRID_ROWS; r++) {
-                        var idx = r * GRID_COLS + c;
-                        var val = grid[idx];
-                        if (val <= 0) continue;
-
-                        var norm = val / maxIntensity;
-                        if (norm < waterLevel) continue;
-
-                        var freqIdx = Math.round((1 - r / (GRID_ROWS - 1)) * (scaleFreqs.length - 1));
-                        freqIdx = Math.max(0, Math.min(scaleFreqs.length - 1, freqIdx));
-                        var freq = scaleFreqs[freqIdx];
-
-                        var vol = 0.06 * norm;
-                        createVoice(ctx, soundType, freq, noteTime, colDur, vol, master, delay);
-                    }
-                }
-
-                var animStartMs = performance.now() + 150;
-                var animDurMs = SCAN_DURATION * 1000;
-
-                function tick(ts) {
-                    var elapsed = ts - animStartMs;
-                    var p = elapsed / animDurMs;
-
-                    if (p >= 1.02) {
-                        scanProgress = -1;
-                        isSonifying = false;
-                        sonifyBtn.disabled = false;
-                        sonifyBtn.textContent = '\u266B Sonify';
-                        render2D();
-                        renderTerrain();
-                        animFrameId = null;
-                        return;
-                    }
-
-                    scanProgress = Math.max(0, Math.min(1, p));
-                    render2D();
-                    renderTerrain();
-                    animFrameId = requestAnimationFrame(tick);
-                }
-
-                animFrameId = requestAnimationFrame(tick);
-            };
-
-            // Resume and wait for it to actually start
-            if (ctx.state === 'suspended') {
-                ctx.resume().then(startAfterResume).catch(function() {
-                    isSonifying = false;
-                    sonifyBtn.disabled = false;
-                    sonifyBtn.textContent = '\u266B Sonify';
-                });
-            } else {
-                startAfterResume();
-            }
-        }
-
-        // ==========================================
-        // CONTROLS
-        // ==========================================
-        waterSlider.addEventListener('input', function() {
-            waterLevel = this.value / 100;
-            waterValueEl.textContent = this.value + '%';
-            render2D();
-            updateTerrain();
+            scanAnimStart = performance.now() + 150;
+            tickScan();
         });
+    }
 
-        sonifyBtn.addEventListener('click', sonify);
-
-        clearBtn.addEventListener('click', function() {
-            grid.fill(0);
-            for (var i = 0; i < colorSeeds.length; i++) colorSeeds[i] = Math.random();
-            maxIntensity = 0;
-            waterLevel = 0;
-            waterSlider.value = 0;
-            waterValueEl.textContent = '0%';
+    function tickScan() {
+        if (!sonifying) return;
+        var elapsed = performance.now() - scanAnimStart;
+        var p = elapsed / (SCAN_DURATION * 1000);
+        if (p >= 1.02) {
             scanProgress = -1;
-            touchCount = 0;
-            touchCountEl.textContent = '0';
-            peakDisplayEl.textContent = '0';
-            if (animFrameId) {
-                cancelAnimationFrame(animFrameId);
-                animFrameId = null;
-            }
-            isSonifying = false;
-            sonifyBtn.disabled = false;
-            sonifyBtn.textContent = '\u266B Sonify';
-            render2D();
-            updateTerrain();
-        });
-
-        // ==========================================
-        // INITIAL RENDER
-        // ==========================================
+            sonifying = false;
+            playBtn.classList.remove('live');
+            playBtn.disabled = (voteCount === 0);
+            stopBtn.disabled = true;
+            tapeRec.classList.remove('on');
+            scopeLive.classList.remove('on');
+            tapeRecLabel.textContent = 'stand by';
+            render2D(); renderThree(); drawTape();
+            animFrame = null;
+            return;
+        }
+        scanProgress = Math.max(0, Math.min(1, p));
         render2D();
-        updateTerrain();
+        renderThree();
+        drawTape();
+        animFrame = requestAnimationFrame(tickScan);
+    }
 
-    })();
-    </script>
+    function stopSonify() {
+        if (!sonifying) return;
+        if (audioCtx) {
+            // hard stop: cut master gain (the existing voices will fade naturally via their envelopes)
+            var t = audioCtx.currentTime;
+            // disconnect future scheduling — but voices already scheduled will continue
+            // (acceptable: pressing stop just stops the visual scan)
+        }
+        sonifying = false;
+        scanProgress = -1;
+        playBtn.classList.remove('live');
+        playBtn.disabled = (voteCount === 0);
+        stopBtn.disabled = true;
+        tapeRec.classList.remove('on');
+        scopeLive.classList.remove('on');
+        tapeRecLabel.textContent = 'stand by';
+        render2D(); renderThree(); drawTape();
+    }
+
+    playBtn.addEventListener('click', sonify);
+    stopBtn.addEventListener('click', stopSonify);
+    clearBtn.addEventListener('click', function() {
+        if (sonifying) stopSonify();
+        grid.fill(0);
+        for (var i = 0; i < colorSeeds.length; i++) colorSeeds[i] = Math.random();
+        maxIntensity = 0; voteCount = 0;
+        canvasWrap.classList.remove('has-marks');
+        lcdVotes.textContent = '000';
+        lcdAbove.textContent = '000';
+        scopePeak.textContent = '0.0';
+        playBtn.disabled = true;
+        render2D();
+        updateTerrainHeights();
+        drawTape();
+    });
+
+    // ============== CABLE OVERLAY ==============
+    function drawCable(svg, fromEl, toEl, color) {
+        if (!fromEl || !toEl) return;
+        var rackEl = document.getElementById('rack');
+        var rackRect = rackEl.getBoundingClientRect();
+        var fr = fromEl.getBoundingClientRect();
+        var to = toEl.getBoundingClientRect();
+        var x1 = fr.left - rackRect.left + fr.width / 2;
+        var y1 = fr.top  - rackRect.top  + fr.height / 2;
+        var x2 = to.left - rackRect.left + to.width / 2;
+        var y2 = to.top  - rackRect.top  + to.height / 2;
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        var sag = Math.min(70, Math.max(25, dist * 0.18));
+        var c1x = x1 + dx * 0.30, c1y = y1 + dy * 0.30 + sag;
+        var c2x = x1 + dx * 0.70, c2y = y1 + dy * 0.70 + sag;
+        var d = 'M ' + x1 + ' ' + y1 +
+                ' C ' + c1x + ' ' + c1y +
+                ', ' + c2x + ' ' + c2y +
+                ', ' + x2 + ' ' + y2;
+        var ns = 'http://www.w3.org/2000/svg';
+        var addPath = function(stroke, w, dash, transform) {
+            var p = document.createElementNS(ns, 'path');
+            p.setAttribute('d', d); p.setAttribute('stroke', stroke); p.setAttribute('stroke-width', w);
+            p.setAttribute('fill', 'none'); p.setAttribute('stroke-linecap', dash ? 'butt' : 'round');
+            if (dash) p.setAttribute('stroke-dasharray', dash);
+            if (transform) p.setAttribute('transform', transform);
+            svg.appendChild(p);
+        };
+        addPath('rgba(0,0,0,0.32)', '7', null, 'translate(2, 4)');
+        addPath(color, '5.5', null, null);
+        addPath('rgba(0,0,0,0.28)', '5.5', '2 4', null);
+        addPath('rgba(255,255,255,0.22)', '1.4', null, 'translate(0, -1.2)');
+        var addPlug = function(x, y) {
+            var c = document.createElementNS(ns, 'circle');
+            c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', '5');
+            c.setAttribute('fill', '#c4bca1'); c.setAttribute('stroke', '#15140F'); c.setAttribute('stroke-width', '0.8');
+            svg.appendChild(c);
+            var inner = document.createElementNS(ns, 'circle');
+            inner.setAttribute('cx', x); inner.setAttribute('cy', y); inner.setAttribute('r', '1.8');
+            inner.setAttribute('fill', '#15140F');
+            svg.appendChild(inner);
+        };
+        addPlug(x1, y1); addPlug(x2, y2);
+    }
+
+    function repaintCables() {
+        var overlay = document.getElementById('cableOverlay');
+        var rackEl = document.getElementById('rack');
+        if (!overlay || !rackEl) return;
+        var rr = rackEl.getBoundingClientRect();
+        overlay.setAttribute('width', rr.width);
+        overlay.setAttribute('height', rr.height);
+        overlay.setAttribute('viewBox', '0 0 ' + rr.width + ' ' + rr.height);
+        overlay.style.width = rr.width + 'px';
+        overlay.style.height = rr.height + 'px';
+        overlay.innerHTML = '';
+        var so = document.querySelector('#patchOuts [data-id="scope-out"] .socket');
+        var to = document.querySelector('#patchOuts [data-id="tape-out"] .socket');
+        var si = document.querySelector('#scopeInJack .socket');
+        var ti = document.querySelector('#tapeInJack .socket');
+        drawCable(overlay, so, si, '#3a7e2c');
+        drawCable(overlay, to, ti, '#8a6020');
+    }
+
+    function repaintAll() {
+        render2D();
+        if (renderer) {
+            var rr = threeHost.getBoundingClientRect();
+            renderer.setSize(rr.width, rr.height);
+            camera.aspect = rr.width / rr.height;
+            camera.updateProjectionMatrix();
+            renderThree();
+        }
+        drawTape();
+        repaintCables();
+    }
+    window.addEventListener('resize', repaintAll);
+
+    // ============== INIT ==============
+    playBtn.disabled = true;
+    stopBtn.disabled = true;
+    render2D();
+    drawTape();
+
+    startBtn.addEventListener('click', function() {
+        startOverlay.style.display = 'none';
+        // build three.js after overlay dismissed (so the canvas has correct size)
+        // requestAnimationFrame ensures layout is committed before we measure
+        requestAnimationFrame(function() {
+            buildThree();
+            requestAnimationFrame(function() {
+                repaintAll();
+            });
+        });
+    });
+
+
+    // ============== MODULE DRAG ==============
+    // header is the drag handle; modules absolute-positioned within rack
+    var dragState = null;
+    var rackElDrag = document.getElementById('rack');
+    document.querySelectorAll('.module-header').forEach(function(head) {
+        head.addEventListener('pointerdown', function(e) {
+            var moduleEl = head.closest('.module');
+            if (!moduleEl) return;
+            var x = parseFloat(moduleEl.dataset.x) || 0;
+            var y = parseFloat(moduleEl.dataset.y) || 0;
+            dragState = {
+                head: head,
+                moduleEl: moduleEl,
+                rackRect: rackElDrag.getBoundingClientRect(),
+                startX: x,
+                startY: y,
+                startMouseX: e.clientX,
+                startMouseY: e.clientY
+            };
+            moduleEl.classList.add('dragging');
+            try { head.setPointerCapture(e.pointerId); } catch(_) {}
+            e.preventDefault();
+        });
+        head.addEventListener('pointermove', function(e) {
+            if (!dragState || dragState.head !== head) return;
+            var dx = e.clientX - dragState.startMouseX;
+            var dy = e.clientY - dragState.startMouseY;
+            var modW = dragState.moduleEl.offsetWidth;
+            var modH = dragState.moduleEl.offsetHeight;
+            var nx = Math.max(0, Math.min(dragState.rackRect.width - modW, dragState.startX + dx));
+            var ny = Math.max(0, Math.min(dragState.rackRect.height - modH, dragState.startY + dy));
+            dragState.moduleEl.dataset.x = nx;
+            dragState.moduleEl.dataset.y = ny;
+            dragState.moduleEl.style.transform = 'translate(' + nx + 'px, ' + ny + 'px)';
+            repaintCables();
+        });
+        function endDrag() {
+            if (dragState && dragState.head === head) {
+                dragState.moduleEl.classList.remove('dragging');
+                dragState = null;
+            }
+        }
+        head.addEventListener('pointerup', endDrag);
+        head.addEventListener('pointercancel', endDrag);
+        head.addEventListener('lostpointercapture', endDrag);
+    });
+
+
+    // ===== MANUAL =====
+    var manualToggle = document.getElementById('manualToggle');
+    var manualOverlay = document.getElementById('manualOverlay');
+    var manualClose = document.getElementById('manualClose');
+    function openManual() {
+        manualOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeManual() {
+        manualOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    if (manualToggle) manualToggle.addEventListener('click', openManual);
+    if (manualClose) manualClose.addEventListener('click', closeManual);
+    if (manualOverlay) {
+        manualOverlay.addEventListener('click', function(e) {
+            if (e.target === manualOverlay) closeManual();
+        });
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && manualOverlay && manualOverlay.classList.contains('open')) {
+            closeManual();
+        }
+    });
+
+})();
+</script>
+
 </body>
 </html>

@@ -3,445 +3,1089 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Parliament — Democracy in Music</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B0E1A'/%3E%3Ccircle cx='11' cy='9' r='5' fill='%23d4a842'/%3E%3Ccircle cx='21' cy='8' r='4' fill='%2346d2d2'/%3E%3Ccircle cx='15' cy='18' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23' r='3.5' fill='%23d25a6e'/%3E%3Ccircle cx='23' cy='22' r='2.8' fill='%236aa860'/%3E%3C/svg%3E">
+    <title>PA·SYSTEM — Parliament · Democracy in Music</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2315140F'/%3E%3Ccircle cx='9.5' cy='10' r='5' fill='%23F7901E'/%3E%3Ccircle cx='22' cy='9' r='4' fill='%23F0C840'/%3E%3Ccircle cx='15.5' cy='19' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23.5' r='3' fill='%23D43030'/%3E%3Ccircle cx='24' cy='22.5' r='3.2' fill='%234FB85F'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+        :root {
+            --cream:        #E8E2D0;
+            --cream-deep:   #D6CFB8;
+            --cream-edge:   #C4BCA1;
+            --cream-shadow: #A89F87;
+            --ink:          #15140F;
+            --ink-soft:     #2A2823;
+            --ink-mid:      #4A463E;
+            --table:        #C7C0AC;
+
+            --scope-bg:     #0E160C;
+            --scope-phos:   #7FE558;
+
+            --rec-bg:       #1A1206;
+            --rec-phos:     #F0C040;
+
+            --te-orange:    #FF5A1F;
+            --te-yellow:    #F5D026;
+            --te-blue:      #3D7DCC;
+            --te-green:     #5FAF52;
+            --te-red:       #D4322A;
+            --te-white:     #FAF7EE;
+
+            /* Bloomberg palette (cross-prototype identity) */
+            --bbg-amber:    #F7901E;
+            --bbg-amber-dim:#B86810;
+            --bbg-yellow:   #F0C840;
+            --bbg-cyan:     #50C8E6;
+            --bbg-green:    #4FB85F;
+            --bbg-red:      #D43030;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'EB Garamond', Georgia, serif;
-            background: #FEFDFB;
-            color: #1C1917;
+
+        html, body {
+            font-family: 'Hanken Grotesk', system-ui, sans-serif;
+            background: var(--table);
+            background-image:
+                radial-gradient(ellipse at top, rgba(255,255,255,0.18), transparent 60%),
+                radial-gradient(ellipse at bottom, rgba(0,0,0,0.10), transparent 60%);
+            color: var(--ink);
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            font-feature-settings: "tnum" on;
+            overflow-x: hidden;
+        }
+
+        body {
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
-            -webkit-user-select: none;
-            user-select: none;
+            padding: 18px 16px 32px;
         }
 
         a.home-link {
-            position: fixed; top: 12px; left: 16px;
-            font-size: 12px; color: #9C9590; text-decoration: none;
+            position: fixed; top: 14px; left: 16px;
+            font-size: 10px; color: var(--ink-mid); text-decoration: none;
             letter-spacing: 2px; z-index: 99;
+            font-weight: 700; text-transform: uppercase;
         }
-        a.home-link:hover { color: #1C1917; }
-
-        #header { text-align: center; padding: 22px 20px 6px; }
-        
-        #header h2 {
-            font-size: 24px; font-weight: 400; color: #1C1917;
-            line-height: 1.3; margin-top: 4px;
+        a.home-link:hover { color: var(--ink); }
+        /* ===== MANUAL ===== */
+        .manual-toggle {
+            position: fixed; top: 12px; right: 16px;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 10px; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--ink);
+            background: var(--cream);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.55),
+                inset 0 -1px 0 rgba(0,0,0,0.05),
+                0 1px 2px rgba(0,0,0,0.18);
+            display: inline-flex; align-items: center; gap: 7px;
+            transition: background 0.15s;
         }
-        .header-rule {
-            width: 40px; height: 1px; background: #D6D3D1;
-            margin: 18px auto 0;
+        .manual-toggle:hover { background: #efe9d6; }
+        .manual-toggle .qmark {
+            display: inline-block;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--ink);
+            color: var(--cream);
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 14px;
+            text-align: center;
         }
-        #header h1 {
-            font-size: 28px; letter-spacing: 10px;
-            font-weight: 400; color: #1C1917;
-        }
-        #header p {
-            font-size: 13.5px; font-style: italic;
-            color: #9a9080; margin-top: 5px;
-        }
-
-        #canvas-wrap {
-            position: relative; width: 100%; max-width: 820px;
-            padding: 0 12px; margin-top: 6px;
-        }
-        #mainCanvas {
-            width: 100%; height: auto; display: block;
-            border: 1px solid #D6D3D1;
-            border-radius: 3px;
-        }
-
-        #start-overlay {
-            position: absolute; top: 0; left: 12px; right: 12px; bottom: 0;
-            display: flex; flex-direction: column;
+        .manual-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15,18,12,0.62);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: none;
             align-items: center; justify-content: center;
-            background: rgba(247,244,238,0.92);
-            border-radius: 3px; cursor: pointer;
-            transition: opacity 0.9s; z-index: 5;
+            z-index: 200;
+            padding: 24px 16px;
+            opacity: 0;
+            transition: opacity 0.18s;
         }
-        #start-overlay.hidden { opacity: 0; pointer-events: none; }
-        .overlay-text {
-            font-size: 15px; letter-spacing: 4px;
-            text-transform: uppercase; color: #1C1917;
-            margin-bottom: 5px;
+        .manual-overlay.open { display: flex; opacity: 1; }
+        .manual-card {
+            background: var(--cream);
+            border-radius: 14px;
+            max-width: 560px;
+            width: 100%;
+            max-height: calc(100vh - 48px);
+            overflow-y: auto;
+            position: relative;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.65),
+                0 24px 48px rgba(0,0,0,0.35),
+                0 4px 12px rgba(0,0,0,0.18);
+            transform: translateY(8px);
+            transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .overlay-sub {
-            font-size: 12px; color: #9C9590; font-style: italic;
+        .manual-overlay.open .manual-card { transform: translateY(0); }
+        .manual-card::before {
+            content: ""; position: absolute; inset: 0; border-radius: 14px;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.012) 0px, rgba(0,0,0,0.012) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+        }
+        .manual-header {
+            padding: 18px 28px 12px 28px;
+            display: flex; align-items: baseline; gap: 10px;
+            border-bottom: 1px dashed rgba(0,0,0,0.18);
+            position: relative;
+        }
+        .manual-header .model {
+            font-size: 16px; font-weight: 800; letter-spacing: 0.5px; color: var(--ink);
+        }
+        .manual-header .model-name {
+            font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
+            color: var(--ink-mid); text-transform: uppercase;
+        }
+        .manual-close {
+            position: absolute;
+            z-index: 5;
+            top: 12px; right: 14px;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: var(--cream-deep);
+            color: var(--ink);
+            font-size: 16px; line-height: 1;
+            cursor: pointer;
+            font-family: 'Hanken Grotesk', sans-serif;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 2px rgba(0,0,0,0.15);
+            transition: background 0.12s;
+        }
+        .manual-close:hover { background: var(--cream-edge); }
+        .manual-body {
+            padding: 18px 28px 26px 28px;
+            position: relative; z-index: 1;
+        }
+        .manual-body .intro {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-style: italic;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--ink-soft);
+            margin-bottom: 20px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        .manual-body h3 {
+            font-size: 9px; font-weight: 800; letter-spacing: 2.4px;
+            text-transform: uppercase;
+            color: var(--ink-mid);
+            margin: 18px 0 9px 0;
+            font-family: 'Hanken Grotesk', sans-serif;
+        }
+        .manual-body h3:first-child { margin-top: 0; }
+        .manual-body p {
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            margin-bottom: 9px;
+        }
+        .manual-body ol {
+            margin: 0 0 9px 0;
+            padding-left: 22px;
+        }
+        .manual-body ol li {
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            margin-bottom: 4px;
+        }
+        .manual-body .ctrl {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 4px 14px;
+            margin-bottom: 9px;
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+        }
+        .manual-body .ctrl .k {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 11px;
+            color: var(--ink);
+            letter-spacing: 0.5px;
+            padding-top: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .manual-body b { color: var(--ink); font-weight: 700; }
+        @media (max-width: 520px) {
+            .manual-toggle { padding: 7px 11px; font-size: 9px; }
+            .manual-header { padding: 16px 20px 10px 20px; }
+            .manual-body { padding: 16px 20px 22px 20px; }
+            .manual-body .intro { font-size: 15px; }
         }
 
-        /* System selector */
-        #system-row {
-            display: flex; align-items: center; justify-content: center;
-            gap: 0; padding: 10px 20px 2px;
+
+        /* ===== RACK (freeform, draggable) ===== */
+        .rack-shell {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 8px;
         }
-        .sys-btn {
-            padding: 8px 20px; background: none;
-            border: 1px solid #D6D3D1; color: #9C9590;
-            font-family: 'EB Garamond', Georgia, serif;
-            font-size: 12px; letter-spacing: 2px;
-            cursor: pointer; transition: all 0.3s;
+        .rack {
+            width: 1240px;
+            height: 720px;
+            display: block;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        /* ===== MODULE BASE ===== */
+        .module {
+            width: auto;
+            background: var(--cream);
+            border-radius: 14px;
+            position: absolute;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.65),
+                inset 0 -2px 0 rgba(0,0,0,0.04),
+                0 1px 0 rgba(255,255,255,0.5),
+                0 12px 28px rgba(0,0,0,0.18),
+                0 2px 8px rgba(0,0,0,0.10);
+            transition: box-shadow 0.18s;
+            will-change: transform;
+        }
+        .module.dragging {
+            z-index: 50;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.7),
+                inset 0 -2px 0 rgba(0,0,0,0.04),
+                0 1px 0 rgba(255,255,255,0.5),
+                0 22px 44px rgba(0,0,0,0.32),
+                0 6px 14px rgba(0,0,0,0.18);
+        }
+        .module-header {
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .module-header:active { cursor: grabbing; }
+        #dp01 { width: 880px; }
+        #dp02 { width: 320px; }
+        .module::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.012) 0px, rgba(0,0,0,0.012) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+        }
+
+        /* ===== HEADER ===== */
+        .module-header {
+            padding: 14px 28px 10px 28px;
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+            border-bottom: 1px dashed rgba(0,0,0,0.18);
+        }
+        .module-header .model {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--ink);
+        }
+        .module-header .model-name {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            color: var(--ink-mid);
             text-transform: uppercase;
         }
-        .sys-btn:first-child { border-radius: 3px 0 0 3px; }
-        .sys-btn:last-child { border-radius: 0 3px 3px 0; }
-        .sys-btn:not(:first-child) { border-left: none; }
-        .sys-btn.active { background: #1C1917; border-color: #1C1917; color: #F7F4EE; }
-        .sys-btn:hover:not(.active) { border-color: #1C1917; color: #1C1917; }
 
-        /* Outcome label */
-        #outcome {
-            text-align: center; padding: 5px 20px 0;
-            font-size: 13px; color: #57534E;
-            letter-spacing: 0.5px; min-height: 22px;
-            transition: opacity 0.3s;
+        /* ===== INSTRUMENT (PA·01) ===== */
+        .instrument .chassis {
+            padding: 14px 24px 18px 24px;
+            position: relative;
+            z-index: 1;
         }
-        #outcome .silenced { color: #555; font-style: italic; }
 
-        /* Vote row */
-        #vote-row {
-            display: flex; align-items: center; justify-content: center;
-            gap: 8px; padding: 8px 20px; flex-wrap: wrap;
+        /* preset row: same voters, different lines */
+        .preset-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
         }
-        .vote-btn {
-            width: 36px; height: 36px; border-radius: 50%;
-            border: 2px solid transparent; cursor: pointer;
-            transition: all 0.25s; position: relative;
-            opacity: 0.55;
+        .preset-btn {
+            background: var(--cream-deep);
+            border: none;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            padding: 9px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            color: var(--ink);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 2px rgba(0,0,0,0.18);
+            text-transform: uppercase;
+            transition: all 0.1s;
         }
-        .vote-btn:hover { opacity: 0.9; transform: scale(1.15); }
-        .vote-btn.voted {
-            opacity: 1; transform: scale(1.2);
-            box-shadow: 0 0 12px rgba(255,255,255,0.15);
+        .preset-btn:hover { background: var(--cream-edge); }
+        .preset-btn:active { box-shadow: inset 0 1px 2px rgba(0,0,0,0.3); }
+
+        /* the map: voter grid + district outlines */
+        .map-wrap {
+            position: relative;
+            background: linear-gradient(180deg, var(--cream-deep) 0%, var(--cream-edge) 100%);
+            border-radius: 8px;
+            padding: 10px 12px 10px 12px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), 0 1px 0 rgba(255,255,255,0.4);
+            margin-bottom: 12px;
         }
-        .vote-btn.voted::after {
-            content: ''; position: absolute;
-            top: -4px; left: -4px; right: -4px; bottom: -4px;
-            border: 1px solid #D6D3D1;
+        .map-field {
+            position: relative;
+            height: 360px;
+            background: linear-gradient(180deg, #100C06 0%, #1A1206 60%, #100C06 100%);
+            border-radius: 5px;
+            cursor: crosshair;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+            overflow: hidden;
+            box-shadow:
+                inset 0 -2px 3px rgba(0,0,0,0.6),
+                inset 0 2px 4px rgba(0,0,0,0.5),
+                inset 0 0 16px rgba(0,0,0,0.3);
+        }
+        .map-field canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .map-field::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 3px);
+            pointer-events: none;
+        }
+        .map-prompt {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2.4px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.55);
+            pointer-events: none;
+            transition: opacity 0.25s;
+            text-align: center;
+            line-height: 1.6;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        }
+        .map-prompt .small {
+            display: block;
+            font-size: 8px;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 1.8px;
+            margin-top: 6px;
+        }
+        .map-field.engaged .map-prompt { opacity: 0; }
+
+        /* ===== CHAMBER (PA·02) ===== */
+        .chamber .chassis {
+            padding: 14px 22px 18px 22px;
+            position: relative;
+            z-index: 1;
+        }
+        .chamber-meta {
+            margin-bottom: 12px;
+        }
+        .chamber-meta .lcd {
+            min-width: 0;
+            width: 100%;
+            justify-self: stretch;
+        }
+        .chamber-wrap {
+            position: relative;
+            background: linear-gradient(180deg, var(--cream-deep) 0%, var(--cream-edge) 100%);
+            border-radius: 8px;
+            padding: 8px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), 0 1px 0 rgba(255,255,255,0.4);
+        }
+        .chamber-field {
+            position: relative;
+            height: 340px;
+            background: #0a0805;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow:
+                inset 0 -2px 3px rgba(0,0,0,0.6),
+                inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .chamber-field canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .chamber-field::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 3px);
+            pointer-events: none;
+        }
+
+        /* LCD — BBG amber phosphor */
+        .lcd {
+            justify-self: end;
+            background: #000;
+            border-radius: 6px;
+            padding: 22px 14px 8px 14px;
+            min-width: 200px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.85), 0 1px 0 rgba(255,255,255,0.30);
+            position: relative;
+            border: 1px solid #000;
+            overflow: hidden;
+        }
+        /* BBG amber panel header */
+        .lcd::before {
+            content: "PA·02 · CHAMBER";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 14px;
+            background: var(--bbg-amber);
+            color: #000;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            line-height: 14px;
+            text-align: center;
+        }
+        /* scanlines */
+        .lcd::after {
+            content: "";
+            position: absolute;
+            top: 14px; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.22) 2px, rgba(0,0,0,0.22) 3px);
+            pointer-events: none;
+        }
+        .lcd-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-family: 'VT323', monospace;
+            font-size: 17px;
+            color: var(--bbg-amber);
+            text-shadow: 0 0 4px rgba(247,144,30,0.55), 0 0 1px rgba(247,144,30,0.9);
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+        .lcd-row .key {
+            font-size: 10px;
+            color: rgba(247,144,30,0.55);
+            letter-spacing: 1.5px;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-weight: 700;
+            min-width: 32px;
+        }
+        .lcd-row .val { font-size: 17px; }
+
+
+        /* transport */
+        .transport {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .trans-btn {
+            background: var(--cream-deep);
+            border: none;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.6px;
+            padding: 12px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--ink);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 2px rgba(0,0,0,0.18);
+            position: relative;
+            min-width: 70px;
+            transition: all 0.1s;
+            text-transform: uppercase;
+        }
+        .trans-btn:hover { background: var(--cream-edge); }
+        .trans-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        .trans-btn .led {
+            position: absolute;
+            top: 5px; right: 5px;
+            width: 4px; height: 4px;
             border-radius: 50%;
+            background: rgba(0,0,0,0.30);
+            transition: all 0.15s;
+        }
+        /* PLAY = bright green GO key, STOP/CLEAR = red CANCEL keys */
+        #playBtn { background: var(--bbg-green); color: #000; }
+        #playBtn:hover { background: #5fcf6f; }
+        #stopBtn, #clearBtn { background: var(--bbg-red); color: #fff; }
+        #stopBtn:hover, #clearBtn:hover { background: #e54040; }
+        #stopBtn .led, #clearBtn .led { background: rgba(255,255,255,0.35); }
+        /* live state: white LED with glow (visible on green or red) */
+        .trans-btn.live .led {
+            background: #FFFFFF;
+            opacity: 1;
+            box-shadow: 0 0 5px rgba(255,255,255,0.85);
+        }
+        /* override the legacy .alarm rule so red stays red with white text */
+        .trans-btn.alarm { color: #fff; }
+        .trans-btn.alarm .led { background: rgba(255,255,255,0.35); }
+
+        .transport-rule {
+            flex: 1;
+            height: 1px;
+            background: rgba(0,0,0,0.08);
+            margin: 0 8px;
         }
 
-        #vote-label {
-            font-size: 10px; color: #555; letter-spacing: 3px;
-            text-transform: uppercase; margin-right: 6px;
+        .status-strip {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--ink-mid);
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 360px;
+        }
+        .status-strip .acc { color: var(--ink); font-weight: 700; }
+
+        .gap { height: 28px; }
+        @media (max-width: 800px) { .gap { height: 20px; } }
+
+        /* responsive */
+        @media (max-width: 800px) {
+            body { padding: 18px 8px 36px; }
+            .module-header { padding: 12px 18px 8px 18px; }
+            .instrument .chassis,
+            .chamber .chassis { padding: 14px 18px; }
+            .map-field { height: 300px; }
+            .map-wrap { padding: 8px 10px 8px 10px; }
+            .chamber-field { height: 280px; }
+            .preset-row { gap: 6px; }
+            .preset-btn { padding: 8px 10px; font-size: 9px; letter-spacing: 1.2px; }
+
+            /* stack the rack vertically; disable drag on mobile */
+            .rack-shell {
+                overflow-x: visible;
+                padding: 0 4px 8px 4px;
+            }
+            .rack {
+                width: 100%;
+                height: auto;
+                min-height: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+            }
+            .module {
+                position: relative !important;
+                transform: none !important;
+                width: auto !important;
+                max-width: 100%;
+            }
+            .module-header,
+            .module-header:active { cursor: default; }
+        }
+        @media (max-width: 520px) {
+            .map-field { height: 260px; }
+            .chamber-field { height: 240px; }
+            .transport { flex-wrap: wrap; }
+            .trans-btn { padding: 10px 14px; min-width: 56px; }
+            .status-strip { display: none; }
         }
 
-        /* Controls */
-        #ctrl-row {
-            display: flex; align-items: center; justify-content: center;
-            gap: 16px; padding: 4px 20px 4px;
+        /* start overlay */
+        .start-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,18,12,0.78);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
         }
-        .ctrl-btn {
-            padding: 5px 16px; background: none;
-            border: 1px solid #D6D3D1; color: #9C9590;
-            font-family: 'EB Garamond', Georgia, serif;
-            font-size: 11px; letter-spacing: 1px;
-            cursor: pointer; border-radius: 3px;
-            transition: all 0.2s;
+        .start-card {
+            background: var(--cream);
+            border-radius: 12px;
+            padding: 28px 36px 24px;
+            text-align: center;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.65), 0 18px 40px rgba(0,0,0,0.45);
+            max-width: 380px;
+            margin: 0 16px;
         }
-        .ctrl-btn:hover { background: #1C1917; color: #F7F4EE; }
-
-        #info {
-            text-align: center; padding: 10px 24px 32px;
-            font-size: 13px; color: #9C9590; line-height: 1.8;
-            max-width: 520px;
+        .start-card .h {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+            color: var(--ink);
+            margin-bottom: 6px;
         }
-        #info strong { color: #1C1917; }
+        .start-card .s {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.6px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+        .start-card p {
+            font-size: 13px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            margin-bottom: 20px;
+        }
+        .start-card button {
+            background: var(--ink);
+            color: var(--te-yellow);
+            border: none;
+            padding: 12px 22px;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
-    <a class="home-link" href="index.html">&larr; Home</a>
 
-    <div id="header">
-        <h1>PARLIAMENT</h1>
-        <h2>The same people, heard differently</h2>
-        <div class="header-rule"></div>
-    </div>
+<a class="home-link" href="index.html">← HOME</a>
 
-    <div id="canvas-wrap">
-        <canvas id="mainCanvas" width="820" height="520"></canvas>
-        <div id="start-overlay">
-            <div class="overlay-text">Click to begin</div>
-            <div class="overlay-sub">vote for a party, then change the system</div>
+<button class="manual-toggle" id="manualToggle" aria-label="Open manual">
+    <span class="qmark">?</span><span>manual</span>
+</button>
+
+<div class="manual-overlay" id="manualOverlay" role="dialog" aria-modal="true" aria-labelledby="manualHeading">
+    <div class="manual-card">
+        <button class="manual-close" id="manualClose" aria-label="Close">×</button>
+        <div class="manual-header" id="manualHeading">
+            <span class="model">PA·01</span>
+            <span class="model-name">parliament · manual</span>
+        </div>
+        <div class="manual-body">
+            <p class="intro">A constitutional design tool. The other prototypes in this suite put you inside a democracy: you cast a vote, you contribute a pitch, you place a marker among many. This one puts you above it, drawing the lines: 160 voters are already on the map, already in their parties; what you choose is the system they vote inside. Five draggable seeds define five districts (each voter belongs to its nearest seed); each district elects its plurality winner; the parliament plays the five winning voices. Move the seeds and the rules of representation change. The same voters can elect very different parliaments depending on the lines you draw.</p>
+
+            <h3>How to play</h3>
+            <ol>
+                <li>Drag any of the five numbered seeds across the map. Districts re-shape in real time around them. The closer a voter is to a seed, the more it belongs to that seed's district. The music shifts as the parliament re-elects.</li>
+                <li>Hit a preset (<b>fair</b>, <b>pack &amp; crack</b>, or <b>stack</b>) to jump to three different seed configurations on the same voters and hear how the parliament changes.</li>
+                <li>The five parties play different melodies. A single party dominating means one voice loud; a balanced parliament means five voices in counterpoint.</li>
+            </ol>
+
+            <h3>Controls</h3>
+            <div class="ctrl"><span class="k">Seeds</span><span>Five draggable handles, one per district. The district owns whatever voters are closest to its seed (a Voronoi partition).</span></div>
+            <div class="ctrl"><span class="k">Presets</span><span><b>Fair</b> = seeds evenly spread horizontally, giving compact strip districts. <b>Pack &amp; Crack</b> = one seed planted inside the largest party's stronghold (packing it into one district), the other four spread to the corners so its remaining voters are diluted and outvoted everywhere else: a classic gerrymander. <b>Stack</b> = seeds in a vertical column, producing horizontal-band districts: same voters, different axis, often a different parliament.</span></div>
+            <div class="ctrl"><span class="k">Reseed</span><span>Generates a new voter geography (clustered by party) and resets seeds to fair.</span></div>
+
+            <h3>What this demonstrates</h3>
+            <p>Most democratic activity happens <i>inside</i> a system: you vote, you petition, you organize. But every system has a designer, and the choice of system is itself a democratic act with its own politics. Plurality voting inside geographically-defined districts (the most common electoral system in the world) does not aggregate preferences in any neutral way: the choice of district lines, holding the underlying voters constant, can change which party gets the most seats, sometimes inverting the popular winner. Gerrymandering is the political art of choosing lines for outcomes, and this prototype makes that act audible. Compare what fair seeds sound like against packed-and-cracked seeds, on the same voters, and you can hear the mechanism. Where the other prototypes in this suite show how votes aggregate within rules, this one shows that the rules themselves are a choice.</p>
         </div>
     </div>
+</div>
 
-    <div id="system-row">
-        <button class="sys-btn active" data-sys="pr">Proportional</button>
-        <button class="sys-btn" data-sys="fptp">First Past Post</button>
-        <button class="sys-btn" data-sys="coalition">Coalition</button>
+<div class="start-overlay" id="startOverlay">
+    <div class="start-card">
+        <div class="h">PA·SYSTEM</div>
+        <div class="s">a redistricting workbench · model 06</div>
+        <p>The other prototypes in the suite put you inside a democracy. This one puts you above it. 160 voters in 5 parties are already on the map. You decide the system they vote inside — drag the five seeds to redraw the districts, and hear how the same voters elect different parliaments.</p>
+        <button id="startBtn">power on</button>
     </div>
+</div>
 
-    <div id="outcome">&nbsp;</div>
+<div class="rack-shell">
+<div class="rack" id="rack">
 
-    <div id="vote-row">
-        <span id="vote-label">Vote</span>
-    </div>
+    <!-- ============================================== -->
+    <!--   PA·01 · INSTRUMENT                          -->
+    <!-- ============================================== -->
+    <section class="module instrument" id="dp01" data-x="20" data-y="20" style="transform: translate(20px, 20px);">
+        <header class="module-header">
+            <span class="model">PA·01</span>
+            <span class="model-name">parliament</span>
+        </header>
 
-    <div id="ctrl-row">
-        <button class="ctrl-btn" id="play-stop">Stop</button>
-        <button class="ctrl-btn" id="new-election">New election</button>
-    </div>
+        <div class="chassis">
 
-    <div id="info">
-        Seven voices. Three systems for choosing who is heard.<br>
-        The votes never change. Only the <strong>rules</strong> do.
-    </div>
+            <!-- preset row: same voters, different lines, different music -->
+            <div class="preset-row" id="presetRow"></div>
+
+            <!-- the map: voter grid + district outlines -->
+            <div class="map-wrap">
+                <div class="map-field" id="mapField">
+                    <canvas id="mapCanvas"></canvas>
+                    <div class="map-prompt" id="mapPrompt">
+                        drag the seeds to redraw the districts
+                        <span class="small">5 seeds · 5 districts · same voters · different music</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- transport -->
+            <div class="transport">
+                <button class="trans-btn live" id="playBtn"><span class="led"></span>▶ PLAY</button>
+                <button class="trans-btn" id="stopBtn"><span class="led"></span>■ STOP</button>
+                <div class="transport-rule"></div>
+                <div class="status-strip" id="statusStrip">
+                    <span class="acc">RUNNING</span> · drag the seeds to redraw the parliament
+                </div>
+                <div class="transport-rule"></div>
+                <button class="trans-btn alarm" id="clearBtn"><span class="led"></span>CLEAR</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!--   PA·02 · CHAMBER                              -->
+    <!-- ============================================== -->
+    <section class="module chamber" id="dp02" data-x="920" data-y="20" style="transform: translate(920px, 20px);">
+        <header class="module-header">
+            <span class="model">PA·02</span>
+            <span class="model-name">chamber</span>
+        </header>
+
+        <div class="chassis">
+            <div class="chamber-meta">
+                <div class="lcd">
+                    <div class="lcd-row"><span class="key">CHORD</span> <span class="val" id="lcdChord">—</span></div>
+                    <div class="lcd-row"><span class="key">SEATS</span> <span class="val" id="lcdSeats">—</span></div>
+                </div>
+            </div>
+            <div class="chamber-wrap">
+                <div class="chamber-field">
+                    <canvas id="chamberCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+</div>
 
 <script>
 (function() {
-    // ==========================================
-    // PARTIES
-    // ==========================================
+    'use strict';
+
+    // ============== CONSTANTS ==============
+    var GRID_W = 16, GRID_H = 10;       // 160 voter cells
+    var NUM_VOTERS = GRID_W * GRID_H;
+    var NUM_DISTRICTS = 5;
+    var STEPS = 8;
+    var BPM = 92;
+
+    // 5 parties, one per BBG palette color.
+    // Each party has a distinct musical character: fundamental, timbre, melody, rhythm.
     var PARTIES = [
-        { name: 'Red',    hex: '#d94040', r: 217, g: 64,  b: 64  },
-        { name: 'Coral',  hex: '#e07a3a', r: 224, g: 122, b: 58  },
-        { name: 'Amber',  hex: '#d4a842', r: 212, g: 168, b: 66  },
-        { name: 'Green',  hex: '#5cb86c', r: 92,  g: 184, b: 108 },
-        { name: 'Teal',   hex: '#46b8b8', r: 70,  g: 184, b: 184 },
-        { name: 'Blue',   hex: '#4a8edd', r: 74,  g: 142, b: 221 },
-        { name: 'Violet', hex: '#9a7ad8', r: 154, g: 122, b: 216 },
+        // amber — high airy bell
+        { name: 'AMBER',  hex: '#F7901E', rgb: [247,144,30],
+          fund: 440.00, type: 'sine',     harmonics: [1, 0.4, 0.15], detune: 5,
+          rhythm: [1,0,0,0,1,0,1,0], melody:  [0, 0, 0, 12, 0, 0, 7, 0] },
+        // yellow — bright lead
+        { name: 'YELLOW', hex: '#F0C840', rgb: [240,200,64],
+          fund: 293.66, type: 'triangle', harmonics: [1, 0.3, 0.1], detune: 2,
+          rhythm: [0,1,0,1,0,0,1,0], melody:  [0, 4, 7, 4, 0, -1, 0, 4] },
+        // cyan — middle-high open
+        { name: 'CYAN',   hex: '#50C8E6', rgb: [80,200,230],
+          fund: 246.94, type: 'sine',     harmonics: [1, 0.5, 0.25], detune: -3,
+          rhythm: [1,0,1,0,1,0,0,1], melody:  [0, 0, 5, 7, 5, 0, 0, -5] },
+        // green — singing middle
+        { name: 'GREEN',  hex: '#4FB85F', rgb: [79,184,95],
+          fund: 196.00, type: 'triangle', harmonics: [1, 0.4, 0.2], detune: 0,
+          rhythm: [0,1,0,0,1,0,0,1], melody:  [0, 3, 7, 3, 0, -2, 0, 3] },
+        // red — low growl
+        { name: 'RED',    hex: '#D43030', rgb: [212,48,48],
+          fund: 130.81, type: 'sawtooth', harmonics: [1, 0.5, 0.3], detune: 0,
+          rhythm: [1,0,0,1,0,0,1,0], melody:  [0, 0, -2, 0, 3, 0, -2, 0] }
     ];
-    var N = PARTIES.length;
-    var POP = 300;
+    var NUM_PARTIES = PARTIES.length;
 
-    // Musical definitions per party — base note, scale role, rhythmic character
-    // Each voice gets: fundamental, timbre (osc types + harmonics), a simple melodic motif
-    var VOICES = [
-        { fund: 130.81, type: 'sawtooth', harmonics: [1, 0.5, 0.3], rhythm: [1,0,0,1,0,0,1,0], detune: 0 },      // Red — low C3, growling
-        { fund: 164.81, type: 'triangle', harmonics: [1, 0.3, 0.1], rhythm: [0,1,0,0,1,0,0,1], detune: 2 },      // Coral — E3, warm
-        { fund: 196.00, type: 'sine',     harmonics: [1, 0.6, 0.4, 0.2], rhythm: [1,0,1,0,0,1,0,0], detune: 0 }, // Amber — G3, bell-like
-        { fund: 246.94, type: 'triangle', harmonics: [1, 0.2],      rhythm: [0,0,1,0,1,0,0,1], detune: -3 },      // Green — B3, singing
-        { fund: 293.66, type: 'sine',     harmonics: [1, 0.4, 0.15], rhythm: [1,0,0,0,1,0,1,0], detune: 5 },     // Teal — D4, bright
-        { fund: 349.23, type: 'triangle', harmonics: [1, 0.15],     rhythm: [0,1,0,1,0,0,0,1], detune: -2 },      // Blue — F4, flute
-        { fund: 415.30, type: 'sine',     harmonics: [1, 0.1, 0.05], rhythm: [0,0,1,0,0,1,0,0], detune: 7 },     // Violet — Ab4, ethereal
+    // District accent colors — neutral whites/grays so they don't clash
+    // with the voter palette. Each district has a thick outline color.
+    var DISTRICT_COLORS = [
+        'rgba(255,255,255,0.95)',
+        'rgba(255,255,255,0.85)',
+        'rgba(255,255,255,0.75)',
+        'rgba(255,255,255,0.65)',
+        'rgba(255,255,255,0.55)'
     ];
 
-    // Melodic intervals per party (semitones from fundamental, cycles through)
-    var MELODIES = [
-        [0, 0, -2, 0, 3, 0, -2, 0],
-        [0, 4, 7, 4, 0, -1, 0, 4],
-        [0, 0, 5, 7, 5, 0, 0, -5],
-        [0, 3, 7, 10, 7, 3, 0, -2],
-        [0, 0, 2, 0, -2, 0, 5, 0],
-        [0, 7, 5, 3, 0, 3, 5, 7],
-        [0, 0, 0, 12, 0, 0, 7, 0],
-    ];
+    // ============== STATE ==============
+    // voters[i] = party index (0..NUM_PARTIES-1)
+    var voters = new Array(NUM_VOTERS);
+    // districts[i] = district index (0..NUM_DISTRICTS-1), derived from seeds
+    var districts = new Array(NUM_VOTERS);
+    // 5 Voronoi seed points in grid coordinates; each cell belongs to its nearest seed.
+    // Initialized to a "fair" horizontal spread.
+    var seeds = [];
+    // index of seed currently being dragged, -1 if none
+    var draggingSeed = -1;
+    // computed winners[d] = party index that won district d
+    var winners = new Array(NUM_DISTRICTS).fill(0);
+    // total seats won per party
+    var seatCount = new Array(NUM_PARTIES).fill(0);
 
-    // ==========================================
-    // STATE
-    // ==========================================
-    var canvas = document.getElementById('mainCanvas');
-    var ctx = canvas.getContext('2d');
-    var W = 820, H = 520;
-    var dpr = window.devicePixelRatio || 1;
-
-    function resizeCanvas() {
-        var rect = canvas.getBoundingClientRect();
-        W = rect.width;
-        H = rect.height || Math.round(W * 520 / 820);
-        canvas.width = W * dpr;
-        canvas.height = H * dpr;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    var overlay = document.getElementById('start-overlay');
-    var outcomeEl = document.getElementById('outcome');
-    var voteRow = document.getElementById('vote-row');
-    var sysBtns = document.querySelectorAll('.sys-btn');
-
-    var started = false;
-    var playing = true;
-    var system = 'pr';
-    var playerVote = -1;
-    var votes = new Array(N).fill(0);
-    var votePct = new Array(N).fill(0);
-    var hasVoted = false;
-
-    // Audio
+    // audio
     var audioCtx = null;
-    var voiceNodes = [];  // per-party: { oscs, gain, filter }
-    var masterGain = null;
-    var masterComp = null;
-    var voiceTargetGains = new Array(N).fill(0);
-    var voiceCurrentGains = new Array(N).fill(0);
+    var masterGain = null, masterComp = null, masterFilter = null;
+    var voiceNodes = [];                                  // per-party { oscs, gain, filter, melodyIndex }
+    var voiceTargetGains = new Array(NUM_PARTIES).fill(0);
+    var voiceCurrentGains = new Array(NUM_PARTIES).fill(0);
 
-    // Particles
-    var particles = [];
-    var particleTargetAlpha = [];
-
-    // Step sequencer
-    var TEMPO = 108; // BPM
+    var running = false;
+    var animFrame = null;
+    var lastTime = 0;
     var stepIndex = 0;
     var lastStepTime = 0;
-    var STEPS = 8;
 
-    // ==========================================
-        // ==========================================
-    
+    // ============== DOM ==============
+    var mapField    = document.getElementById('mapField');
+    var mapCanvas   = document.getElementById('mapCanvas');
+    var mapPrompt   = document.getElementById('mapPrompt');
+    var chamberCanvas = document.getElementById('chamberCanvas');
+    var presetRow   = document.getElementById('presetRow');
+    var lcdChord    = document.getElementById('lcdChord');
+    var lcdSeats    = document.getElementById('lcdSeats');
+    var statusStrip = document.getElementById('statusStrip');
+    var playBtn     = document.getElementById('playBtn');
+    var stopBtn     = document.getElementById('stopBtn');
+    var clearBtn    = document.getElementById('clearBtn');
+    var startOverlay = document.getElementById('startOverlay');
+    var startBtn    = document.getElementById('startBtn');
 
-    // ==========================================
-    // ELECTION
-    // ==========================================
-    function runElection() {
-        votes = new Array(N).fill(0);
-        votePct = new Array(N).fill(0);
-        // Weight distribution — competitive, no single party dominates
-        var weights = [];
-        var totalW = 0;
-        for (var i = 0; i < N; i++) {
-            weights[i] = 0.6 + Math.random() * 1.0;
-            totalW += weights[i];
+    // ============== VOTER GENERATION (spatial clustering) ==============
+    // Place 4-6 random "preference cluster" centers in grid space; each is
+    // affiliated with a party. Voters adopt the party of their nearest center,
+    // with a small dose of randomness. This produces geographic clustering of
+    // preferences — without it, districting would be meaningless.
+    function seedVoters() {
+        var numClusters = 4 + Math.floor(Math.random() * 3);
+        var clusters = [];
+        // make sure every party gets at least one cluster
+        var partyOrder = [0,1,2,3,4];
+        // Fisher-Yates shuffle
+        for (var s = partyOrder.length - 1; s > 0; s--) {
+            var k = Math.floor(Math.random() * (s + 1));
+            var tmp = partyOrder[s]; partyOrder[s] = partyOrder[k]; partyOrder[k] = tmp;
         }
-        // Moderate boost to 3-4 parties (smaller boosts = tighter races)
-        var boosts = 3 + Math.floor(Math.random() * 2);
-        for (var b = 0; b < boosts; b++) {
-            var bi = Math.floor(Math.random() * N);
-            weights[bi] += 0.8 + Math.random() * 1.4;
+        for (var c = 0; c < Math.max(numClusters, NUM_PARTIES); c++) {
+            clusters.push({
+                cx: Math.random() * GRID_W,
+                cy: Math.random() * GRID_H,
+                party: partyOrder[c % NUM_PARTIES],
+                strength: 0.7 + Math.random() * 0.7
+            });
         }
-        totalW = 0;
-        for (var i = 0; i < N; i++) totalW += weights[i];
-        for (var v = 0; v < POP; v++) {
-            var r = Math.random() * totalW, s = 0;
-            for (var i = 0; i < N; i++) {
-                s += weights[i];
-                if (r <= s) { votes[i]++; break; }
-            }
-        }
-        if (playerVote >= 0) votes[playerVote]++;
-        var total = 0;
-        for (var i = 0; i < N; i++) total += votes[i];
-        for (var i = 0; i < N; i++) votePct[i] = total > 0 ? votes[i] / total : 0;
-    }
-
-    function getWinner() {
-        var mx = -1, w = 0;
-        for (var i = 0; i < N; i++) if (votes[i] > mx) { mx = votes[i]; w = i; }
-        return w;
-    }
-
-    function getCoalition() {
-        var sorted = [];
-        for (var i = 0; i < N; i++) sorted.push({ idx: i, pct: votePct[i] });
-        sorted.sort(function(a, b) { return b.pct - a.pct; });
-        var coal = [], total = 0;
-        for (var i = 0; i < sorted.length; i++) {
-            coal.push(sorted[i].idx);
-            total += sorted[i].pct;
-            if (total > 0.5) break;
-        }
-        return coal;
-    }
-
-    // ==========================================
-    // PARTICLES — the electorate as a living field
-    // ==========================================
-    function createParticles() {
-        particles = [];
-        particleTargetAlpha = [];
-        for (var i = 0; i < N; i++) {
-            var count = votes[i];
-            for (var j = 0; j < count; j++) {
-                // Cluster loosely by party region but with overlap
-                var cx = (i + 0.5) / N * (W - 120) + 60;
-                var cy = H / 2;
-                // Spread with Gaussian-ish distribution
-                var r1 = Math.random() + Math.random() + Math.random();
-                var r2 = Math.random() + Math.random() + Math.random();
-                var x = cx + (r1 - 1.5) * 130;
-                var y = cy + (r2 - 1.5) * 160;
-                x = Math.max(12, Math.min(W - 12, x));
-                y = Math.max(12, Math.min(H - 12, y));
-
-                particles.push({
-                    x: x, y: y,
-                    baseX: x, baseY: y,
-                    party: i,
-                    size: 2.2 + Math.random() * 2.2,
-                    phase: Math.random() * Math.PI * 2,
-                    driftSpeed: 0.3 + Math.random() * 0.5,
-                    driftRadius: 3 + Math.random() * 8,
-                    alpha: 0,
-                    targetAlpha: 0.7,
-                    pulsePhase: Math.random() * Math.PI * 2,
-                    isUser: false,
-                });
+        for (var y = 0; y < GRID_H; y++) {
+            for (var x = 0; x < GRID_W; x++) {
+                // soft-max influence from each cluster
+                var weights = new Array(NUM_PARTIES).fill(0);
+                for (var ci = 0; ci < clusters.length; ci++) {
+                    var cl = clusters[ci];
+                    var dx = x + 0.5 - cl.cx;
+                    var dy = y + 0.5 - cl.cy;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    var w = cl.strength / (1 + dist * 0.7);
+                    weights[cl.party] += w;
+                }
+                // pick weighted-max with small random noise
+                var bestP = 0, bestW = -1;
+                for (var p = 0; p < NUM_PARTIES; p++) {
+                    var jitter = weights[p] * (0.85 + Math.random() * 0.3);
+                    if (jitter > bestW) { bestW = jitter; bestP = p; }
+                }
+                voters[y * GRID_W + x] = bestP;
             }
         }
     }
 
-    function updateParticleTargets() {
-        var winner = getWinner();
-        var coalition = getCoalition();
-
-        for (var i = 0; i < particles.length; i++) {
-            var p = particles[i];
-            var partyIdx = p.party;
-            var active;
-            if (system === 'fptp') {
-                active = (partyIdx === winner);
-            } else if (system === 'pr') {
-                active = true;
-            } else {
-                active = coalition.indexOf(partyIdx) >= 0;
+    // ============== DISTRICTS FROM SEEDS (Voronoi) ==============
+    // Each voter cell is assigned to the district whose seed it's nearest to.
+    // 5 seeds → exactly 5 (typically non-empty) Voronoi cells, always contiguous.
+    function computeDistrictsFromSeeds() {
+        for (var y = 0; y < GRID_H; y++) {
+            for (var x = 0; x < GRID_W; x++) {
+                var cx = x + 0.5, cy = y + 0.5;
+                var bestD = 0, bestDist = Infinity;
+                for (var s = 0; s < NUM_DISTRICTS; s++) {
+                    var dx = cx - seeds[s].x, dy = cy - seeds[s].y;
+                    var d = dx * dx + dy * dy;
+                    if (d < bestDist) { bestDist = d; bestD = s; }
+                }
+                districts[y * GRID_W + x] = bestD;
             }
-            p.targetAlpha = active ? (0.6 + votePct[partyIdx] * 0.6) : 0.04;
         }
     }
 
-    // ==========================================
-    // AUDIO
-    // ==========================================
-    function buildAudio() {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // ============== SEED PRESETS ==============
+    // Each preset sets the 5 seed positions and re-derives districts.
+    function presetFair() {
+        // 5 seeds evenly spread horizontally — clean vertical-ish strips
+        seeds = [];
+        for (var i = 0; i < NUM_DISTRICTS; i++) {
+            seeds.push({
+                x: GRID_W * (i + 0.5) / NUM_DISTRICTS,
+                y: GRID_H * 0.5
+            });
+        }
+        computeDistrictsFromSeeds();
+    }
 
+    function presetPackAndCrack() {
+        // Find the largest party + the centroid of its voters.
+        // Plant seed[0] right there → "pack" all those voters into one tight
+        // district. Spread seeds[1..4] toward the four corners to "crack"
+        // remaining same-party voters across districts that they can't win.
+        var pCounts = new Array(NUM_PARTIES).fill(0);
+        for (var i = 0; i < NUM_VOTERS; i++) pCounts[voters[i]]++;
+        var topParty = 0;
+        for (var p = 1; p < NUM_PARTIES; p++) {
+            if (pCounts[p] > pCounts[topParty]) topParty = p;
+        }
+        var ccx = 0, ccy = 0, ccn = 0;
+        for (var i = 0; i < NUM_VOTERS; i++) {
+            if (voters[i] === topParty) {
+                ccx += (i % GRID_W) + 0.5;
+                ccy += Math.floor(i / GRID_W) + 0.5;
+                ccn++;
+            }
+        }
+        if (ccn > 0) { ccx /= ccn; ccy /= ccn; }
+        else { ccx = GRID_W / 2; ccy = GRID_H / 2; }
+
+        seeds = [{ x: ccx, y: ccy }];
+        // 4 spread "crack" seeds at corners, pulled inward a touch
+        var corners = [
+            { x: GRID_W * 0.15, y: GRID_H * 0.15 },
+            { x: GRID_W * 0.85, y: GRID_H * 0.15 },
+            { x: GRID_W * 0.15, y: GRID_H * 0.85 },
+            { x: GRID_W * 0.85, y: GRID_H * 0.85 }
+        ];
+        for (var c = 0; c < 4; c++) seeds.push(corners[c]);
+        computeDistrictsFromSeeds();
+    }
+
+    function presetStack() {
+        // 5 seeds in a vertical column → horizontal-strip districts.
+        // A different geometry than fair: the same voters tend to be split
+        // along a different axis, often producing a different parliament.
+        seeds = [];
+        for (var i = 0; i < NUM_DISTRICTS; i++) {
+            seeds.push({
+                x: GRID_W * 0.5,
+                y: GRID_H * (i + 0.5) / NUM_DISTRICTS
+            });
+        }
+        computeDistrictsFromSeeds();
+    }
+
+    // ============== ELECTORAL TALLY ==============
+    function tally() {
+        // for each district, find plurality winner
+        for (var d = 0; d < NUM_DISTRICTS; d++) {
+            var counts = new Array(NUM_PARTIES).fill(0);
+            for (var i = 0; i < NUM_VOTERS; i++) {
+                if (districts[i] === d) counts[voters[i]]++;
+            }
+            var bestP = 0, bestC = -1;
+            for (var p = 0; p < NUM_PARTIES; p++) {
+                if (counts[p] > bestC) { bestC = counts[p]; bestP = p; }
+            }
+            winners[d] = bestP;
+        }
+        // count seats per party
+        for (var p = 0; p < NUM_PARTIES; p++) seatCount[p] = 0;
+        for (var d = 0; d < NUM_DISTRICTS; d++) seatCount[winners[d]]++;
+        // update audio targets
+        for (var p = 0; p < NUM_PARTIES; p++) {
+            // base volume floor (0.12) so a single-district winner is still audible
+            voiceTargetGains[p] = seatCount[p] > 0 ? (0.12 + (seatCount[p] / NUM_DISTRICTS) * 1.2) : 0;
+        }
+        // LCD readouts
+        var chordParts = [];
+        for (var d = 0; d < NUM_DISTRICTS; d++) {
+            chordParts.push(PARTIES[winners[d]].name.charAt(0));
+        }
+        if (lcdChord) lcdChord.textContent = chordParts.join('·');
+        var seatParts = [];
+        for (var p = 0; p < NUM_PARTIES; p++) {
+            if (seatCount[p] > 0) seatParts.push(PARTIES[p].name.charAt(0) + seatCount[p]);
+        }
+        if (lcdSeats) lcdSeats.textContent = seatParts.join(' ');
+    }
+
+    // ============== AUDIO ==============
+    function buildAudioGraph_inResume() {
+        // master chain
         masterComp = audioCtx.createDynamicsCompressor();
-        masterComp.threshold.value = -20;
-        masterComp.ratio.value = 6;
-        masterComp.knee.value = 10;
+        masterComp.threshold.value = -18; masterComp.ratio.value = 5;
+        masterComp.knee.value = 8; masterComp.attack.value = 0.01; masterComp.release.value = 0.15;
         masterComp.connect(audioCtx.destination);
+        masterFilter = audioCtx.createBiquadFilter();
+        masterFilter.type = 'lowpass'; masterFilter.frequency.value = 4500; masterFilter.Q.value = 0.4;
+        masterFilter.connect(masterComp);
+        masterGain = audioCtx.createGain(); masterGain.gain.value = 0.22;
+        masterGain.connect(masterFilter);
 
-        masterGain = audioCtx.createGain();
-        masterGain.gain.value = 0.22;
-        masterGain.connect(masterComp);
-
-        // Reverb
-        var len = audioCtx.sampleRate * 3;
+        // simple reverb send
+        var len = audioCtx.sampleRate * 2.5;
         var buf = audioCtx.createBuffer(2, len, audioCtx.sampleRate);
         for (var ch = 0; ch < 2; ch++) {
             var d = buf.getChannelData(ch);
-            for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.5);
+            for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6);
         }
-        var convolver = audioCtx.createConvolver();
-        convolver.buffer = buf;
-        var revGain = audioCtx.createGain();
-        revGain.gain.value = 0.25;
-        convolver.connect(revGain);
-        revGain.connect(masterGain);
+        var conv = audioCtx.createConvolver(); conv.buffer = buf;
+        var revGain = audioCtx.createGain(); revGain.gain.value = 0.28;
+        conv.connect(revGain); revGain.connect(masterFilter);
 
-        // Build each party's voice
         voiceNodes = [];
-        for (var i = 0; i < N; i++) {
-            var v = VOICES[i];
-            var voiceGain = audioCtx.createGain();
-            voiceGain.gain.value = 0;
+        for (var i = 0; i < NUM_PARTIES; i++) {
+            var v = PARTIES[i];
+            var voiceGain = audioCtx.createGain(); voiceGain.gain.value = 0;
+            voiceGain.connect(masterGain);
+            voiceGain.connect(conv);
 
             var filter = audioCtx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 1200 + i * 300;
-            filter.Q.value = 0.5;
+            filter.type = 'lowpass'; filter.frequency.value = 1800; filter.Q.value = 2.2;
             filter.connect(voiceGain);
 
-            voiceGain.connect(masterGain);
-            voiceGain.connect(convolver);
-
-            // Create oscillators for harmonics
             var oscs = [];
             for (var h = 0; h < v.harmonics.length; h++) {
                 var osc = audioCtx.createOscillator();
@@ -449,90 +1093,49 @@
                 osc.frequency.value = v.fund * (h + 1);
                 osc.detune.value = v.detune + (h > 0 ? h * 2 : 0);
                 var hGain = audioCtx.createGain();
-                hGain.gain.value = v.harmonics[h] * 0.3;
-                osc.connect(hGain);
-                hGain.connect(filter);
+                hGain.gain.value = v.harmonics[h] * 0.32;
+                osc.connect(hGain); hGain.connect(filter);
                 osc.start();
-                oscs.push({ osc: osc, hGain: hGain, baseFreq: v.fund * (h + 1) });
+                oscs.push({ osc: osc, hGain: hGain });
             }
-
-            voiceNodes.push({
-                oscs: oscs,
-                gain: voiceGain,
-                filter: filter,
-                melodyIndex: 0,
-            });
+            voiceNodes.push({ oscs: oscs, gain: voiceGain, filter: filter, melodyIndex: 0 });
         }
     }
-
-    function updateVoiceTargets() {
-        var winner = getWinner();
-        var coalition = getCoalition();
-
-        for (var i = 0; i < N; i++) {
-            var active;
-            if (system === 'fptp') {
-                active = (i === winner);
-            } else if (system === 'pr') {
-                active = true;
-            } else {
-                active = coalition.indexOf(i) >= 0;
-            }
-
-            if (!active) {
-                voiceTargetGains[i] = 0;
-            } else if (system === 'pr') {
-                // Proportional: volume = vote share (but with a floor so small parties are audible)
-                voiceTargetGains[i] = 0.15 + votePct[i] * 1.8;
-            } else if (system === 'fptp') {
-                // Winner takes all — full volume
-                voiceTargetGains[i] = 1.2;
-            } else {
-                // Coalition: proportional within coalition
-                var coalTotal = 0;
-                for (var c = 0; c < coalition.length; c++) coalTotal += votePct[coalition[c]];
-                voiceTargetGains[i] = coalTotal > 0 ? (votePct[i] / coalTotal) * 1.1 : 0;
-            }
-        }
-    }
-
-    function advanceStep() {
+    function silenceAudio() {
         if (!audioCtx) return;
         var t = audioCtx.currentTime;
-
-        for (var i = 0; i < N; i++) {
-            var v = VOICES[i];
-            var node = voiceNodes[i];
-            var mel = MELODIES[i];
-
-            // Check if this step has a note
+        for (var i = 0; i < voiceNodes.length; i++) {
+            voiceNodes[i].gain.gain.cancelScheduledValues(t);
+            voiceNodes[i].gain.gain.linearRampToValueAtTime(0, t + 0.25);
+            voiceCurrentGains[i] = 0;
+        }
+    }
+    // Per-step note articulation
+    function articulateStep() {
+        if (!audioCtx) return;
+        var t = audioCtx.currentTime;
+        for (var i = 0; i < NUM_PARTIES; i++) {
+            var v = PARTIES[i], node = voiceNodes[i];
             if (v.rhythm[stepIndex % STEPS] === 1 && voiceCurrentGains[i] > 0.01) {
-                // Get melody note
-                var semitones = mel[node.melodyIndex % mel.length];
+                var semis = v.melody[node.melodyIndex % v.melody.length];
                 node.melodyIndex++;
-                var freq = v.fund * Math.pow(2, semitones / 12);
-
-                // Glide oscillators to new pitch
+                var freq = v.fund * Math.pow(2, semis / 12);
                 for (var h = 0; h < node.oscs.length; h++) {
-                    var target = freq * (h + 1);
-                    node.oscs[h].osc.frequency.linearRampToValueAtTime(target, t + 0.06);
+                    var tgt = freq * (h + 1);
+                    node.oscs[h].osc.frequency.linearRampToValueAtTime(tgt, t + 0.06);
                 }
-
-                // Articulation envelope on the filter
                 node.filter.frequency.cancelScheduledValues(t);
-                node.filter.frequency.setValueAtTime(2500 + i * 200, t);
-                node.filter.frequency.exponentialRampToValueAtTime(600 + i * 200, t + 0.35);
+                node.filter.frequency.setValueAtTime(2400 + i * 220, t);
+                node.filter.frequency.exponentialRampToValueAtTime(550 + i * 200, t + 0.42);
             }
         }
-
         stepIndex++;
     }
-
-    function updateAudioGains(dt) {
+    // Smoothly slew voice gains toward targets
+    function updateAudio(dt) {
         if (!audioCtx) return;
         var t = audioCtx.currentTime;
-        for (var i = 0; i < N; i++) {
-            // Smooth interpolation
+        for (var i = 0; i < NUM_PARTIES; i++) {
             voiceCurrentGains[i] += (voiceTargetGains[i] - voiceCurrentGains[i]) * Math.min(1, dt * 3.5);
             voiceNodes[i].gain.gain.linearRampToValueAtTime(
                 Math.max(0, voiceCurrentGains[i]), t + 0.05
@@ -540,286 +1143,455 @@
         }
     }
 
-    // ==========================================
-    // RENDERING
-    // ==========================================
-    function render(t) {
-        ctx.fillStyle = '#FEFDFB';
+    // ============== CANVAS HELPERS ==============
+    function setupCanvas(c) {
+        var dpr = window.devicePixelRatio || 1;
+        var rect = c.getBoundingClientRect();
+        c.width  = Math.floor(rect.width  * dpr);
+        c.height = Math.floor(rect.height * dpr);
+        var ctx = c.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx: ctx, w: rect.width, h: rect.height };
+    }
+
+    // ============== MAP RENDER (PA·01) ==============
+    function renderMap() {
+        var s = setupCanvas(mapCanvas);
+        var ctx = s.ctx, W = s.w, H = s.h;
+        ctx.clearRect(0, 0, W, H);
+
+        // dark inset background
+        ctx.fillStyle = '#0a0805';
         ctx.fillRect(0, 0, W, H);
 
-        // Draw particles
-        for (var i = 0; i < particles.length; i++) {
-            var p = particles[i];
+        var pad = 6;
+        var gridW = W - pad * 2, gridH = H - pad * 2;
+        var cellW = gridW / GRID_W;
+        var cellH = gridH / GRID_H;
 
-            // Drift
-            var time = t / 1000;
-            p.x = p.baseX + Math.sin(time * p.driftSpeed + p.phase) * p.driftRadius;
-            p.y = p.baseY + Math.cos(time * p.driftSpeed * 0.7 + p.phase + 1.3) * p.driftRadius * 0.6;
-
-            // Alpha interpolation
-            p.alpha += (p.targetAlpha - p.alpha) * 0.04;
-
-            // Pulse on beat (subtle)
-            var pulse = 1.0;
-            if (p.alpha > 0.15) {
-                var beatPhase = (stepIndex % 4) / 4;
-                pulse = 1.0 + Math.max(0, Math.sin(beatPhase * Math.PI * 2) * 0.15);
+        // 1. draw voter cells (filled rect, party-colored)
+        for (var y = 0; y < GRID_H; y++) {
+            for (var x = 0; x < GRID_W; x++) {
+                var i = y * GRID_W + x;
+                var party = PARTIES[voters[i]];
+                var px = pad + x * cellW;
+                var py = pad + y * cellH;
+                ctx.fillStyle = party.hex;
+                ctx.fillRect(px + 1, py + 1, cellW - 2, cellH - 2);
+                // subtle inner highlight (top-left edge)
+                ctx.fillStyle = 'rgba(255,255,255,0.10)';
+                ctx.fillRect(px + 1, py + 1, cellW - 2, 1);
             }
+        }
 
-            var party = PARTIES[p.party];
-            var size = p.size * pulse;
+        // 2. draw district boundaries — thick outline between cells of
+        // different districts. Crisp white lines, varying alpha per district
+        // index to distinguish them faintly.
+        ctx.lineWidth = 2.5;
+        for (var y = 0; y < GRID_H; y++) {
+            for (var x = 0; x < GRID_W; x++) {
+                var i = y * GRID_W + x;
+                var d = districts[i];
+                var px = pad + x * cellW;
+                var py = pad + y * cellH;
+                // right edge: if neighbor exists and is different district
+                if (x < GRID_W - 1 && districts[i + 1] !== d) {
+                    ctx.strokeStyle = DISTRICT_COLORS[Math.max(d, districts[i + 1])];
+                    ctx.beginPath();
+                    ctx.moveTo(px + cellW, py);
+                    ctx.lineTo(px + cellW, py + cellH);
+                    ctx.stroke();
+                }
+                // bottom edge
+                if (y < GRID_H - 1 && districts[i + GRID_W] !== d) {
+                    ctx.strokeStyle = DISTRICT_COLORS[Math.max(d, districts[i + GRID_W])];
+                    ctx.beginPath();
+                    ctx.moveTo(px, py + cellH);
+                    ctx.lineTo(px + cellW, py + cellH);
+                    ctx.stroke();
+                }
+            }
+        }
+        // outer perimeter of map
+        ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(pad + 0.5, pad + 0.5, gridW - 1, gridH - 1);
 
-            // Glow for active particles
-            if (p.alpha > 0.2) {
+        // 3. draw the 5 seed markers — draggable handles, neutral black so
+        // they don't compete with voter colors. Number inside identifies the
+        // district. The marker being dragged enlarges and glows.
+        for (var s = 0; s < NUM_DISTRICTS; s++) {
+            var sx = pad + seeds[s].x * cellW;
+            var sy = pad + seeds[s].y * cellH;
+            var isDrag = (s === draggingSeed);
+            var r = isDrag ? 14 : 12;
+            // outer halo / glow
+            if (isDrag) {
+                ctx.fillStyle = 'rgba(255,255,255,0.18)';
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, size + 4, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(' + party.r + ',' + party.g + ',' + party.b + ',' + (p.alpha * 0.06) + ')';
+                ctx.arc(sx, sy, r + 6, 0, Math.PI * 2);
                 ctx.fill();
             }
-
-            // Core
+            // solid black disk
+            ctx.fillStyle = '#000';
             ctx.beginPath();
-            ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(' + party.r + ',' + party.g + ',' + party.b + ',' + p.alpha + ')';
+            ctx.arc(sx, sy, r, 0, Math.PI * 2);
             ctx.fill();
+            // white ring
+            ctx.strokeStyle = isDrag
+                ? 'rgba(255,255,255,1.0)'
+                : 'rgba(255,255,255,0.85)';
+            ctx.lineWidth = isDrag ? 2.4 : 1.6;
+            ctx.beginPath();
+            ctx.arc(sx, sy, r, 0, Math.PI * 2);
+            ctx.stroke();
+            // district number in white
+            ctx.font = 'bold 13px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText((s + 1).toString(), sx, sy);
+        }
+    }
 
-            // Bright center for highly active
-            if (p.alpha > 0.4) {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, size * 0.4, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(255,255,255,' + (p.alpha * 0.15) + ')';
-                ctx.fill();
-            }
+    // ============== CHAMBER RENDER (PA·02) ==============
+    // Draws 5 seats stacked vertically; each shows district number, elected party
+    // color, party name + fundamental Hz, and a live VU meter showing voice level.
+    function renderChamber() {
+        var s = setupCanvas(chamberCanvas);
+        var ctx = s.ctx, W = s.w, H = s.h;
+        ctx.clearRect(0, 0, W, H);
 
-            // User's vote marker
-            if (p.isUser) {
+        ctx.fillStyle = '#0a0805';
+        ctx.fillRect(0, 0, W, H);
+
+        var pad = 8;
+        var seatH = (H - pad * 2) / NUM_DISTRICTS;
+        for (var d = 0; d < NUM_DISTRICTS; d++) {
+            var y = pad + d * seatH;
+            var party = PARTIES[winners[d]];
+
+            // seat background
+            ctx.fillStyle = 'rgba(255,255,255,0.025)';
+            ctx.fillRect(pad, y + 2, W - pad * 2, seatH - 6);
+
+            // left: district label
+            ctx.fillStyle = 'rgba(255,255,255,0.55)';
+            ctx.font = '9px "Hanken Grotesk", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('SEAT ' + (d + 1), pad + 6, y + seatH / 2);
+
+            // party color swatch
+            var swatchX = pad + 60, swatchY = y + seatH / 2 - 10;
+            ctx.fillStyle = party.hex;
+            ctx.shadowColor = party.hex;
+            ctx.shadowBlur = 8;
+            ctx.fillRect(swatchX, swatchY, 18, 20);
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(swatchX + 0.5, swatchY + 0.5, 17, 19);
+
+            // party name + Hz
+            ctx.fillStyle = party.hex;
+            ctx.font = 'bold 11px "Hanken Grotesk", sans-serif';
+            ctx.fillText(party.name, swatchX + 26, y + seatH / 2 - 4);
+            ctx.fillStyle = 'rgba(255,255,255,0.45)';
+            ctx.font = '9px "JetBrains Mono", monospace';
+            ctx.fillText(Math.round(party.fund) + ' Hz', swatchX + 26, y + seatH / 2 + 8);
+
+            // VU meter (right side) — shows live voice level for THIS party's voice,
+            // not just whether it has this seat — so identical parties across multiple
+            // seats will all show full level
+            var vuX = pad + Math.max(150, W * 0.55);
+            var vuW = W - pad - vuX - 4;
+            var vuY = y + seatH / 2 - 4;
+            // background bar
+            ctx.fillStyle = 'rgba(255,255,255,0.06)';
+            ctx.fillRect(vuX, vuY, vuW, 8);
+            // fill
+            var level = Math.min(1, voiceCurrentGains[winners[d]] / 1.3);
+            ctx.fillStyle = party.hex;
+            ctx.shadowColor = party.hex;
+            ctx.shadowBlur = 5;
+            ctx.fillRect(vuX, vuY, vuW * level, 8);
+            ctx.shadowBlur = 0;
+            // tick marks every 25%
+            ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+            ctx.lineWidth = 1;
+            for (var k = 1; k < 4; k++) {
+                var tx = vuX + (vuW / 4) * k;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, size + 7, 0, Math.PI * 2);
-                ctx.strokeStyle = 'rgba(255,255,255,' + (0.3 + Math.sin(time * 2) * 0.15) + ')';
-                ctx.lineWidth = 1;
+                ctx.moveTo(tx, vuY);
+                ctx.lineTo(tx, vuY + 8);
                 ctx.stroke();
             }
         }
 
-        // Party labels along bottom
-        ctx.font = '10px "EB Garamond", Georgia, serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        for (var i = 0; i < N; i++) {
-            var cx = (i + 0.5) / N * (W - 120) + 60;
-            var pct = Math.round(votePct[i] * 100);
-            var active = isPartyActive(i);
-            var alpha = active ? 0.6 : 0.12;
-            ctx.fillStyle = 'rgba(' + PARTIES[i].r + ',' + PARTIES[i].g + ',' + PARTIES[i].b + ',' + alpha + ')';
-            ctx.fillText(PARTIES[i].name + ' ' + pct + '%', cx, H - 6);
+        // very top label
+        ctx.fillStyle = 'rgba(247,144,30,0.4)';
+        ctx.font = '8px "Hanken Grotesk", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText('THE PARLIAMENT · 5 SEATS', pad + 6, 2);
+    }
+
+    // ============== INTERACTION: drag the seeds ==============
+    function pointerToGrid(e) {
+        var rect = mapCanvas.getBoundingClientRect();
+        var cx, cy;
+        if (e.clientX != null) { cx = e.clientX; cy = e.clientY; }
+        else if (e.touches && e.touches[0]) { cx = e.touches[0].clientX; cy = e.touches[0].clientY; }
+        else return null;
+        var pad = 6;
+        var cellW = (rect.width  - pad * 2) / GRID_W;
+        var cellH = (rect.height - pad * 2) / GRID_H;
+        var gx = (cx - rect.left - pad) / cellW;
+        var gy = (cy - rect.top  - pad) / cellH;
+        return { x: gx, y: gy };
+    }
+    function findSeedNear(pt) {
+        // grab radius ≈ 1.5 cells of distance — generous so it's forgiving
+        var GRAB = 1.5;
+        var bestS = -1, bestD = Infinity;
+        for (var s = 0; s < NUM_DISTRICTS; s++) {
+            var dx = pt.x - seeds[s].x, dy = pt.y - seeds[s].y;
+            var d = Math.sqrt(dx * dx + dy * dy);
+            if (d < GRAB && d < bestD) { bestD = d; bestS = s; }
         }
-
-        // System label top-right
-        ctx.font = '10px "EB Garamond", Georgia, serif';
-        ctx.textAlign = 'right';
-        ctx.fillStyle = 'rgba(224,122,58,0.3)';
-        var sysLabel = system === 'fptp' ? 'FIRST PAST THE POST' :
-                       system === 'pr' ? 'PROPORTIONAL REPRESENTATION' : 'COALITION';
-        ctx.fillText(sysLabel, W - 14, 18);
+        return bestS;
     }
-
-    function isPartyActive(idx) {
-        if (system === 'fptp') return idx === getWinner();
-        if (system === 'pr') return true;
-        return getCoalition().indexOf(idx) >= 0;
+    function clampSeed(s) {
+        // keep seeds slightly inside grid edges so their Voronoi cells
+        // always contain at least one voter
+        s.x = Math.max(0.2, Math.min(GRID_W - 0.2, s.x));
+        s.y = Math.max(0.2, Math.min(GRID_H - 0.2, s.y));
     }
+    mapField.addEventListener('pointerdown', function(e) {
+        var pt = pointerToGrid(e);
+        if (!pt) return;
+        var idx = findSeedNear(pt);
+        if (idx === -1) return; // missed every seed — ignore
+        draggingSeed = idx;
+        mapField.classList.add('engaged');
+        try { mapField.setPointerCapture(e.pointerId); } catch (_) {}
+        // snap seed to pointer
+        seeds[idx].x = pt.x; seeds[idx].y = pt.y;
+        clampSeed(seeds[idx]);
+        computeDistrictsFromSeeds();
+        tally();
+        if (!running) { renderMap(); renderChamber(); }
+        e.preventDefault();
+    });
+    mapField.addEventListener('pointermove', function(e) {
+        if (draggingSeed === -1) return;
+        var pt = pointerToGrid(e);
+        if (!pt) return;
+        seeds[draggingSeed].x = pt.x;
+        seeds[draggingSeed].y = pt.y;
+        clampSeed(seeds[draggingSeed]);
+        computeDistrictsFromSeeds();
+        tally();
+        if (!running) { renderMap(); renderChamber(); }
+    });
+    function endDrag() { draggingSeed = -1; }
+    mapField.addEventListener('pointerup', endDrag);
+    mapField.addEventListener('pointercancel', endDrag);
+    mapField.addEventListener('lostpointercapture', endDrag);
 
-    // ==========================================
-    // OUTCOME TEXT
-    // ==========================================
-    function updateOutcome() {
-        if (!hasVoted) { outcomeEl.innerHTML = '&nbsp;'; return; }
-
-        var winner = getWinner();
-        var coalition = getCoalition();
-
-        if (system === 'fptp') {
-            var silencedPct = Math.round((1 - votePct[winner]) * 100);
-            outcomeEl.innerHTML = PARTIES[winner].name + ' governs alone. '
-                + '<span class="silenced">' + silencedPct + '% of voices produce no sound.</span>';
-        } else if (system === 'pr') {
-            outcomeEl.innerHTML = 'Every voice is heard in proportion.';
-        } else {
-            var names = coalition.map(function(i) { return PARTIES[i].name; });
-            var coalPct = 0;
-            for (var c = 0; c < coalition.length; c++) coalPct += votePct[coalition[c]];
-            coalPct = Math.round(coalPct * 100);
-            outcomeEl.innerHTML = names.join(' + ') + ' form a coalition. '
-                + '<span class="silenced">' + (100 - coalPct) + '% unheard.</span>';
-        }
-    }
-
-    // ==========================================
-    // INTERACTION
-    // ==========================================
-    // Vote buttons
-    function buildVoteButtons() {
-        var existing = voteRow.querySelectorAll('.vote-btn');
-        existing.forEach(function(el) { el.remove(); });
-        for (var i = 0; i < N; i++) {
+    // ============== UI: build district swatches and preset buttons ==============
+    function buildPresetRow() {
+        var presets = [
+            { name: 'fair',          handler: function() { presetFair();         tally(); } },
+            { name: 'pack & crack',  handler: function() { presetPackAndCrack(); tally(); } },
+            { name: 'stack',         handler: function() { presetStack();        tally(); } },
+            { name: 'reseed voters', handler: function() { seedVoters(); presetFair(); tally(); } }
+        ];
+        presetRow.innerHTML = '';
+        presets.forEach(function(p) {
             var btn = document.createElement('button');
-            btn.className = 'vote-btn';
-            btn.style.background = PARTIES[i].hex;
-            btn.setAttribute('data-party', i);
-            btn.title = PARTIES[i].name;
-            btn.addEventListener('click', (function(idx) {
-                return function() { castVote(idx); };
-            })(i));
-            voteRow.appendChild(btn);
-        }
-    }
-    buildVoteButtons();
-
-    function castVote(idx) {
-        if (playerVote >= 0) {
-            votes[playerVote]--;
-        }
-        playerVote = idx;
-        if (!hasVoted) {
-            hasVoted = true;
-            runElection();
-        } else {
-            votes[playerVote]++;
-            var total = 0;
-            for (var i = 0; i < N; i++) total += votes[i];
-            for (var i = 0; i < N; i++) votePct[i] = total > 0 ? votes[i] / total : 0;
-        }
-
-        // Mark user's particle
-        for (var i = 0; i < particles.length; i++) particles[i].isUser = false;
-        createParticles();
-        // Find one particle of the player's party and mark it
-        for (var i = 0; i < particles.length; i++) {
-            if (particles[i].party === playerVote) {
-                particles[i].isUser = true;
-                break;
-            }
-        }
-
-        updateParticleTargets();
-        if (playing) updateVoiceTargets();
-        updateOutcome();
-        updateVoteButtons();
-    }
-
-    function updateVoteButtons() {
-        var btns = voteRow.querySelectorAll('.vote-btn');
-        btns.forEach(function(btn) {
-            var idx = parseInt(btn.getAttribute('data-party'));
-            btn.classList.toggle('voted', idx === playerVote);
+            btn.className = 'preset-btn';
+            btn.textContent = p.name;
+            btn.addEventListener('click', function() {
+                p.handler();
+                if (!running) { renderMap(); renderChamber(); }
+                statusStrip.innerHTML = '<span class="acc">' + p.name.toUpperCase() + '</span> · seeds repositioned';
+                setTimeout(function() {
+                    if (running) statusStrip.innerHTML = '<span class="acc">RUNNING</span> · drag the seeds to redraw the parliament';
+                }, 1200);
+            });
+            presetRow.appendChild(btn);
         });
     }
 
-    // System toggle
-    sysBtns.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            var s = btn.getAttribute('data-sys');
-            if (s === system) return;
-            system = s;
-            sysBtns.forEach(function(b) { b.classList.remove('active'); });
-            btn.classList.add('active');
-            updateParticleTargets();
-            if (playing) updateVoiceTargets();
-            updateOutcome();
-        });
-    });
+    // ============== ANIMATION LOOP ==============
+    function tick() {
+        if (!running) { animFrame = null; return; }
+        var now = (audioCtx ? audioCtx.currentTime : performance.now() / 1000);
+        var dt = lastTime > 0 ? Math.min(0.05, now - lastTime) : 1/60;
+        lastTime = now;
 
-    // New election
-    document.getElementById('new-election').addEventListener('click', function() {
-        runElection();
-        createParticles();
-        if (playerVote >= 0) {
-            for (var i = 0; i < particles.length; i++) {
-                if (particles[i].party === playerVote) {
-                    particles[i].isUser = true;
-                    break;
-                }
-            }
-        }
-        updateParticleTargets();
-        if (playing) updateVoiceTargets();
-        updateOutcome();
-    });
+        updateAudio(dt);
 
-    // Play/Stop
-    var playStopBtn = document.getElementById('play-stop');
-    playStopBtn.addEventListener('click', function() {
-        playing = !playing;
-        playStopBtn.textContent = playing ? 'Stop' : 'Play';
-        if (audioCtx) {
-            if (playing) {
-                audioCtx.resume();
-                updateVoiceTargets();
-            } else {
-                // Fade all voices to zero
-                var t = audioCtx.currentTime;
-                for (var i = 0; i < N; i++) {
-                    voiceTargetGains[i] = 0;
-                    voiceNodes[i].gain.gain.linearRampToValueAtTime(0, t + 0.3);
-                    voiceCurrentGains[i] = 0;
-                }
-            }
-        }
-    });
-
-    // Start
-    overlay.addEventListener('click', function() {
-        if (started) return;
-        started = true;
-        overlay.classList.add('hidden');
-        buildAudio();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-
-        // Pre-populate an election for visual interest
-        runElection();
-        createParticles();
-        updateParticleTargets();
-        updateVoiceTargets();
-
-        lastStepTime = performance.now();
-        tick(performance.now());
-    });
-    overlay.addEventListener('touchstart', function(e) {
-        e.preventDefault(); overlay.click();
-    }, { passive: false });
-
-    // ==========================================
-    // MAIN LOOP
-    // ==========================================
-    var lastFrameTime = 0;
-
-    function tick(ts) {
-        var dt = Math.min(0.1, (ts - (lastFrameTime || ts)) / 1000);
-        lastFrameTime = ts;
-
-        // Step sequencer (only when playing)
-        if (playing) {
-            var stepInterval = (60 / TEMPO) * 1000 / 2; // eighth notes
-            if (ts - lastStepTime >= stepInterval) {
-                lastStepTime = ts;
-                advanceStep();
-            }
+        // step scheduler — articulate notes per beat
+        var stepDur = 60 / BPM / 2; // 8 steps per beat? No — 8 steps per "phrase"; one step per eighth note → 60/BPM/2
+        if (lastStepTime === 0) lastStepTime = now;
+        while (now - lastStepTime >= stepDur) {
+            articulateStep();
+            lastStepTime += stepDur;
         }
 
-        // Smooth audio gains
-        updateAudioGains(dt);
+        renderMap();
+        renderChamber();
 
-        // Render (always — particles stay visible)
-        render(ts);
-
-        requestAnimationFrame(tick);
+        animFrame = requestAnimationFrame(tick);
     }
 
-    // Initial render
-    ctx.fillStyle = '#FEFDFB';
-    ctx.fillRect(0, 0, W, H);
+    // ============== TRANSPORT ==============
+    function start() {
+        if (running) return;
+        running = true;
+        playBtn.classList.add('live');
+        stopBtn.classList.remove('live');
+        statusStrip.innerHTML = '<span class="acc">RUNNING</span> · drag the seeds to redraw the parliament';
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        lastTime = 0;
+        lastStepTime = 0;
+        if (!animFrame) animFrame = requestAnimationFrame(tick);
+    }
+    function stop() {
+        if (!running) return;
+        running = false;
+        playBtn.classList.remove('live');
+        statusStrip.innerHTML = '<span class="acc">PAUSED</span> · press play';
+        silenceAudio();
+        if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+    }
+    playBtn.addEventListener('click', start);
+    stopBtn.addEventListener('click', stop);
+    clearBtn.addEventListener('click', function() {
+        seedVoters();
+        presetFair();
+        tally();
+        statusStrip.innerHTML = '<span class="acc">CLEAR</span> · voters reseeded · fair districts';
+        if (!running) { renderMap(); renderChamber(); }
+        setTimeout(function() {
+            if (running) statusStrip.innerHTML = '<span class="acc">RUNNING</span> · drag the seeds to redraw the parliament';
+        }, 1200);
+    });
+
+    function repaintAll() { renderMap(); renderChamber(); }
+    window.addEventListener('resize', repaintAll);
+
+    // ============== INIT ==============
+    seedVoters();
+    presetFair();
+    tally();
+    buildPresetRow();
+    renderMap();
+    renderChamber();
+
+    startBtn.addEventListener('click', function() {
+        // iOS-safe MIRO pattern: create context, resume() from user gesture,
+        // build all audio nodes INSIDE the resume callback.
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        function go() {
+            if (!masterGain) buildAudioGraph_inResume();
+            startOverlay.style.display = 'none';
+            lastTime = 0;
+            lastStepTime = 0;
+            running = true;
+            playBtn.classList.add('live');
+            animFrame = requestAnimationFrame(tick);
+            setTimeout(repaintAll, 80);
+        }
+        audioCtx.resume().then(go).catch(go);
+    });
+
+    setTimeout(repaintAll, 60);
+
+    // ============== MODULE DRAG ==============
+    // header is the drag handle; modules absolute-positioned within rack.
+    // (drag disabled on mobile — modules stack vertically there)
+    function isMobileLayout() {
+        return window.matchMedia('(max-width: 800px)').matches;
+    }
+    var dragState = null;
+    var rackElDrag = document.getElementById('rack');
+    document.querySelectorAll('.module-header').forEach(function(head) {
+        head.addEventListener('pointerdown', function(e) {
+            if (isMobileLayout()) return;
+            var moduleEl = head.closest('.module');
+            if (!moduleEl) return;
+            var x = parseFloat(moduleEl.dataset.x) || 0;
+            var y = parseFloat(moduleEl.dataset.y) || 0;
+            dragState = {
+                head: head,
+                moduleEl: moduleEl,
+                rackRect: rackElDrag.getBoundingClientRect(),
+                startX: x,
+                startY: y,
+                startMouseX: e.clientX,
+                startMouseY: e.clientY
+            };
+            moduleEl.classList.add('dragging');
+            try { head.setPointerCapture(e.pointerId); } catch(_) {}
+            e.preventDefault();
+        });
+        head.addEventListener('pointermove', function(e) {
+            if (!dragState || dragState.head !== head) return;
+            var dx = e.clientX - dragState.startMouseX;
+            var dy = e.clientY - dragState.startMouseY;
+            var modW = dragState.moduleEl.offsetWidth;
+            var modH = dragState.moduleEl.offsetHeight;
+            var nx = Math.max(0, Math.min(dragState.rackRect.width - modW, dragState.startX + dx));
+            var ny = Math.max(0, Math.min(dragState.rackRect.height - modH, dragState.startY + dy));
+            dragState.moduleEl.dataset.x = nx;
+            dragState.moduleEl.dataset.y = ny;
+            dragState.moduleEl.style.transform = 'translate(' + nx + 'px, ' + ny + 'px)';
+        });
+        function endDrag() {
+            if (dragState && dragState.head === head) {
+                dragState.moduleEl.classList.remove('dragging');
+                dragState = null;
+            }
+        }
+        head.addEventListener('pointerup', endDrag);
+        head.addEventListener('pointercancel', endDrag);
+        head.addEventListener('lostpointercapture', endDrag);
+    });
+
+
+    // ===== MANUAL =====
+    var manualToggle = document.getElementById('manualToggle');
+    var manualOverlay = document.getElementById('manualOverlay');
+    var manualClose = document.getElementById('manualClose');
+    function openManual() {
+        manualOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeManual() {
+        manualOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    if (manualToggle) manualToggle.addEventListener('click', openManual);
+    if (manualClose) manualClose.addEventListener('click', closeManual);
+    if (manualOverlay) {
+        manualOverlay.addEventListener('click', function(e) {
+            if (e.target === manualOverlay) closeManual();
+        });
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && manualOverlay && manualOverlay.classList.contains('open')) {
+            closeManual();
+        }
+    });
 
 })();
 </script>
+
 </body>
 </html>

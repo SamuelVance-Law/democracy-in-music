@@ -3,602 +3,2561 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Assembly — Democracy in Music</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B0E1A'/%3E%3Ccircle cx='11' cy='9' r='5' fill='%23d4a842'/%3E%3Ccircle cx='21' cy='8' r='4' fill='%2346d2d2'/%3E%3Ccircle cx='15' cy='18' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23' r='3.5' fill='%23d25a6e'/%3E%3Ccircle cx='23' cy='22' r='2.8' fill='%236aa860'/%3E%3C/svg%3E">
+    <title>DA·SYSTEM — Assembly · Democracy in Music</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2315140F'/%3E%3Ccircle cx='9.5' cy='10' r='5' fill='%23F7901E'/%3E%3Ccircle cx='22' cy='9' r='4' fill='%23F0C840'/%3E%3Ccircle cx='15.5' cy='19' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23.5' r='3' fill='%23D43030'/%3E%3Ccircle cx='24' cy='22.5' r='3.2' fill='%234FB85F'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+        :root {
+            --cream:        #E8E2D0;
+            --cream-deep:   #D6CFB8;
+            --cream-edge:   #C4BCA1;
+            --cream-shadow: #A89F87;
+            --ink:          #15140F;
+            --ink-soft:     #2A2823;
+            --ink-mid:      #4A463E;
+            --table:        #C7C0AC;
+
+            --scope-bg:     #0E160C;
+            --scope-phos:   #7FE558;
+
+            --rec-bg:       #1A1206;
+            --rec-phos:     #F0C040;
+
+            /* Bloomberg terminal palette (shared system identity) */
+            --bbg-amber:      #F7901E;
+            --bbg-amber-dim:  #B86810;
+            --bbg-yellow:     #F0C840;
+            --bbg-green:      #4FB85F;
+            --bbg-red:        #D43030;
+            --bbg-cyan:       #50C8E6;
+            --bbg-black:      #0A0A0A;
+
+            /* Per-layer colors — each layer has its own identity */
+            --layer-0: #F7901E;   /* Rhythm  — BBG amber  */
+            --layer-1: #a78bfa;   /* Bass    — violet (Assembly's project accent) */
+            --layer-2: #4FB85F;   /* Chords  — BBG green */
+            --layer-3: #F0C840;   /* Melody  — BBG yellow */
+            --layer-4: #D43030;   /* Texture — BBG red */
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'EB Garamond', Georgia, serif;
-            background: #F7F4EE;
-            color: #1C1917;
+
+        html, body {
+            font-family: 'Hanken Grotesk', system-ui, sans-serif;
+            background: var(--table);
+            background-image:
+                radial-gradient(ellipse at top, rgba(255,255,255,0.18), transparent 60%),
+                radial-gradient(ellipse at bottom, rgba(0,0,0,0.10), transparent 60%);
+            color: var(--ink);
             min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center;
-            padding: 24px 20px 40px;
+            -webkit-font-smoothing: antialiased;
+            font-feature-settings: "tnum" on;
+            overflow-x: hidden;
         }
-        a.home { position: fixed; top: 12px; left: 16px; font-size: 11px; color: #333; text-decoration: none; letter-spacing: 2px; z-index: 99; }
-        #header { text-align: center; margin-bottom: 24px; }
-        
-        #header h2 {
-            font-size: 24px; font-weight: 400; color: #1C1917;
-            line-height: 1.3; margin-top: 4px;
-        }
-        .header-rule {
-            width: 40px; height: 1px; background: #D6D3D1;
-            margin: 18px auto 0;
-        }
-        #header h1 { font-size: 15px; letter-spacing: 3px; font-weight: 400; color: #9C9590; text-transform: uppercase; }
-        #header p { font-size: 14px; font-style: italic; color: #777; margin-top: 6px; }
 
-        /* Progress */
-        #progress { display: flex; gap: 12px; margin-bottom: 32px; }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 16px 56px;
+        }
+
+        a.home-link {
+            position: fixed; top: 14px; left: 16px;
+            font-size: 10px; color: var(--ink-mid); text-decoration: none;
+            letter-spacing: 2px; z-index: 99;
+            font-family: 'Hanken Grotesk', sans-serif; font-weight: 700;
+            text-transform: uppercase;
+        }
+        a.home-link:hover { color: var(--ink); }
+
+        /* ===== MANUAL ===== */
+        .manual-toggle {
+            position: fixed; top: 12px; right: 16px;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 10px; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--ink);
+            background: var(--cream);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.55),
+                inset 0 -1px 0 rgba(0,0,0,0.05),
+                0 1px 2px rgba(0,0,0,0.18);
+            display: inline-flex; align-items: center; gap: 7px;
+            transition: background 0.15s;
+        }
+        .manual-toggle:hover { background: #efe9d6; }
+        .manual-toggle .qmark {
+            display: inline-block;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--ink);
+            color: var(--cream);
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 14px;
+            text-align: center;
+        }
+        .manual-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15,18,12,0.62);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: none;
+            align-items: center; justify-content: center;
+            z-index: 200;
+            padding: 24px 16px;
+            opacity: 0;
+            transition: opacity 0.18s;
+        }
+        .manual-overlay.open { display: flex; opacity: 1; }
+        .manual-card {
+            background: var(--cream);
+            border-radius: 14px;
+            max-width: 560px;
+            width: 100%;
+            max-height: calc(100vh - 48px);
+            overflow-y: auto;
+            position: relative;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.65),
+                0 24px 48px rgba(0,0,0,0.35),
+                0 4px 12px rgba(0,0,0,0.18);
+            transform: translateY(8px);
+            transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .manual-overlay.open .manual-card { transform: translateY(0); }
+        .manual-card::before {
+            content: ""; position: absolute; inset: 0; border-radius: 14px;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.012) 0px, rgba(0,0,0,0.012) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+        }
+        .manual-header {
+            padding: 18px 28px 12px 28px;
+            display: flex; align-items: baseline; gap: 10px;
+            border-bottom: 1px dashed rgba(0,0,0,0.18);
+            position: relative;
+        }
+        .manual-header .model {
+            font-size: 16px; font-weight: 800; letter-spacing: 0.5px; color: var(--ink);
+            text-transform: uppercase;
+        }
+        .manual-header .model-name {
+            font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
+            color: var(--ink-mid); text-transform: uppercase;
+        }
+        .manual-close {
+            position: absolute;
+            z-index: 5;
+            top: 12px; right: 14px;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: var(--cream-deep);
+            color: var(--ink);
+            font-size: 16px; line-height: 1;
+            cursor: pointer;
+            font-family: 'Hanken Grotesk', sans-serif;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 2px rgba(0,0,0,0.15);
+            transition: background 0.12s;
+        }
+        .manual-close:hover { background: var(--cream-edge); }
+        .manual-body {
+            padding: 18px 28px 26px 28px;
+            position: relative; z-index: 1;
+        }
+        .manual-body .intro {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-style: italic;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--ink-soft);
+            margin-bottom: 20px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        .manual-body h3 {
+            font-size: 9px; font-weight: 800; letter-spacing: 2.4px;
+            text-transform: uppercase;
+            color: var(--ink-mid);
+            margin: 18px 0 9px 0;
+            font-family: 'Hanken Grotesk', sans-serif;
+        }
+        .manual-body h3:first-child { margin-top: 0; }
+        .manual-body p {
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            margin-bottom: 9px;
+        }
+        .manual-body ol {
+            margin: 0 0 9px 0;
+            padding-left: 22px;
+        }
+        .manual-body ol li {
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            margin-bottom: 4px;
+        }
+        .manual-body .ctrl {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 4px 14px;
+            margin-bottom: 9px;
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+        }
+        .manual-body .ctrl .k {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 11px;
+            color: var(--ink);
+            letter-spacing: 0.5px;
+            padding-top: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .manual-body b { color: var(--ink); font-weight: 700; }
+        @media (max-width: 520px) {
+            .manual-toggle { padding: 7px 11px; font-size: 9px; }
+            .manual-header { padding: 16px 20px 10px 20px; }
+            .manual-body { padding: 16px 20px 22px 20px; }
+            .manual-body .intro { font-size: 15px; }
+        }
+
+        /* ===== RACK (freeform, draggable on desktop; stacked on mobile) ===== */
+        .rack-shell {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 8px;
+        }
+        .rack {
+            width: 1240px;
+            height: 940px;
+            display: block;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        /* ===== MODULE BASE ===== */
+        .module {
+            width: auto;
+            background: var(--cream);
+            border-radius: 14px;
+            position: absolute;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.65),
+                inset 0 -2px 0 rgba(0,0,0,0.04),
+                0 1px 0 rgba(255,255,255,0.5),
+                0 12px 28px rgba(0,0,0,0.18),
+                0 2px 8px rgba(0,0,0,0.10);
+            transition: box-shadow 0.18s;
+            will-change: transform;
+        }
+        .module.dragging {
+            z-index: 50;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.7),
+                inset 0 -2px 0 rgba(0,0,0,0.04),
+                0 1px 0 rgba(255,255,255,0.5),
+                0 22px 44px rgba(0,0,0,0.32),
+                0 6px 14px rgba(0,0,0,0.18);
+        }
+        .module-header {
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .module-header:active { cursor: grabbing; }
+        #dp01 { width: 720px; }
+        #dp02 { width: 540px; }
+        #dp03 { width: 540px; }
+        .module::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.012) 0px, rgba(0,0,0,0.012) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+        }
+
+        /* ===== HEADER ===== */
+        .module-header {
+            padding: 14px 28px 8px 28px;
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+            border-bottom: 2px solid var(--bbg-amber);
+        }
+        .module-header .model {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--ink);
+            text-transform: uppercase;
+        }
+        .module-header .model-name {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+        }
+        .module-header .serial {
+            margin-left: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.8px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+        }
+
+        /* ===== DA·01 — ASSEMBLY INSTRUMENT ===== */
+        .instrument .chassis {
+            padding: 18px 28px 22px 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* stage banner: progress dots + layer info + status LCD */
+        .stage-row {
+            display: grid;
+            grid-template-columns: auto auto 1fr auto;
+            gap: 22px;
+            align-items: stretch;
+            margin-bottom: 22px;
+        }
+        .progress-dots {
+            display: flex;
+            gap: 0;
+            align-items: center;
+        }
         .prog-dot {
-            width: 10px; height: 10px; border-radius: 50%;
-            background: #FEFDFB; border: 1px solid #D6D3D1; transition: all 0.4s;
+            width: 11px; height: 11px;
+            border-radius: 50%;
+            background: var(--cream-deep);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.20), inset 0 0 0 1px rgba(0,0,0,0.05);
+            position: relative;
+            transition: all 0.3s;
         }
-        .prog-dot.done { background: #a78bfa; border-color: #a78bfa; }
-        .prog-dot.current { background: none; border-color: #a78bfa; box-shadow: 0 0 8px rgba(167,139,250,0.3); }
+        .prog-dot + .prog-dot {
+            margin-left: 10px;
+        }
+        .prog-dot + .prog-dot::before {
+            content: "";
+            position: absolute;
+            top: 50%; right: 100%;
+            width: 10px; height: 1px;
+            background: rgba(20,14,8,0.18);
+            transform: translateY(-50%);
+        }
+        .prog-dot::after {
+            content: "";
+            position: absolute;
+            inset: 3px;
+            border-radius: 50%;
+            background: transparent;
+            transition: all 0.3s;
+        }
+        /* layer-colored progress dots */
+        .prog-dot[data-layer="0"].done::after,
+        .prog-dot[data-layer="0"].current::after { background: var(--layer-0); box-shadow: 0 0 5px var(--layer-0); }
+        .prog-dot[data-layer="1"].done::after,
+        .prog-dot[data-layer="1"].current::after { background: var(--layer-1); box-shadow: 0 0 5px var(--layer-1); }
+        .prog-dot[data-layer="2"].done::after,
+        .prog-dot[data-layer="2"].current::after { background: var(--layer-2); box-shadow: 0 0 5px var(--layer-2); }
+        .prog-dot[data-layer="3"].done::after,
+        .prog-dot[data-layer="3"].current::after { background: var(--layer-3); box-shadow: 0 0 5px var(--layer-3); }
+        .prog-dot[data-layer="4"].done::after,
+        .prog-dot[data-layer="4"].current::after { background: var(--layer-4); box-shadow: 0 0 5px var(--layer-4); }
+        .prog-dot.done { background: var(--ink); }
+        .prog-dot.current { background: var(--ink); animation: progPulse 1.6s ease-in-out infinite; }
+        @keyframes progPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
 
-        /* Step container */
-        #step { max-width: 520px; width: 100%; text-align: center; }
-        #layer-name {
-            font-size: 12px; letter-spacing: 4px; text-transform: uppercase;
-            color: #57534E; margin-bottom: 6px;
+        .stage-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            min-width: 0;
         }
-        #step-prompt {
-            font-size: 20px; color: #57534E; margin-bottom: 24px; font-style: italic;
+        .stage-name {
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--ink);
+            text-transform: uppercase;
+            line-height: 1.15;
+        }
+        .stage-prompt {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-style: italic;
+            font-size: 13px;
+            color: var(--ink-mid);
+            line-height: 1.2;
         }
 
-        /* Option cards */
-        #options { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
-        .opt-card {
-            width: 110px; padding: 18px 8px; border: 1px solid #D6D3D1; border-radius: 6px;
-            background: #FEFDFB; cursor: pointer; transition: all 0.2s; text-align: center;
-            user-select: none; -webkit-user-select: none;
+        /* LCD on instrument — Bloomberg terminal panel */
+        .lcd {
+            justify-self: end;
+            background: var(--bbg-black);
+            border-radius: 3px;
+            padding: 22px 14px 9px;
+            min-width: 180px;
+            box-shadow:
+                inset 0 2px 5px rgba(0,0,0,0.85),
+                0 1px 0 rgba(255,255,255,0.30);
+            position: relative;
+            border: 1px solid #000;
+            overflow: hidden;
         }
-        .opt-card:hover { border-color: #9C9590; background: #F7F4EE; }
-        .opt-card.previewing { border-color: #a78bfa; background: rgba(167,139,250,0.06); box-shadow: 0 0 16px rgba(167,139,250,0.1); }
-        .opt-card .opt-name { font-size: 15px; color: #1C1917; letter-spacing: 1px; margin-bottom: 4px; }
-        .opt-card.previewing .opt-name { color: #1C1917; }
-        .opt-card .opt-hint { font-size: 10px; color: #3a3a50; font-style: italic; }
-        .opt-card.previewing .opt-hint { color: #7a6a9a; }
+        .lcd::before {
+            content: "DA·01 · TERMINAL";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 14px;
+            background: var(--bbg-amber);
+            color: #000;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            line-height: 14px;
+            text-align: center;
+        }
+        .lcd::after {
+            content: "";
+            position: absolute;
+            top: 14px; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.20) 2px, rgba(0,0,0,0.20) 3px);
+            pointer-events: none;
+        }
+        .lcd-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-family: 'VT323', monospace;
+            font-size: 17px;
+            color: var(--bbg-amber);
+            text-shadow: 0 0 4px rgba(247,144,30,0.55), 0 0 1px rgba(247,144,30,0.95);
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+        .lcd-row .key {
+            font-size: 10px;
+            color: rgba(247,144,30,0.55);
+            letter-spacing: 1.5px;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-weight: 700;
+            min-width: 32px;
+        }
+        .lcd-row .val { font-size: 17px; }
 
-        /* Vote bar (shown during reveal) */
-        .opt-card .vote-bar-wrap {
-            height: 4px; background: #FEFDFB; border-radius: 2px; margin-top: 10px;
-            overflow: hidden; display: none;
+        /* Decisions ledger — sits between stage-text and LCD,
+           showing all five layers' committed picks. Builds up live. */
+        .ledger {
+            background: linear-gradient(180deg, var(--cream-deep) 0%, var(--cream-edge) 100%);
+            border-radius: 6px;
+            padding: 8px 14px 9px;
+            box-shadow:
+                inset 0 1px 2px rgba(0,0,0,0.18),
+                inset 0 -1px 0 rgba(255,255,255,0.45),
+                0 1px 0 rgba(255,255,255,0.4);
+            min-width: 240px;
+            align-self: center;
+            position: relative;
         }
-        .opt-card .vote-bar {
-            height: 100%; background: #a78bfa; border-radius: 2px;
-            transition: width 0.8s ease; width: 0%;
+        .ledger-title {
+            font-size: 8px;
+            letter-spacing: 1.8px;
+            font-weight: 800;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+            border-bottom: 1px dashed rgba(20,14,8,0.22);
+            display: flex; align-items: baseline; gap: 8px;
         }
-        .opt-card .vote-count {
-            font-size: 10px; color: #555; margin-top: 4px; min-height: 14px; display: none;
+        .ledger-title .acc {
+            color: var(--bbg-amber);
+            font-weight: 800;
         }
-        .opt-card.winner { border-color: #a78bfa; background: rgba(167,139,250,0.1); }
-        .opt-card.winner .opt-name { color: #fff; }
-        .opt-card.winner .vote-bar { background: #a78bfa; }
-        .opt-card.you-voted .opt-hint { color: #a78bfa; }
+        .ledger-rows {
+            display: grid;
+            grid-template-columns: auto auto auto 1fr;
+            gap: 1px 9px;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .ledger-row { display: contents; }
+        .ledger-row > * { line-height: 1.45; }
+        .ledger-row .num {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--ink-mid);
+            font-variant-numeric: tabular-nums;
+        }
+        .ledger-row .swatch {
+            width: 7px; height: 7px;
+            background: var(--swatch);
+            border-radius: 1.5px;
+            opacity: 0.40;
+            transition: all 0.25s;
+        }
+        .ledger-row .name {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--ink-mid);
+            transition: color 0.25s;
+        }
+        .ledger-row .pick {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: var(--ink-mid);
+            opacity: 0.55;
+            text-align: right;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            transition: all 0.25s;
+            font-variant-numeric: tabular-nums;
+        }
+        .ledger-row.decided .swatch { opacity: 1; box-shadow: 0 0 4px var(--swatch); }
+        .ledger-row.decided .name   { color: var(--ink); }
+        .ledger-row.decided .pick   { color: var(--swatch); opacity: 1; }
+        .ledger-row.current .swatch {
+            opacity: 0.95;
+            animation: ledgerPulse 1.4s ease-in-out infinite;
+        }
+        .ledger-row.current .name { color: var(--ink); }
+        .ledger-row.current .pick { color: var(--bbg-amber); opacity: 1; }
+        @keyframes ledgerPulse {
+            0%, 100% { transform: scale(1); }
+            50%       { transform: scale(1.25); }
+        }
 
-        /* Action button */
-        #action-area { min-height: 60px; display: flex; align-items: center; justify-content: center; }
-        .action-btn {
-            padding: 10px 32px; background: none; border: 1px solid #1C1917; color: #1C1917;
-            font-family: 'EB Garamond', Georgia, serif; font-size: 14px; letter-spacing: 1px;
-            cursor: pointer; border-radius: 4px; transition: all 0.2s;
+        /* PAD GRID — 1×4 on desktop, 2×2 on mobile */
+        .pad-frame {
+            position: relative;
+            background: linear-gradient(180deg, var(--cream-deep) 0%, var(--cream-edge) 100%);
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), 0 1px 0 rgba(255,255,255,0.4);
+            margin-bottom: 22px;
         }
-        .action-btn:hover { background: #1C1917; color: #F7F4EE; }
-        .action-btn:disabled { opacity: 0.3; cursor: default; }
-        .action-btn:disabled:hover { background: none; color: #a78bfa; }
+        .pad-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        .pad {
+            position: relative;
+            background: linear-gradient(180deg, var(--cream) 0%, #d8d0bb 100%);
+            border-radius: 5px;
+            padding: 22px 8px 18px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            text-align: center;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.65),
+                inset 0 -2px 0 rgba(0,0,0,0.10),
+                0 1px 2px rgba(0,0,0,0.15);
+            transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.2s, color 0.2s, opacity 0.3s;
+            min-height: 84px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+        }
+        .pad::before {
+            /* corner indicator dot */
+            content: "";
+            position: absolute;
+            top: 6px; right: 7px;
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--ink-mid);
+            opacity: 0.18;
+            transition: all 0.2s;
+        }
+        .pad-num {
+            position: absolute;
+            top: 6px; left: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--ink-mid);
+            opacity: 0.45;
+        }
+        .pad:hover { background: linear-gradient(180deg, #f0eadc 0%, #c8c0a8 100%); }
+        .pad:active {
+            transform: translateY(1px);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.18);
+        }
 
-        /* Status text */
-        #status {
-            font-size: 15px; color: #999; margin-top: 20px; min-height: 24px;
-            letter-spacing: 0.5px; text-align: center; transition: color 0.3s;
+        /* PREVIEWING — cyan, "your tentative pick" (matches piano's user-input cyan) */
+        .pad.previewing {
+            background: linear-gradient(180deg, var(--bbg-cyan) 0%, #2EAACA 100%);
+            color: #001a22;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.55),
+                inset 0 -2px 0 rgba(0,0,0,0.20),
+                0 0 0 2px rgba(80,200,230,0.25),
+                0 1px 3px rgba(0,0,0,0.20);
         }
-        #status.highlight { color: #1C1917; }
+        .pad.previewing::before {
+            background: #ffffff;
+            opacity: 1;
+            box-shadow: 0 0 5px rgba(255,255,255,0.85);
+        }
+        .pad.previewing .pad-num { color: #001a22; opacity: 0.55; }
 
-        /* Result screen */
-        #result { display: none; max-width: 680px; width: 100%; text-align: center; }
-        #result h2 { font-size: 22px; font-weight: 400; color: #57534E; margin-bottom: 20px; }
-        #result-grid { padding: 0 8px; }
-        .result-grid-row { display: flex; align-items: center; margin-bottom: 5px; }
-        .result-grid-label {
-            width: 64px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-            color: #555; text-align: right; padding-right: 10px; flex-shrink: 0;
+        /* WINNER — layer-colored */
+        .pad.winner { color: #fff; }
+        .pad.winner::before {
+            background: #fff;
+            opacity: 1;
+            box-shadow: 0 0 5px rgba(255,255,255,0.85);
         }
-        .result-grid-cells { display: flex; gap: 5px; flex: 1; }
-        .result-cell {
-            flex: 1; padding: 12px 4px; border: 1px solid #D6D3D1; border-radius: 4px;
-            background: #FEFDFB; text-align: center; transition: all 0.3s;
+        #dp01[data-layer="0"] .pad.winner { background: linear-gradient(180deg, var(--layer-0) 0%, #B86810 100%); }
+        #dp01[data-layer="1"] .pad.winner { background: linear-gradient(180deg, var(--layer-1) 0%, #7a5dd6 100%); }
+        #dp01[data-layer="2"] .pad.winner { background: linear-gradient(180deg, var(--layer-2) 0%, #2d8a3c 100%); }
+        #dp01[data-layer="3"] .pad.winner { background: linear-gradient(180deg, var(--layer-3) 0%, #B89028 100%); color: #2a2008; }
+        #dp01[data-layer="3"] .pad.winner::before { background: #2a2008; }
+        #dp01[data-layer="4"] .pad.winner { background: linear-gradient(180deg, var(--layer-4) 0%, #8a2020 100%); }
+
+        /* DIMMED — losers after reveal */
+        .pad.dim { opacity: 0.30; pointer-events: none; }
+        /* YOUR-CHOICE indicator when user voted for non-winner */
+        .pad.you-voted::after {
+            content: "you";
+            position: absolute;
+            bottom: 5px; left: 50%;
+            transform: translateX(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7px;
+            letter-spacing: 1.4px;
+            color: var(--bbg-cyan);
+            opacity: 0.85;
+            text-transform: uppercase;
         }
-        .result-cell .rc-name { font-size: 11px; color: #3a3a50; letter-spacing: 0.5px; }
-        .result-cell.is-winner { border-color: #a78bfa; background: rgba(167,139,250,0.1); transition: all 0.12s; }
-        .result-cell.is-winner .rc-name { color: #1C1917; }
-        .result-cell.is-winner.flash { background: rgba(167,139,250,0.15); border-color: #a78bfa; }
-        .result-cell.is-winner.flash .rc-name { color: #fff; }
-        .result-cell.is-yours { position: relative; }
-        .result-cell.is-yours::after {
-            content: 'you'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
-            font-size: 7px; color: #a78bfa; letter-spacing: 1px;
+        .pad.you-voted { opacity: 0.55; }
+
+        .pad-name {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            line-height: 1;
         }
-        #result-transport { margin-top: 20px; display: flex; gap: 12px; justify-content: center; }
+        .pad-hint {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+            opacity: 0.65;
+            line-height: 1.1;
+        }
+        .pad.previewing .pad-hint { color: rgba(0,26,34,0.75); opacity: 1; }
+        .pad.winner .pad-hint { color: rgba(255,255,255,0.85); opacity: 1; }
+
+        /* TRANSPORT — primary CAST/NEXT dominates, secondary STOP/RESET */
+        .transport {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 10px;
+            align-items: stretch;
+            margin-bottom: 18px;
+        }
+        .trans-primary {
+            background: var(--ink);
+            color: var(--bbg-yellow);
+            border: none;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 2.4px;
+            padding: 14px 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                inset 0 -2px 0 rgba(0,0,0,0.4),
+                0 2px 6px rgba(0,0,0,0.25),
+                0 0 0 1px rgba(0,0,0,0.18);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            line-height: 1.1;
+            transition: all 0.12s;
+        }
+        .trans-primary .hint {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.6px;
+            opacity: 0.55;
+            text-transform: uppercase;
+        }
+        .trans-primary:hover:not(:disabled) { background: #2a2823; }
+        .trans-primary:disabled {
+            background: var(--cream-deep);
+            color: var(--ink-mid);
+            opacity: 0.65;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 2px rgba(0,0,0,0.15);
+            cursor: not-allowed;
+        }
+        .trans-primary:disabled .hint { color: var(--ink-mid); }
+
+        .trans-btn {
+            background: var(--bbg-red);
+            border: none;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.6px;
+            padding: 12px 16px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            color: #fff;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.30),
+                inset 0 -2px 0 rgba(0,0,0,0.20),
+                0 1px 2px rgba(0,0,0,0.20);
+            position: relative;
+            min-width: 68px;
+            transition: all 0.1s;
+            text-transform: uppercase;
+        }
+        .trans-btn:hover:not(:disabled) { filter: brightness(1.06); }
+        .trans-btn:active:not(:disabled) {
+            box-shadow:
+                inset 0 1px 3px rgba(0,0,0,0.32),
+                inset 0 0 0 1px rgba(0,0,0,0.12);
+        }
+        .trans-btn:disabled { opacity: 0.40; cursor: not-allowed; }
+        .trans-btn .led {
+            position: absolute;
+            top: 5px; right: 6px;
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.35);
+            transition: all 0.15s;
+        }
+        .trans-btn.live .led {
+            background: #FFFFFF;
+            box-shadow: 0 0 5px rgba(255,255,255,0.85);
+        }
+
+        /* status strip below transport */
+        .status-strip {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--ink-mid);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            min-height: 14px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .status-strip .acc { color: var(--ink); font-weight: 700; }
+
+        /* output jacks bottom of instrument */
+        .output-jacks {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+        }
+
+        .patch-jack {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            min-width: 56px;
+            position: relative;
+        }
+        .patch-jack .socket {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 50%, #0a0908 0%, #0a0908 35%, #423d33 38%, #6e6856 60%, #4a4538 100%);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.7), 0 1px 0 rgba(255,255,255,0.5);
+            position: relative;
+        }
+        .patch-jack .socket::before {
+            content: "";
+            position: absolute; inset: 6px;
+            border-radius: 50%;
+            background: #050403;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.9);
+        }
+        .patch-jack.lit .socket::after {
+            content: "";
+            position: absolute;
+            top: -2px; right: -2px;
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--bbg-green);
+            box-shadow: 0 0 4px var(--bbg-green);
+        }
+        .patch-jack .label {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+        .patch-jack.out .label { color: var(--ink); }
+
+
+        /* ===== CABLE OVERLAY ===== */
+        .cable-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: visible;
+            z-index: 10;
+        }
+
+        /* ===== DA·02 / DA·03 — DISPLAY MODULES (TALLY + SCORE) ===== */
+        .display .chassis {
+            padding: 18px 28px 22px 28px;
+            position: relative;
+            z-index: 1;
+        }
+        .display .top-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            flex-wrap: wrap;
+        }
+        .display .top-row .in-jack {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+        .display .top-row .in-jack .label {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+        }
+        .display .top-row .meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--ink-mid);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+        .display .top-row .meta .acc { color: var(--ink); font-weight: 700; }
+        .display .top-row .mini-led {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.6px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+        }
+        .display .top-row .mini-led .dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--ink-mid);
+            opacity: 0.3;
+        }
+        .tally .top-row .mini-led.on .dot {
+            background: var(--scope-phos);
+            opacity: 1;
+            box-shadow: 0 0 5px var(--scope-phos);
+        }
+        .score-mod .top-row .mini-led.on .dot {
+            background: var(--rec-phos);
+            opacity: 1;
+            box-shadow: 0 0 5px var(--rec-phos);
+        }
+
+        /* dark CRT screen */
+        .screen {
+            position: relative;
+            border-radius: 8px;
+            padding: 8px;
+            background: linear-gradient(180deg, #1a1814 0%, #0e0c08 100%);
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.4);
+            box-sizing: border-box;
+        }
+        .screen-inner {
+            position: relative;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: inset 0 0 24px rgba(0,0,0,0.5);
+            height: 100%;
+            width: 100%;
+        }
+        .tally .screen-inner { background: var(--scope-bg); }
+        .score-mod .screen-inner { background: var(--rec-bg); }
+
+        .screen canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .screen-inner::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.18) 2px, rgba(0,0,0,0.18) 3px);
+            pointer-events: none;
+            border-radius: 4px;
+        }
+
+        .screen-label {
+            position: absolute;
+            font-family: 'VT323', monospace;
+            font-size: 14px;
+            letter-spacing: 0.6px;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .tally .screen-label { color: var(--scope-phos); text-shadow: 0 0 4px rgba(127,229,88,0.5); }
+        .score-mod .screen-label { color: var(--rec-phos); text-shadow: 0 0 4px rgba(240,192,64,0.5); }
+
+        .tally-screen { height: 200px; }
+        .score-screen { height: 220px; }
+
+        /* footer for score module */
+        .score-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.18);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.8px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .score-footer .seg { display: flex; align-items: center; gap: 6px; }
+        .score-footer .seg .acc { color: var(--ink); font-weight: 700; }
+
+        /* legend dots (per-layer color key, shown on score footer) */
+        .layer-legend {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .legend-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--ink-mid);
+            opacity: 0.55;
+            transition: opacity 0.3s, color 0.3s;
+        }
+        .legend-pill.lit { opacity: 1; color: var(--ink); font-weight: 700; }
+        .legend-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--cream-edge);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .legend-pill.lit[data-layer="0"] .legend-dot { background: var(--layer-0); box-shadow: 0 0 4px var(--layer-0); }
+        .legend-pill.lit[data-layer="1"] .legend-dot { background: var(--layer-1); box-shadow: 0 0 4px var(--layer-1); }
+        .legend-pill.lit[data-layer="2"] .legend-dot { background: var(--layer-2); box-shadow: 0 0 4px var(--layer-2); }
+        .legend-pill.lit[data-layer="3"] .legend-dot { background: var(--layer-3); box-shadow: 0 0 4px var(--layer-3); }
+        .legend-pill.lit[data-layer="4"] .legend-dot { background: var(--layer-4); box-shadow: 0 0 4px var(--layer-4); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 800px) {
+            body { padding: 18px 8px 36px; }
+            .module-header { padding: 12px 18px 8px 18px; }
+            .instrument .chassis,
+            .display .chassis { padding: 14px 18px 18px 18px; }
+
+            /* stage row collapses to vertical */
+            .ledger { display: none; }
+            .stage-row {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+            .lcd { width: 100%; min-width: 0; justify-self: stretch; }
+
+            /* pads go from 1×4 → 2×2 grid for thumb-tap */
+            .pad-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .pad { min-height: 78px; padding: 20px 8px 16px; }
+
+            /* transport: primary spans full row, secondaries below */
+            .transport {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto;
+                gap: 8px;
+            }
+            .trans-primary {
+                grid-column: 1 / -1;
+                padding: 14px 18px;
+            }
+
+            .tally-screen { height: 200px; }
+            .score-screen { height: 260px; }
+            .module-header .serial { display: none; }
+        }
+        @media (max-width: 520px) {
+            .pad-name { font-size: 13px; letter-spacing: 1.1px; }
+            .pad-hint { font-size: 7.5px; }
+            .stage-name { font-size: 15px; letter-spacing: 0.8px; }
+            .stage-prompt { font-size: 12px; }
+            .trans-btn { padding: 10px 14px; min-width: 56px; font-size: 9px; }
+            .trans-primary { font-size: 12px; letter-spacing: 2px; padding: 13px 14px; }
+            .patch-jack { min-width: 44px; }
+            .patch-jack .socket { width: 18px; height: 18px; }
+            .patch-jack .label { font-size: 7.5px; }
+            .layer-legend { flex-wrap: wrap; gap: 6px; }
+            .legend-pill { font-size: 7px; }
+            .score-screen { height: 280px; }
+        }
+
+        /* MOBILE LAYOUT — rack stacks vertically */
+        @media (max-width: 800px) {
+            .rack-shell {
+                overflow-x: visible;
+                padding: 0 12px;
+            }
+            .rack {
+                width: 100%;
+                height: auto;
+                min-height: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+            }
+            .module {
+                position: relative !important;
+                transform: none !important;
+                width: auto !important;
+                max-width: 100%;
+            }
+            .module-header,
+            .module-header:active { cursor: default; }
+            .cable-overlay { display: none; }
+        }
+
+        /* start overlay */
+        .start-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,18,12,0.78);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .start-card {
+            background: var(--cream);
+            border-radius: 12px;
+            padding: 28px 36px 24px;
+            text-align: center;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.65), 0 18px 40px rgba(0,0,0,0.45);
+            max-width: 380px;
+            margin: 0 16px;
+        }
+        .start-card .h {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+            color: var(--ink);
+            margin-bottom: 6px;
+        }
+        .start-card .s {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.6px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+        .start-card p {
+            font-size: 13px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            margin-bottom: 20px;
+        }
+        .start-card button {
+            background: var(--ink);
+            color: var(--bbg-yellow);
+            border: none;
+            padding: 12px 22px;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
-    <a class="home" href="index.html">&larr; Home</a>
 
-    <div id="header">
-        <h1>ASSEMBLY</h1>
-        <h2>Build a piece of music, one vote at a time</h2>
-        <div class="header-rule"></div>
-    </div>
+<a class="home-link" href="index.html">← HOME</a>
 
-    <div id="progress"></div>
+<button class="manual-toggle" id="manualToggle" aria-label="Open manual">
+    <span class="qmark">?</span><span>manual</span>
+</button>
 
-    <div id="step">
-        <div id="layer-name"></div>
-        <div id="step-prompt">Tap to preview, then cast your vote</div>
-        <div id="options"></div>
-        <div id="action-area">
-            <button class="action-btn" id="voteBtn" disabled>Cast Vote</button>
+<div class="manual-overlay" id="manualOverlay" role="dialog" aria-modal="true" aria-labelledby="manualHeading">
+    <div class="manual-card">
+        <button class="manual-close" id="manualClose" aria-label="Close">×</button>
+        <div class="manual-header" id="manualHeading">
+            <span class="model">da·01</span>
+            <span class="model-name">assembly · manual</span>
         </div>
-        <div id="status"></div>
-    </div>
+        <div class="manual-body">
+            <p class="intro">A song that builds itself one layer at a time. Five layers, four variations each. Preview a block, cast your vote, hear what the crowd chose, and advance.</p>
 
-    <div id="result">
-        <h2>What we chose together</h2>
-        <div id="result-grid"></div>
-        <div id="result-transport">
-            <button class="action-btn" id="stopBtn">&#9632; Stop</button>
-            <button class="action-btn" id="againBtn">New Round</button>
+            <h3>How to play</h3>
+            <ol>
+                <li>Tap one of the four blocks to preview a variation; it starts playing immediately.</li>
+                <li>Try the others if you like; only your last tap counts as your standing vote.</li>
+                <li>Press <b>CAST VOTE</b> to commit. The tally module shows the crowd settling.</li>
+                <li>The winning variation joins the score. Press <b>NEXT LAYER</b> to move on.</li>
+                <li>Work through rhythm, bass, chords, melody, and texture.</li>
+            </ol>
+
+            <h3>Controls</h3>
+            <div class="ctrl"><span class="k">Pads</span><span>The four variations for the current layer. The highlighted pad is your standing choice.</span></div>
+            <div class="ctrl"><span class="k">Cast Vote</span><span>Commits your vote and reveals the crowd's tally.</span></div>
+            <div class="ctrl"><span class="k">Stop</span><span>Pauses playback without losing progress.</span></div>
+            <div class="ctrl"><span class="k">Reset</span><span>Starts the round over from the rhythm layer.</span></div>
+
+            <h3>What this demonstrates</h3>
+            <p>The other prototypes ask you to decide one thing at a time. Assembly stacks discrete decisions: rhythm first, then bass, chords, melody, texture, building the composition layer by layer. The piece you hear at the end is one of 4⁵ = 1,024 possible compositions, chosen by a sequence of small crowd-aggregated votes. Tempo is deliberately not a control here. It is a collective decision baked into the system rather than an individual override.</p>
         </div>
     </div>
+</div>
 
+<div class="start-overlay" id="startOverlay">
+    <div class="start-card">
+        <div class="h">DA·SYSTEM</div>
+        <div class="s">a layered composer · model 04</div>
+        <p>Five rounds, four blocks each. Preview, cast, watch the crowd choose, and on to the next layer.</p>
+        <button id="startBtn">power on</button>
+    </div>
+</div>
 
-    <script>
-    (function() {
-        var LAYERS = [
-            { name: 'Rhythm', variations: ['Pulse', 'Scatter', 'Sway', 'Drift'] },
-            { name: 'Bass', variations: ['Root', 'Walk', 'Throb', 'Sub'] },
-            { name: 'Chords', variations: ['Warm', 'Glass', 'Hollow', 'Open'] },
-            { name: 'Melody', variations: ['Arc', 'Steps', 'Float', 'Call'] },
-            { name: 'Texture', variations: ['Rain', 'Hum', 'Crackle', 'Wind'] }
-        ];
-        var PROMPTS = [
-            'Choose a rhythm',
-            'Add a bass line',
-            'Pick the chords',
-            'Choose a melody',
-            'Add a texture'
-        ];
-        var NOTES = {
-            C2: 65.41, Eb2: 77.78, F2: 87.31, G2: 98.00, Bb2: 116.54,
-            C3: 130.81, Eb3: 155.56, F3: 174.61, G3: 196.00, Bb3: 233.08,
-            C4: 261.63, Eb4: 311.13, F4: 349.23, G4: 392.00, Bb4: 466.16,
-            C5: 523.25, Eb5: 622.25, G5: 783.99
-        };
-        var BPM = 76, STEPS = 16, CROWD_SIZE = 24;
+<div class="rack-shell">
+<div class="rack" id="rack">
+    <svg class="cable-overlay" id="cableOverlay"></svg>
 
-        // State
-        var currentLayer = 0;
-        var phase = 'preview'; // preview | revealed | done
-        var userChoice = -1; // which option the user picked for current layer
-        var userChoices = []; // all user choices
-        var winners = []; // winning variation index (1-indexed for audio) per layer
-        var crowdVotes = []; // votes per option for current layer
-        var resultWinnerCells = []; // DOM refs to winning cells in result grid
+    <!-- ============================================== -->
+    <!--   DA·01 · ASSEMBLY  (instrument)               -->
+    <!-- ============================================== -->
+    <section class="module instrument" id="dp01" data-x="260" data-y="20" style="transform: translate(260px, 20px);" data-layer="0">
+        <header class="module-header">
+            <span class="model">da·01</span>
+            <span class="model-name">democratic assembly</span>
+            <span class="serial" id="serialA">DA·A 04</span>
+        </header>
+        <div class="chassis">
+            <!-- stage banner -->
+            <div class="stage-row">
+                <div class="progress-dots" id="progressDots"></div>
+                <div class="stage-text">
+                    <div class="stage-name" id="stageName">RHYTHM</div>
+                    <div class="stage-prompt" id="stagePrompt">Choose a rhythm</div>
+                </div>
+                <div class="ledger" id="ledgerPanel">
+                    <div class="ledger-title">decisions · ledger <span class="acc" id="ledgerProgress">0/5</span></div>
+                    <div class="ledger-rows" id="ledgerRows"></div>
+                </div>
+                <div class="lcd">
+                    <div class="lcd-row"><span class="key">LAYER</span> <span class="val" id="lcdLayer">1/5</span></div>
+                    <div class="lcd-row"><span class="key">PICK</span> <span class="val" id="lcdPick">---</span></div>
+                    <div class="lcd-row"><span class="key">WIN</span> <span class="val" id="lcdWin">---</span></div>
+                </div>
+            </div>
 
-        // Audio
-        var audioCtx = null, masterGain = null, reverbSend = null, compressor = null, masterFilter = null;
-        var isPlaying = false, currentStep = -1, nextStepTime = 0, schedulerTimer = null;
-        var activeVariation = [0, 0, 0, 0, 0]; // 0 = silent, 1-4 = variations
-        var mutedLayers = [false, false, false, false, false];
+            <!-- pads -->
+            <div class="pad-frame">
+                <div class="pad-grid" id="padGrid"></div>
+            </div>
 
-        // DOM
-        var progress = document.getElementById('progress');
-        var layerName = document.getElementById('layer-name');
-        var stepPrompt = document.getElementById('step-prompt');
-        var optionsEl = document.getElementById('options');
-        var voteBtn = document.getElementById('voteBtn');
-        var statusEl = document.getElementById('status');
-        var stepEl = document.getElementById('step');
-        var resultEl = document.getElementById('result');
-        var resultGrid = document.getElementById('result-grid');
-        var againBtn = document.getElementById('againBtn');
-        var stopBtn = document.getElementById('stopBtn');
+            <!-- transport -->
+            <div class="transport">
+                <button class="trans-primary" id="primaryBtn" disabled>
+                    <span class="primary-label">CAST VOTE</span>
+                    <span class="hint" id="primaryHint">tap a block first</span>
+                </button>
+                <button class="trans-btn" id="stopBtn" disabled><span class="led"></span>STOP</button>
+                <button class="trans-btn" id="clearBtn"><span class="led"></span>RESET</button>
+            </div>
 
-        // Progress dots
+            <div class="status-strip" id="statusStrip">
+                <span class="acc">READY</span> · power on to begin
+            </div>
+
+            <!-- output jacks -->
+            <div class="output-jacks" id="patchOuts">
+                <div class="patch-jack out lit" data-id="tally-out">
+                    <div class="socket"></div>
+                    <div class="label">tally out</div>
+                </div>
+                <div class="patch-jack out lit" data-id="score-out">
+                    <div class="socket"></div>
+                    <div class="label">score out</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!--   DA·02 · TALLY  (live crowd vote scope)       -->
+    <!-- ============================================== -->
+    <section class="module display tally" id="dp02" data-x="60" data-y="510" style="transform: translate(60px, 510px);">
+        <header class="module-header">
+            <span class="model">da·02</span>
+            <span class="model-name">tally</span>
+            <span class="serial">DA·T 04</span>
+        </header>
+        <div class="chassis">
+            <div class="top-row">
+                <div class="in-jack" id="tallyInJack">
+                    <div class="patch-jack lit"><div class="socket"></div></div>
+                    <div class="label">in · from da·01</div>
+                </div>
+                <div class="meta">LAYER · <span class="acc" id="tallyLayer">RHYTHM</span></div>
+                <div class="meta">VOTERS · <span class="acc">24</span></div>
+                <div class="mini-led" id="tallyLive">
+                    <div class="dot"></div>
+                    <span id="tallyLiveLabel">signal</span>
+                </div>
+            </div>
+
+            <div class="screen tally-screen">
+                <div class="screen-inner">
+                    <canvas id="tallyCanvas"></canvas>
+                    <div class="screen-label" style="top:8px; left:10px;">VOTE · LIVE</div>
+                    <div class="screen-label" style="top:8px; right:10px;" id="tallyReadout">— —</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!--   DA·03 · SCORE  (accumulated composition)     -->
+    <!-- ============================================== -->
+    <section class="module display score-mod" id="dp03" data-x="640" data-y="510" style="transform: translate(640px, 510px);">
+        <header class="module-header">
+            <span class="model">da·03</span>
+            <span class="model-name">score</span>
+            <span class="serial">DA·S 04</span>
+        </header>
+        <div class="chassis">
+            <div class="top-row">
+                <div class="in-jack" id="scoreInJack">
+                    <div class="patch-jack lit"><div class="socket"></div></div>
+                    <div class="label">in · from da·01</div>
+                </div>
+                <div class="meta">DECIDED · <span class="acc" id="scoreDecided">0</span>/5</div>
+                <div class="meta">BPM · <span class="acc">76</span></div>
+                <div class="mini-led" id="scoreLive">
+                    <div class="dot"></div>
+                    <span id="scoreLiveLabel">stand by</span>
+                </div>
+            </div>
+
+            <div class="screen score-screen">
+                <div class="screen-inner">
+                    <canvas id="scoreCanvas"></canvas>
+                    <div class="screen-label" style="top:8px; left:10px;">SCORE · ROLL</div>
+                    <div class="screen-label" style="top:8px; right:10px;" id="scorePos">00:00</div>
+                </div>
+            </div>
+
+            <div class="score-footer">
+                <div class="layer-legend" id="layerLegend"></div>
+                <div class="seg">step · <span class="acc" id="scoreStep">--</span>/16</div>
+            </div>
+        </div>
+    </section>
+
+</div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    // ============== CONSTANTS ==============
+    var LAYERS = [
+        { name: 'Rhythm',  variations: ['Pulse', 'Scatter', 'Sway', 'Drift'] },
+        { name: 'Bass',    variations: ['Root', 'Walk', 'Throb', 'Sub'] },
+        { name: 'Chords',  variations: ['Warm', 'Glass', 'Hollow', 'Open'] },
+        { name: 'Melody',  variations: ['Arc', 'Steps', 'Float', 'Call'] },
+        { name: 'Texture', variations: ['Rain', 'Hum', 'Crackle', 'Wind'] }
+    ];
+    var PROMPTS = [
+        'Choose a rhythm',
+        'Add a bass line',
+        'Pick the chords',
+        'Choose a melody',
+        'Add a texture'
+    ];
+    var LAYER_COLORS = ['#F7901E', '#a78bfa', '#4FB85F', '#F0C840', '#D43030'];
+    var LAYER_COLORS_DIM = ['#7a4810', '#52447a', '#2d6a35', '#7a6418', '#6a1818'];
+
+    var NOTES = {
+        C2:65.41, Eb2:77.78, F2:87.31, G2:98.00, Bb2:116.54,
+        C3:130.81, Eb3:155.56, F3:174.61, G3:196.00, Bb3:233.08,
+        C4:261.63, Eb4:311.13, F4:349.23, G4:392.00, Bb4:466.16,
+        C5:523.25, Eb5:622.25, G5:783.99
+    };
+    var BPM = 76, STEPS = 16, CROWD_SIZE = 24;
+
+    // ============== STATE ==============
+    var currentLayer = 0;
+    // phase: 'preview' | 'counting' | 'revealed' | 'allDone'
+    var phase = 'preview';
+    var userChoice = -1;          // current layer's tentative pick
+    var userChoices = [];         // all user choices (per layer)
+    var winners = [];             // 1-indexed winner per layer (0 = undecided)
+    var crowdVotes = null;        // current layer's [v0,v1,v2,v3]
+    var revealAnim = 0;           // 0..1 reveal progress for tally
+    var revealStartTs = 0;
+    var revealDoneTs = 0;
+
+    // audio
+    var audioCtx = null, masterGain = null, reverbSend = null, compressor = null, masterFilter = null;
+    var isPlaying = false, currentStep = -1, nextStepTime = 0, schedulerTimer = null;
+    var activeVariation = [0, 0, 0, 0, 0];
+    var beatStartTime = 0;
+
+    // ============== DOM ==============
+    var progressDots = document.getElementById('progressDots');
+    var ledgerRows = document.getElementById('ledgerRows');
+    var ledgerProgress = document.getElementById('ledgerProgress');
+    var stageName = document.getElementById('stageName');
+    var stagePrompt = document.getElementById('stagePrompt');
+    var padGrid = document.getElementById('padGrid');
+    var primaryBtn = document.getElementById('primaryBtn');
+    var primaryLabel = primaryBtn.querySelector('.primary-label');
+    var primaryHint = document.getElementById('primaryHint');
+    var stopBtn = document.getElementById('stopBtn');
+    var clearBtn = document.getElementById('clearBtn');
+    var statusStrip = document.getElementById('statusStrip');
+    var dp01 = document.getElementById('dp01');
+
+    var lcdLayer = document.getElementById('lcdLayer');
+    var lcdPick = document.getElementById('lcdPick');
+    var lcdWin = document.getElementById('lcdWin');
+
+    var tallyCanvas = document.getElementById('tallyCanvas');
+    var tallyLayerEl = document.getElementById('tallyLayer');
+    var tallyLive = document.getElementById('tallyLive');
+    var tallyLiveLabel = document.getElementById('tallyLiveLabel');
+    var tallyReadout = document.getElementById('tallyReadout');
+
+    var scoreCanvas = document.getElementById('scoreCanvas');
+    var scoreDecidedEl = document.getElementById('scoreDecided');
+    var scoreLive = document.getElementById('scoreLive');
+    var scoreLiveLabel = document.getElementById('scoreLiveLabel');
+    var scorePos = document.getElementById('scorePos');
+    var scoreStepEl = document.getElementById('scoreStep');
+    var layerLegend = document.getElementById('layerLegend');
+
+    var startOverlay = document.getElementById('startOverlay');
+    var startBtn = document.getElementById('startBtn');
+
+    // ============== UTIL ==============
+    function isMobileLayout() {
+        return window.matchMedia('(max-width: 800px)').matches;
+    }
+    function pad2(n) { return ('00' + n).slice(-2); }
+
+    // ============== BUILD UI: progress dots, pads, legend ==============
+    function buildProgressDots() {
+        progressDots.innerHTML = '';
         for (var i = 0; i < LAYERS.length; i++) {
             var d = document.createElement('div');
             d.className = 'prog-dot';
-            progress.appendChild(d);
+            d.dataset.layer = i;
+            progressDots.appendChild(d);
         }
-
-        function updateProgress() {
-            var dots = progress.querySelectorAll('.prog-dot');
-            for (var i = 0; i < dots.length; i++) {
-                dots[i].className = 'prog-dot';
-                if (i < currentLayer) dots[i].classList.add('done');
-                else if (i === currentLayer && phase !== 'done') dots[i].classList.add('current');
-                else if (phase === 'done') dots[i].classList.add('done');
-            }
+    }
+    function updateProgressDots() {
+        var dots = progressDots.children;
+        for (var i = 0; i < dots.length; i++) {
+            dots[i].classList.remove('done', 'current');
+            if (winners[i]) dots[i].classList.add('done');
+            else if (i === currentLayer && phase !== 'allDone') dots[i].classList.add('current');
         }
+    }
 
-        // ==========================================
-        // STEP FLOW
-        // ==========================================
-        function showStep() {
-            phase = 'preview';
-            userChoice = -1;
-            var layer = LAYERS[currentLayer];
-
-            layerName.textContent = layer.name;
-            stepPrompt.textContent = PROMPTS[currentLayer];
-            optionsEl.innerHTML = '';
-            statusEl.textContent = currentLayer === 0 ? 'Tap a block to hear it' : 'Tap to hear how it fits';
-            statusEl.className = '';
-            voteBtn.disabled = true;
-            voteBtn.textContent = 'Cast Vote';
-            voteBtn.style.display = '';
-
-            layer.variations.forEach(function(name, vi) {
-                var card = document.createElement('div');
-                card.className = 'opt-card';
-                card.innerHTML = '<div class="opt-name">' + name + '</div>' +
-                    '<div class="opt-hint">tap to preview</div>' +
-                    '<div class="vote-bar-wrap"><div class="vote-bar"></div></div>' +
-                    '<div class="vote-count"></div>';
-                card.addEventListener('click', function() { handleOptionTap(vi); });
-                optionsEl.appendChild(card);
-            });
-
-            updateProgress();
-        }
-
-        function handleOptionTap(vi) {
-            if (phase !== 'preview') return;
-
-            userChoice = vi;
-            voteBtn.disabled = false;
-
-            // Update card states
-            var cards = optionsEl.querySelectorAll('.opt-card');
-            cards.forEach(function(c, i) {
-                c.className = 'opt-card' + (i === vi ? ' previewing' : '');
-                c.querySelector('.opt-hint').textContent = i === vi ? 'your choice' : 'tap to preview';
-            });
-
-            statusEl.textContent = '';
-
-            // Preview this variation
-            activeVariation[currentLayer] = vi + 1; // +1 because audio uses 1-indexed (0 = silence)
-            if (!isPlaying) startPlayback();
-        }
-
-        function castVote() {
-            if (userChoice < 0 || phase !== 'preview') return;
-            phase = 'revealed';
-            voteBtn.disabled = true;
-            voteBtn.style.display = 'none';
-            userChoices[currentLayer] = userChoice;
-
-            // Generate crowd votes
-            crowdVotes = [];
-            var favorite = Math.floor(Math.random() * 4);
-            for (var i = 0; i < 4; i++) {
-                if (i === favorite) crowdVotes[i] = 6 + Math.floor(Math.random() * 6);
-                else crowdVotes[i] = 1 + Math.floor(Math.random() * 5);
-            }
-            // Add user vote
-            crowdVotes[userChoice]++;
-
-            // Find winner
-            var maxV = 0, winIdx = 0;
-            for (var i = 0; i < 4; i++) {
-                if (crowdVotes[i] > maxV) { maxV = crowdVotes[i]; winIdx = i; }
-            }
-            winners[currentLayer] = winIdx + 1; // 1-indexed for audio
-
-            // Reveal animation
-            statusEl.textContent = 'Counting votes\u2026';
-            statusEl.className = 'highlight';
-            var cards = optionsEl.querySelectorAll('.opt-card');
-            var total = 0;
-            for (var i = 0; i < 4; i++) total += crowdVotes[i];
-
-            // Show bars
-            cards.forEach(function(c) {
-                c.querySelector('.vote-bar-wrap').style.display = '';
-                c.querySelector('.vote-count').style.display = '';
-            });
-
-            // Animate bars after a beat
-            setTimeout(function() {
-                cards.forEach(function(c, i) {
-                    var pct = (crowdVotes[i] / total) * 100;
-                    c.querySelector('.vote-bar').style.width = pct + '%';
-                    c.querySelector('.vote-count').textContent = crowdVotes[i] + ' vote' + (crowdVotes[i] !== 1 ? 's' : '');
-                    if (i === userChoice) {
-                        c.classList.add('you-voted');
-                        c.querySelector('.opt-hint').textContent = 'you voted';
-                    }
-                });
-            }, 300);
-
-            // Reveal winner after bars animate
-            setTimeout(function() {
-                cards.forEach(function(c, i) {
-                    if (i === winIdx) c.classList.add('winner');
-                    else { c.style.opacity = '0.4'; }
-                });
-
-                // Set the winning variation for playback
-                activeVariation[currentLayer] = winners[currentLayer];
-
-                var youWon = userChoice === winIdx;
-                statusEl.textContent = youWon
-                    ? 'Your choice won'
-                    : 'The group chose ' + LAYERS[currentLayer].variations[winIdx];
-                statusEl.className = 'highlight';
-
-                // Show next button
-                setTimeout(function() {
-                    voteBtn.style.display = '';
-                    voteBtn.disabled = false;
-                    if (currentLayer < LAYERS.length - 1) {
-                        voteBtn.textContent = 'Next Layer \u2192';
-                    } else {
-                        voteBtn.textContent = 'See the Result';
-                    }
-                }, 600);
-            }, 1200);
-        }
-
-        function advanceToNext() {
-            if (phase === 'revealed') {
-                currentLayer++;
-                if (currentLayer >= LAYERS.length) {
-                    showResult();
-                } else {
-                    showStep();
-                }
-            }
-        }
-
-        function showResult() {
-            phase = 'done';
-            stepEl.style.display = 'none';
-            resultEl.style.display = 'block';
-            updateProgress();
-            resultGrid.innerHTML = '';
-            resultWinnerCells = [];
-
-            LAYERS.forEach(function(layer, li) {
-                var row = document.createElement('div');
-                row.className = 'result-grid-row';
-
-                var label = document.createElement('div');
-                label.className = 'result-grid-label';
-                label.textContent = layer.name;
-                row.appendChild(label);
-
-                var cells = document.createElement('div');
-                cells.className = 'result-grid-cells';
-
-                layer.variations.forEach(function(name, vi) {
-                    var cell = document.createElement('div');
-                    cell.className = 'result-cell';
-                    if ((vi + 1) === winners[li]) {
-                        cell.classList.add('is-winner');
-                        resultWinnerCells[li] = cell;
-                    }
-                    if (vi === userChoices[li]) cell.classList.add('is-yours');
-                    cell.innerHTML = '<div class="rc-name">' + name + '</div>';
-                    cells.appendChild(cell);
-                });
-
-                row.appendChild(cells);
-                resultGrid.appendChild(row);
-            });
-        }
-
-        function resetAll() {
-            currentLayer = 0;
-            userChoices = [];
-            winners = [];
-            activeVariation = [0, 0, 0, 0, 0];
-            resultWinnerCells = [];
-            stepEl.style.display = '';
-            resultEl.style.display = 'none';
-            stopBtn.textContent = '\u25A0 Stop';
-            if (isPlaying) stopPlayback();
-            showStep();
-        }
-
-        // Event listeners
-        voteBtn.addEventListener('click', function() {
-            if (phase === 'preview') castVote();
-            else if (phase === 'revealed') advanceToNext();
+    function buildLedger() {
+        ledgerRows.innerHTML = '';
+        LAYERS.forEach(function(layer, i) {
+            var row = document.createElement('div');
+            row.className = 'ledger-row';
+            row.style.setProperty('--swatch', LAYER_COLORS[i]);
+            row.innerHTML =
+                '<span class="num">' + (i + 1) + '</span>' +
+                '<span class="swatch"></span>' +
+                '<span class="name">' + layer.name + '</span>' +
+                '<span class="pick">— —</span>';
+            ledgerRows.appendChild(row);
         });
-        againBtn.addEventListener('click', resetAll);
-        stopBtn.addEventListener('click', function() {
-            if (isPlaying) {
-                stopPlayback();
-                stopBtn.textContent = '\u25B6 Play';
+    }
+    function updateLedger() {
+        if (!ledgerRows.children.length) return;
+        var decided = 0;
+        for (var i = 0; i < LAYERS.length; i++) {
+            var row = ledgerRows.children[i];
+            var pickEl = row.querySelector('.pick');
+            row.classList.remove('decided', 'current');
+            if (winners[i]) {
+                row.classList.add('decided');
+                pickEl.textContent = LAYERS[i].variations[winners[i] - 1].toUpperCase();
+                decided++;
+            } else if (i === currentLayer && phase !== 'allDone') {
+                row.classList.add('current');
+                pickEl.textContent = 'voting';
             } else {
-                startPlayback();
-                stopBtn.textContent = '\u25A0 Stop';
+                pickEl.textContent = '— —';
+            }
+        }
+        ledgerProgress.textContent = decided + '/5';
+    }
+
+    function buildPads() {
+        padGrid.innerHTML = '';
+        var layer = LAYERS[currentLayer];
+        layer.variations.forEach(function(name, vi) {
+            var pad = document.createElement('div');
+            pad.className = 'pad';
+            pad.dataset.idx = vi;
+            pad.innerHTML =
+                '<div class="pad-num">' + (vi + 1) + '</div>' +
+                '<div class="pad-name">' + name + '</div>' +
+                '<div class="pad-hint">tap</div>';
+            pad.addEventListener('click', function() { handlePadTap(vi); });
+            padGrid.appendChild(pad);
+        });
+    }
+
+    function buildLegend() {
+        layerLegend.innerHTML = '';
+        LAYERS.forEach(function(layer, li) {
+            var pill = document.createElement('span');
+            pill.className = 'legend-pill';
+            pill.dataset.layer = li;
+            pill.innerHTML = '<span class="legend-dot"></span>' + layer.name;
+            layerLegend.appendChild(pill);
+        });
+    }
+    function updateLegend() {
+        var pills = layerLegend.children;
+        for (var i = 0; i < pills.length; i++) {
+            if (winners[i]) pills[i].classList.add('lit');
+            else pills[i].classList.remove('lit');
+        }
+    }
+
+    // ============== STAGE TRANSITIONS ==============
+    function showLayer(li) {
+        currentLayer = li;
+        phase = 'preview';
+        userChoice = -1;
+        crowdVotes = null;
+
+        var layer = LAYERS[li];
+        stageName.textContent = layer.name.toUpperCase();
+        stagePrompt.textContent = PROMPTS[li];
+        dp01.dataset.layer = li;
+        tallyLayerEl.textContent = layer.name.toUpperCase();
+        lcdLayer.textContent = (li + 1) + '/5';
+        lcdPick.textContent = '---';
+        lcdWin.textContent = '---';
+
+        buildPads();
+        updateProgressDots();
+        updateLedger();
+
+        primaryBtn.disabled = true;
+        primaryLabel.textContent = 'CAST VOTE';
+        primaryHint.textContent = 'tap a block first';
+        statusStrip.innerHTML = '<span class="acc">' + layer.name.toUpperCase() + '</span> · pick a variation to preview';
+        tallyLive.classList.remove('on');
+        tallyLiveLabel.textContent = 'awaiting';
+        tallyReadout.textContent = '— —';
+    }
+
+    function handlePadTap(vi) {
+        if (phase !== 'preview') return;
+        userChoice = vi;
+        var pads = padGrid.children;
+        for (var i = 0; i < pads.length; i++) {
+            pads[i].classList.toggle('previewing', i === vi);
+            var hint = pads[i].querySelector('.pad-hint');
+            if (hint) hint.textContent = (i === vi) ? 'playing' : 'tap';
+        }
+        activeVariation[currentLayer] = vi + 1;
+        if (!isPlaying) startPlayback();
+
+        primaryBtn.disabled = false;
+        primaryLabel.textContent = 'CAST VOTE';
+        primaryHint.textContent = 'commit this choice';
+        lcdPick.textContent = LAYERS[currentLayer].variations[vi].slice(0, 4).toUpperCase();
+        statusStrip.innerHTML = '<span class="acc">' + LAYERS[currentLayer].variations[vi].toUpperCase() + '</span> · standing choice · cast to commit';
+    }
+
+    function castVote() {
+        if (phase !== 'preview' || userChoice < 0) return;
+        phase = 'counting';
+        userChoices[currentLayer] = userChoice;
+
+        // simulate crowd
+        var votes = [0,0,0,0];
+        var favorite = Math.floor(Math.random() * 4);
+        var total = CROWD_SIZE - 1; // user counts as +1 later
+        for (var i = 0; i < total; i++) {
+            // bias toward favorite
+            var r = Math.random();
+            if (r < 0.45) votes[favorite]++;
+            else votes[Math.floor(Math.random() * 4)]++;
+        }
+        votes[userChoice]++;
+        crowdVotes = votes;
+
+        // find winner
+        var maxV = 0, winIdx = 0;
+        for (var i = 0; i < 4; i++) {
+            if (votes[i] > maxV) { maxV = votes[i]; winIdx = i; }
+        }
+        winners[currentLayer] = winIdx + 1;
+        activeVariation[currentLayer] = winIdx + 1;
+
+        // tally screen wakes up
+        tallyLive.classList.add('on');
+        tallyLiveLabel.textContent = 'counting';
+        tallyReadout.textContent = 'TOTAL ' + (total + 1);
+
+        // start reveal animation
+        revealStartTs = performance.now();
+        revealAnim = 0;
+
+        primaryBtn.disabled = true;
+        primaryLabel.textContent = 'COUNTING';
+        primaryHint.textContent = 'tallying votes';
+        statusStrip.innerHTML = '<span class="acc">COUNTING</span> · ' + (total + 1) + ' votes settling';
+        updateProgressDots();
+        updateLedger();
+        updateLegend();
+    }
+
+    function revealComplete() {
+        phase = 'revealed';
+        revealDoneTs = performance.now();
+
+        // mark winners + losers + your-choice on pads
+        var pads = padGrid.children;
+        var winIdx = winners[currentLayer] - 1;
+        for (var i = 0; i < pads.length; i++) {
+            pads[i].classList.remove('previewing');
+            pads[i].style.pointerEvents = 'none';
+            if (i === winIdx) {
+                pads[i].classList.add('winner');
+                var hint = pads[i].querySelector('.pad-hint');
+                if (hint) hint.textContent = userChoice === winIdx ? 'you · won' : 'group choice';
+            } else if (i === userChoice && i !== winIdx) {
+                pads[i].classList.add('you-voted', 'dim');
+                var hint2 = pads[i].querySelector('.pad-hint');
+                if (hint2) hint2.textContent = '';
+            } else {
+                pads[i].classList.add('dim');
+                var hint3 = pads[i].querySelector('.pad-hint');
+                if (hint3) hint3.textContent = '';
+            }
+        }
+
+        var winName = LAYERS[currentLayer].variations[winIdx];
+        lcdWin.textContent = winName.slice(0, 4).toUpperCase();
+        scoreDecidedEl.textContent = currentLayer + 1;
+        scoreLive.classList.add('on');
+        scoreLiveLabel.textContent = 'recording';
+
+        var youWon = userChoice === winIdx;
+        statusStrip.innerHTML = youWon
+            ? '<span class="acc">' + winName.toUpperCase() + '</span> · your choice won the layer'
+            : '<span class="acc">' + winName.toUpperCase() + '</span> · the group chose';
+
+        tallyLiveLabel.textContent = 'locked';
+        var winVotes = crowdVotes[winIdx];
+        tallyReadout.textContent = winName.toUpperCase() + ' ' + winVotes;
+
+        // primary button → next layer or done
+        primaryBtn.disabled = false;
+        if (currentLayer < LAYERS.length - 1) {
+            primaryLabel.textContent = 'NEXT LAYER →';
+            primaryHint.textContent = 'advance to ' + LAYERS[currentLayer + 1].name.toLowerCase();
+        } else {
+            primaryLabel.textContent = '◉ COMPOSITION COMPLETE';
+            primaryHint.textContent = 'reset to start over';
+        }
+        updateLegend();
+        updateProgressDots();
+        updateLedger();
+    }
+
+    function advanceLayer() {
+        if (phase !== 'revealed') return;
+        if (currentLayer < LAYERS.length - 1) {
+            showLayer(currentLayer + 1);
+        } else {
+            phase = 'allDone';
+            primaryLabel.textContent = '◉ ALL LAYERS DECIDED';
+            primaryHint.textContent = 'press RESET to compose again';
+            primaryBtn.disabled = true;
+            statusStrip.innerHTML = '<span class="acc">DONE</span> · 5/5 layers · listening to the assembly';
+            updateProgressDots();
+        updateLedger();
+        }
+    }
+
+    function resetAll() {
+        currentLayer = 0;
+        userChoices = [];
+        winners = [];
+        crowdVotes = null;
+        activeVariation = [0, 0, 0, 0, 0];
+        scoreDecidedEl.textContent = '0';
+        scoreLive.classList.remove('on');
+        scoreLiveLabel.textContent = 'stand by';
+        if (isPlaying) stopPlayback();
+        showLayer(0);
+        updateLegend();
+        statusStrip.innerHTML = '<span class="acc">READY</span> · pick a variation to preview';
+    }
+
+    // ============== EVENT WIRING ==============
+    primaryBtn.addEventListener('click', function() {
+        if (phase === 'preview') castVote();
+        else if (phase === 'revealed') advanceLayer();
+    });
+    stopBtn.addEventListener('click', function() {
+        if (isPlaying) {
+            stopPlayback();
+            stopBtn.classList.remove('live');
+            stopBtn.disabled = true;
+        }
+    });
+    clearBtn.addEventListener('click', resetAll);
+
+
+    // ============== CANVAS HELPERS ==============
+    function setupCanvas(c) {
+        var dpr = window.devicePixelRatio || 1;
+        var rect = c.getBoundingClientRect();
+        if (rect.width < 4 || rect.height < 4) return null;
+        if (c.width !== Math.floor(rect.width * dpr) || c.height !== Math.floor(rect.height * dpr)) {
+            c.width = Math.floor(rect.width * dpr);
+            c.height = Math.floor(rect.height * dpr);
+        }
+        var ctx = c.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx: ctx, w: rect.width, h: rect.height };
+    }
+
+    // ============== TALLY CANVAS (live vote bars) ==============
+    // Desktop: 4 horizontal bars stretching right
+    // Mobile:  4 vertical bars rising up
+    function drawTally() {
+        var info = setupCanvas(tallyCanvas);
+        if (!info) return;
+        var ctx = info.ctx, w = info.w, h = info.h;
+        ctx.clearRect(0, 0, w, h);
+
+        // grid (always visible)
+        ctx.strokeStyle = 'rgba(127,229,88,0.10)';
+        ctx.lineWidth = 1;
+        var mobile = isMobileLayout();
+
+        if (mobile) {
+            // horizontal grid lines (vote count axis)
+            for (var i = 1; i < 5; i++) {
+                var y = h - (h - 24) * (i / 5) - 8;
+                ctx.beginPath(); ctx.moveTo(8, y); ctx.lineTo(w - 8, y); ctx.stroke();
+            }
+        } else {
+            // vertical grid lines
+            for (var i = 1; i < 5; i++) {
+                var x = 50 + (w - 80) * (i / 5);
+                ctx.beginPath(); ctx.moveTo(x, 28); ctx.lineTo(x, h - 12); ctx.stroke();
+            }
+        }
+
+        if (phase === 'preview') {
+            // pre-cast idle: gentle pulsing line, "AWAITING CAST" hint
+            var t = performance.now() * 0.0015;
+            ctx.strokeStyle = 'rgba(127,229,88,0.55)';
+            ctx.lineWidth = 1.4;
+            ctx.beginPath();
+            for (var x = 8; x < w - 8; x += 2) {
+                var y = h / 2 + Math.sin((x * 0.04) + t) * 4;
+                if (x === 8) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            // hint text
+            ctx.fillStyle = 'rgba(127,229,88,0.55)';
+            ctx.font = '12px VT323, monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('AWAITING CAST', w / 2, h - 16);
+            return;
+        }
+
+        // counting or revealed — draw bars
+        if (!crowdVotes) return;
+        var maxV = Math.max.apply(null, crowdVotes);
+        var winIdx = winners[currentLayer] - 1;
+        var anim = revealAnim;
+
+        if (mobile) {
+            // VERTICAL BARS: 4 columns rising up
+            var topPad = 36, bottomPad = 12;
+            var colCount = 4;
+            var colGap = 10;
+            var leftPad = 14, rightPad = 14;
+            var avail = w - leftPad - rightPad;
+            var colW = (avail - colGap * (colCount - 1)) / colCount;
+
+            for (var i = 0; i < 4; i++) {
+                var v = crowdVotes[i];
+                var pct = (v / Math.max(maxV, 1)) * anim;
+                var bh = Math.max(2, pct * (h - topPad - bottomPad));
+                var bx = leftPad + i * (colW + colGap);
+                var by = h - bottomPad - bh;
+
+                var isWin = (i === winIdx) && (phase === 'revealed');
+                var isYou = i === userChoice;
+
+                // bar
+                if (isWin) {
+                    var grad = ctx.createLinearGradient(0, by, 0, by + bh);
+                    grad.addColorStop(0, LAYER_COLORS[currentLayer]);
+                    grad.addColorStop(1, LAYER_COLORS_DIM[currentLayer]);
+                    ctx.fillStyle = grad;
+                } else {
+                    ctx.fillStyle = isYou ? 'rgba(80,200,230,0.65)' : 'rgba(127,229,88,0.45)';
+                }
+                ctx.fillRect(bx, by, colW, bh);
+
+                // bar outline
+                ctx.strokeStyle = isWin
+                    ? LAYER_COLORS[currentLayer]
+                    : (isYou ? 'rgba(80,200,230,0.9)' : 'rgba(127,229,88,0.7)');
+                ctx.lineWidth = 1;
+                ctx.strokeRect(bx + 0.5, by + 0.5, colW - 1, bh - 1);
+
+                // vote count above bar
+                if (anim > 0.4) {
+                    ctx.fillStyle = isWin
+                        ? '#fff'
+                        : (isYou ? '#bff5ff' : 'rgba(127,229,88,0.85)');
+                    ctx.font = 'bold 11px JetBrains Mono, monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(v, bx + colW / 2, by - 4);
+                }
+                // variation label below
+                ctx.fillStyle = isWin ? LAYER_COLORS[currentLayer] : 'rgba(127,229,88,0.65)';
+                ctx.font = 'bold 9px Hanken Grotesk, sans-serif';
+                ctx.textAlign = 'center';
+                var lbl = LAYERS[currentLayer].variations[i].toUpperCase();
+                ctx.fillText(lbl, bx + colW / 2, h - 1);
+
+                // "you" tick
+                if (isYou) {
+                    ctx.fillStyle = '#50C8E6';
+                    ctx.fillRect(bx + colW / 2 - 3, h - bottomPad - 1, 6, 2);
+                }
+            }
+        } else {
+            // HORIZONTAL BARS: 4 rows extending right
+            var topPad = 30, bottomPad = 14;
+            var rowCount = 4;
+            var rowGap = 8;
+            var avail = h - topPad - bottomPad;
+            var rowH = (avail - rowGap * (rowCount - 1)) / rowCount;
+            var labelW = 56;
+            var leftPad = 12 + labelW;
+            var rightPad = 56;
+            var maxBarW = w - leftPad - rightPad;
+
+            for (var i = 0; i < 4; i++) {
+                var v = crowdVotes[i];
+                var pct = (v / Math.max(maxV, 1)) * anim;
+                var bw = Math.max(2, pct * maxBarW);
+                var by = topPad + i * (rowH + rowGap);
+                var bx = leftPad;
+
+                var isWin = (i === winIdx) && (phase === 'revealed');
+                var isYou = i === userChoice;
+
+                // bar background track
+                ctx.fillStyle = 'rgba(127,229,88,0.08)';
+                ctx.fillRect(bx, by, maxBarW, rowH);
+
+                // bar
+                if (isWin) {
+                    var grad = ctx.createLinearGradient(bx, 0, bx + bw, 0);
+                    grad.addColorStop(0, LAYER_COLORS_DIM[currentLayer]);
+                    grad.addColorStop(1, LAYER_COLORS[currentLayer]);
+                    ctx.fillStyle = grad;
+                } else {
+                    ctx.fillStyle = isYou ? 'rgba(80,200,230,0.65)' : 'rgba(127,229,88,0.45)';
+                }
+                ctx.fillRect(bx, by, bw, rowH);
+
+                // outline
+                ctx.strokeStyle = isWin
+                    ? LAYER_COLORS[currentLayer]
+                    : (isYou ? 'rgba(80,200,230,0.9)' : 'rgba(127,229,88,0.7)');
+                ctx.lineWidth = 1;
+                ctx.strokeRect(bx + 0.5, by + 0.5, bw - 1, rowH - 1);
+
+                // variation label left of bar
+                ctx.fillStyle = isWin ? LAYER_COLORS[currentLayer] : 'rgba(127,229,88,0.78)';
+                ctx.font = 'bold 10px Hanken Grotesk, sans-serif';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(LAYERS[currentLayer].variations[i].toUpperCase(), leftPad - 8, by + rowH / 2);
+
+                // vote count right of bar
+                if (anim > 0.4) {
+                    ctx.fillStyle = isWin
+                        ? '#fff'
+                        : (isYou ? '#bff5ff' : 'rgba(127,229,88,0.95)');
+                    ctx.font = 'bold 12px JetBrains Mono, monospace';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(v, bx + bw + 6, by + rowH / 2);
+                }
+
+                // "you" tick on bar
+                if (isYou && anim > 0.3) {
+                    ctx.fillStyle = '#50C8E6';
+                    ctx.font = 'bold 8px JetBrains Mono, monospace';
+                    ctx.textAlign = 'left';
+                    ctx.fillText('YOU', bx + 4, by + rowH - 3);
+                }
+            }
+        }
+    }
+
+    // ============== SCORE CANVAS (5-lane composition) ==============
+    // Desktop: 5 horizontal lanes × 16 steps, time flows L→R
+    // Mobile:  5 vertical columns × 16 steps, time flows T→B (verticality)
+    function getCurrentStepFloat() {
+        if (!isPlaying || !audioCtx || beatStartTime <= 0) return -1;
+        var elapsed = audioCtx.currentTime - beatStartTime;
+        if (elapsed < 0) return -1;
+        return (elapsed / stepDuration()) % STEPS;
+    }
+
+    function layerHitsAt(li, s) {
+        var v = winners[li]; if (!v) return false;
+        if (li === 0) {
+            if (v === 1) return s % 4 === 0 || s % 2 === 0;
+            if (v === 2) return s % 4 === 0 || (s % 3 === 0 && Math.sin(s) > 0);
+            if (v === 3) return s % 8 === 0 || s === 6 || s % 3 === 0;
+            if (v === 4) return s === 0 || s === 5 || s === 10 || s % 5 === 2;
+        }
+        if (li === 1) {
+            if (v === 1) return s % 8 === 0;
+            if (v === 2) return s === 0 || s === 3 || s === 6 || s === 9 || s === 12;
+            if (v === 3) return s % 4 === 0;
+            if (v === 4) return s === 0;
+        }
+        if (li === 2) return s % 8 === 0;
+        if (li === 3) {
+            if (v === 1) return [0,3,6,10,13].indexOf(s) !== -1;
+            if (v === 2) return [0,4,8,12].indexOf(s) !== -1;
+            if (v === 3) return [3,11].indexOf(s) !== -1;
+            if (v === 4) return [0,10,12].indexOf(s) !== -1;
+        }
+        if (li === 4) {
+            if (v === 1) return Math.sin(s * 7.3) > 0.2;
+            if (v === 2) return s % 8 === 0;
+            if (v === 3) return Math.sin(s * 11.7) > 0.4;
+            if (v === 4) return s % 4 === 0;
+        }
+        return false;
+    }
+
+    function drawScore() {
+        var info = setupCanvas(scoreCanvas);
+        if (!info) return;
+        var ctx = info.ctx, w = info.w, h = info.h;
+        ctx.clearRect(0, 0, w, h);
+
+        var anyDecided = winners.some(function(w) { return !!w; });
+        var mobile = isMobileLayout();
+        var stepFloat = getCurrentStepFloat();
+        var stepInt = stepFloat >= 0 ? Math.floor(stepFloat) : -1;
+
+        if (mobile) {
+            // ===== VERTICAL ROLL: 5 columns wide × 16 steps tall =====
+            // Time flows top → bottom. Columns L→R are layers 1..5 (Rhythm → Texture).
+            var topPad = 30, bottomPad = 14;
+            var leftPad = 26, rightPad = 14;
+            var colCount = 5;
+            var colGap = 5;
+            var avail = w - leftPad - rightPad;
+            var colW = (avail - colGap * (colCount - 1)) / colCount;
+            var stepH = (h - topPad - bottomPad) / STEPS;
+
+            // step number labels down left side (1, 5, 9, 13)
+            ctx.fillStyle = 'rgba(240,192,64,0.55)';
+            ctx.font = '10px VT323, monospace';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            for (var s = 0; s < STEPS; s++) {
+                if (s % 4 === 0) {
+                    ctx.fillText(pad2(s + 1), leftPad - 6, topPad + (s + 0.5) * stepH);
+                }
+            }
+
+            // bar lines every 4 steps
+            ctx.strokeStyle = 'rgba(240,192,64,0.18)';
+            ctx.lineWidth = 1;
+            for (var s = 0; s <= STEPS; s += 4) {
+                var y = topPad + s * stepH;
+                ctx.beginPath();
+                ctx.moveTo(leftPad - 4, y); ctx.lineTo(w - rightPad + 2, y);
+                ctx.stroke();
+            }
+
+            // column headers (layer numbers)
+            ctx.fillStyle = 'rgba(240,192,64,0.65)';
+            ctx.font = 'bold 10px Hanken Grotesk, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            for (var li = 0; li < colCount; li++) {
+                var cx = leftPad + li * (colW + colGap) + colW / 2;
+                ctx.fillStyle = winners[li] ? LAYER_COLORS[li] : 'rgba(240,192,64,0.4)';
+                ctx.fillText((li + 1), cx, topPad - 4);
+            }
+
+            // cells
+            for (var li = 0; li < colCount; li++) {
+                var cx = leftPad + li * (colW + colGap);
+                var hasW = !!winners[li];
+
+                for (var s = 0; s < STEPS; s++) {
+                    var cy = topPad + s * stepH;
+                    var hits = hasW && layerHitsAt(li, s);
+                    var isPlayhead = (s === stepInt);
+
+                    if (hits) {
+                        ctx.fillStyle = LAYER_COLORS[li];
+                        if (isPlayhead && isPlaying) {
+                            ctx.shadowColor = LAYER_COLORS[li];
+                            ctx.shadowBlur = 10;
+                        } else {
+                            ctx.shadowBlur = 0;
+                        }
+                        ctx.fillRect(cx + 1, cy + 1, colW - 2, stepH - 2);
+                        ctx.shadowBlur = 0;
+                    } else if (hasW) {
+                        ctx.fillStyle = 'rgba(240,192,64,0.07)';
+                        ctx.fillRect(cx + 1, cy + 1, colW - 2, stepH - 2);
+                    } else {
+                        ctx.fillStyle = 'rgba(240,192,64,0.025)';
+                        ctx.fillRect(cx + 1, cy + 1, colW - 2, stepH - 2);
+                    }
+                }
+            }
+
+            // horizontal playhead line sweeping down
+            if (stepFloat >= 0) {
+                var py = topPad + stepFloat * stepH;
+                ctx.strokeStyle = 'rgba(240,192,64,0.95)';
+                ctx.lineWidth = 1.4;
+                ctx.beginPath();
+                ctx.moveTo(leftPad - 4, py); ctx.lineTo(w - rightPad + 2, py);
+                ctx.stroke();
+                // hot dot on right edge
+                ctx.fillStyle = '#F0C040';
+                ctx.beginPath();
+                ctx.arc(w - rightPad + 4, py, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            if (!anyDecided) {
+                ctx.fillStyle = 'rgba(240,192,64,0.45)';
+                ctx.font = '12px VT323, monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('AWAITING FIRST LAYER', w / 2, h / 2);
+            }
+
+        } else {
+            // ===== HORIZONTAL LANES: 5 rows × 16 steps =====
+            // Time flows L → R. Rows top→bottom are layers 1..5.
+            var topPad = 30, bottomPad = 18;
+            var leftPad = 56, rightPad = 14;
+            var rowCount = 5;
+            var rowGap = 4;
+            var avail = h - topPad - bottomPad;
+            var rowH = (avail - rowGap * (rowCount - 1)) / rowCount;
+            var stepW = (w - leftPad - rightPad) / STEPS;
+
+            // step number labels along top (1, 5, 9, 13)
+            ctx.fillStyle = 'rgba(240,192,64,0.55)';
+            ctx.font = '10px VT323, monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            for (var s = 0; s < STEPS; s++) {
+                if (s % 4 === 0) {
+                    ctx.fillText(pad2(s + 1), leftPad + (s + 0.5) * stepW, topPad - 3);
+                }
+            }
+
+            // bar lines every 4 steps
+            ctx.strokeStyle = 'rgba(240,192,64,0.18)';
+            ctx.lineWidth = 1;
+            for (var s = 0; s <= STEPS; s += 4) {
+                var x = leftPad + s * stepW;
+                ctx.beginPath();
+                ctx.moveTo(x, topPad - 4); ctx.lineTo(x, h - bottomPad + 2);
+                ctx.stroke();
+            }
+
+            // row labels (layer names on left)
+            ctx.font = 'bold 9px Hanken Grotesk, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            for (var li = 0; li < rowCount; li++) {
+                var ry = topPad + li * (rowH + rowGap) + rowH / 2;
+                ctx.fillStyle = winners[li] ? LAYER_COLORS[li] : 'rgba(240,192,64,0.42)';
+                ctx.fillText(LAYERS[li].name.toUpperCase(), leftPad - 8, ry);
+            }
+
+            // cells
+            for (var li = 0; li < rowCount; li++) {
+                var ry = topPad + li * (rowH + rowGap);
+                var hasW = !!winners[li];
+
+                for (var s = 0; s < STEPS; s++) {
+                    var cx = leftPad + s * stepW;
+                    var hits = hasW && layerHitsAt(li, s);
+                    var isPlayhead = (s === stepInt);
+
+                    if (hits) {
+                        ctx.fillStyle = LAYER_COLORS[li];
+                        if (isPlayhead && isPlaying) {
+                            ctx.shadowColor = LAYER_COLORS[li];
+                            ctx.shadowBlur = 10;
+                        } else {
+                            ctx.shadowBlur = 0;
+                        }
+                        ctx.fillRect(cx + 1, ry + 1, stepW - 2, rowH - 2);
+                        ctx.shadowBlur = 0;
+                    } else if (hasW) {
+                        ctx.fillStyle = 'rgba(240,192,64,0.07)';
+                        ctx.fillRect(cx + 1, ry + 1, stepW - 2, rowH - 2);
+                    } else {
+                        ctx.fillStyle = 'rgba(240,192,64,0.025)';
+                        ctx.fillRect(cx + 1, ry + 1, stepW - 2, rowH - 2);
+                    }
+                }
+            }
+
+            // vertical playhead sweeping right
+            if (stepFloat >= 0) {
+                var px = leftPad + stepFloat * stepW;
+                ctx.strokeStyle = 'rgba(240,192,64,0.95)';
+                ctx.lineWidth = 1.4;
+                ctx.beginPath();
+                ctx.moveTo(px, topPad - 4); ctx.lineTo(px, h - bottomPad + 2);
+                ctx.stroke();
+                // hot dot on bottom edge
+                ctx.fillStyle = '#F0C040';
+                ctx.beginPath();
+                ctx.arc(px, h - bottomPad + 6, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            if (!anyDecided) {
+                ctx.fillStyle = 'rgba(240,192,64,0.45)';
+                ctx.font = '12px VT323, monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('AWAITING FIRST LAYER', w / 2, h / 2);
+            }
+        }
+
+        if (stepInt >= 0) {
+            scoreStepEl.textContent = pad2(stepInt + 1);
+            // BPM 76, 16 steps per bar = ~12.6s per bar; show position as bar:beat
+            var bar = 1;
+            var beat = Math.floor(stepInt / 4) + 1;
+            var beatSub = (stepInt % 4) + 1;
+            scorePos.textContent = pad2(beat) + ':' + pad2(beatSub);
+        }
+    }
+
+    // ============== ANIMATION LOOP ==============
+    function animLoop() {
+        // reveal anim
+        if (phase === 'counting') {
+            var t = (performance.now() - revealStartTs) / 900;
+            revealAnim = Math.min(1, t);
+            if (revealAnim >= 1) revealComplete();
+        }
+        drawTally();
+        drawScore();
+        requestAnimationFrame(animLoop);
+    }
+
+
+    // ============== AUDIO ENGINE (preserved from original) ==============
+    function buildAudioGraph() {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        var ctx = audioCtx;
+        compressor = ctx.createDynamicsCompressor();
+        compressor.threshold.value = -24; compressor.knee.value = 12;
+        compressor.ratio.value = 4; compressor.attack.value = 0.01; compressor.release.value = 0.15;
+        compressor.connect(ctx.destination);
+        masterFilter = ctx.createBiquadFilter();
+        masterFilter.type = 'lowpass'; masterFilter.frequency.value = 5000; masterFilter.Q.value = 0.5;
+        masterFilter.connect(compressor);
+        masterGain = ctx.createGain(); masterGain.gain.value = 0.7; masterGain.connect(masterFilter);
+        reverbSend = ctx.createGain(); reverbSend.gain.value = 0.35;
+        var delays = [0.037, 0.079, 0.113, 0.151, 0.197, 0.251];
+        var reverbMix = ctx.createGain(); reverbMix.gain.value = 0.4; reverbMix.connect(masterFilter);
+        delays.forEach(function(dt) {
+            var d = ctx.createDelay(1.0); d.delayTime.value = dt;
+            var g = ctx.createGain(); g.gain.value = 0.18;
+            var f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 2500 - dt * 4000; f.Q.value = 0.3;
+            reverbSend.connect(d); d.connect(f); f.connect(g); g.connect(d); g.connect(reverbMix);
+        });
+    }
+    function stepDuration() { return 60.0 / BPM / 4; }
+    function connectDry(node) { node.connect(masterGain); }
+    function connectWet(node, amount) {
+        var g = audioCtx.createGain(); g.gain.value = amount || 1; node.connect(g); g.connect(reverbSend);
+    }
+
+    function scheduleRhythm(variation, time, dur) {
+        if (variation === 0) return;
+        var ctx = audioCtx, s = currentStep % STEPS;
+        function softHit(t, freq, vol, decay) {
+            var len = ctx.sampleRate * decay, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+            for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.2));
+            var src = ctx.createBufferSource(); src.buffer = buf;
+            var f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 1.2;
+            var g = ctx.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + decay);
+            src.connect(f); f.connect(g); connectDry(g); connectWet(g, 0.3); src.start(t);
+        }
+        function softKick(t, vol) {
+            var osc = ctx.createOscillator(); osc.type = 'sine';
+            osc.frequency.setValueAtTime(90, t); osc.frequency.exponentialRampToValueAtTime(35, t + 0.15);
+            var g = ctx.createGain(); g.gain.setValueAtTime(vol, t); g.gain.setValueAtTime(vol * 0.8, t + 0.05);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+            osc.connect(g); connectDry(g); osc.start(t); osc.stop(t + 0.4);
+        }
+        if (variation === 1) { if (s % 4 === 0) softKick(time, 0.2); if (s % 2 === 0) softHit(time, 7000, 0.04, 0.06); }
+        else if (variation === 2) { if (s % 4 === 0) softKick(time, 0.15); if (Math.random() > 0.5) softHit(time + Math.random() * dur * 0.3, 5000 + Math.random() * 4000, 0.025, 0.04); }
+        else if (variation === 3) { if (s % 8 === 0 || s === 6) softKick(time, 0.15); if (s % 3 === 0) softHit(time, 6000, 0.03, 0.07); }
+        else if (variation === 4) { if (s === 0 || s === 5 || s === 10) softKick(time, 0.12); if (s % 5 === 2) softHit(time, 4000, 0.02, 0.09); }
+    }
+    function scheduleBass(variation, time, dur) {
+        if (variation === 0) return;
+        var ctx = audioCtx, s = currentStep % STEPS;
+        function bassNote(t, freq, length, vol) {
+            var osc1 = ctx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = freq;
+            var osc2 = ctx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.value = freq;
+            var f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = freq * 3; f.Q.value = 0.7;
+            var g1 = ctx.createGain(); g1.gain.value = vol * 0.7;
+            var g2 = ctx.createGain(); g2.gain.value = vol * 0.3;
+            var master = ctx.createGain();
+            master.gain.setValueAtTime(0, t); master.gain.linearRampToValueAtTime(1, t + 0.025);
+            master.gain.setValueAtTime(1, t + length * 0.6); master.gain.exponentialRampToValueAtTime(0.001, t + length);
+            osc1.connect(g1); g1.connect(f); osc2.connect(g2); g2.connect(f);
+            f.connect(master); connectDry(master); connectWet(master, 0.15);
+            osc1.start(t); osc1.stop(t + length + 0.1); osc2.start(t); osc2.stop(t + length + 0.1);
+        }
+        if (variation === 1) { if (s % 8 === 0) bassNote(time, NOTES.C2, dur * 6, 0.18); }
+        else if (variation === 2) { var walk = [NOTES.C2, 0, 0, NOTES.Eb2, 0, 0, NOTES.F2, 0, 0, NOTES.G2, 0, 0, NOTES.Bb2, 0, 0, 0]; if (walk[s]) bassNote(time, walk[s], dur * 2.5, 0.14); }
+        else if (variation === 3) { if (s % 4 === 0) bassNote(time, NOTES.C2, dur * 3.5, 0.16); }
+        else if (variation === 4) { if (s % 16 === 0) { var osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = NOTES.C2 * 0.5; var g = ctx.createGain(); g.gain.setValueAtTime(0, time); g.gain.linearRampToValueAtTime(0.22, time + dur * 4); g.gain.setValueAtTime(0.22, time + dur * 10); g.gain.exponentialRampToValueAtTime(0.001, time + dur * 16); osc.connect(g); connectDry(g); osc.start(time); osc.stop(time + dur * 17); } }
+    }
+    function scheduleChords(variation, time, dur) {
+        if (variation === 0) return;
+        var ctx = audioCtx, s = currentStep % STEPS;
+        if (s % 8 !== 0) return;
+        var chordSets = { 1: [NOTES.C3, NOTES.Eb3, NOTES.G3, NOTES.Bb3], 2: [NOTES.C4, NOTES.G4, NOTES.C5], 3: [NOTES.C3, NOTES.F3, NOTES.Bb3], 4: [NOTES.G3, NOTES.C4, NOTES.Eb4, NOTES.Bb4] };
+        var notes = chordSets[variation]; if (!notes) return;
+        var length = dur * 7, waveType = variation === 2 ? 'sine' : 'triangle';
+        notes.forEach(function(freq) {
+            for (var d = -1; d <= 1; d += 2) {
+                var osc = ctx.createOscillator(); osc.type = waveType; osc.frequency.value = freq; osc.detune.value = d * (variation === 2 ? 3 : 6);
+                var g = ctx.createGain(); var vol = 0.025;
+                g.gain.setValueAtTime(0, time); g.gain.linearRampToValueAtTime(vol, time + dur * 3);
+                g.gain.setValueAtTime(vol * 0.8, time + length * 0.7); g.gain.exponentialRampToValueAtTime(0.001, time + length);
+                osc.connect(g); connectDry(g); connectWet(g, 0.6); osc.start(time); osc.stop(time + length + 0.2);
             }
         });
+    }
+    var melodyData = { 1: [NOTES.C4,0,0,NOTES.Eb4,0,0,NOTES.G4,0,0,0,NOTES.F4,0,0,NOTES.Eb4,0,0], 2: [NOTES.G4,0,0,0,NOTES.Bb4,0,0,0,NOTES.C5,0,0,0,NOTES.Bb4,0,0,0], 3: [0,0,0,NOTES.Eb5,0,0,0,0,0,0,0,NOTES.C5,0,0,0,0], 4: [NOTES.G4,0,0,0,0,0,0,0,0,0,NOTES.Bb4,0,NOTES.G4,0,0,0] };
+    function scheduleMelody(variation, time, dur) {
+        if (variation === 0 || !melodyData[variation]) return;
+        var s = currentStep % STEPS, freq = melodyData[variation][s]; if (!freq) return;
+        var ctx = audioCtx, length = dur * 4;
+        var osc1 = ctx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = freq;
+        var osc2 = ctx.createOscillator(); osc2.type = 'sine'; osc2.frequency.value = freq * 2.01;
+        var g1 = ctx.createGain(); g1.gain.value = 0.07; var g2 = ctx.createGain(); g2.gain.value = 0.015;
+        var env = ctx.createGain();
+        env.gain.setValueAtTime(0, time); env.gain.linearRampToValueAtTime(1, time + 0.04);
+        env.gain.setValueAtTime(0.7, time + length * 0.4); env.gain.exponentialRampToValueAtTime(0.001, time + length);
+        osc1.connect(g1); g1.connect(env); osc2.connect(g2); g2.connect(env);
+        connectDry(env); connectWet(env, 0.5);
+        osc1.start(time); osc1.stop(time + length + 0.1); osc2.start(time); osc2.stop(time + length + 0.1);
+    }
+    function scheduleTexture(variation, time, dur) {
+        if (variation === 0) return;
+        var ctx = audioCtx, s = currentStep % STEPS;
+        if (variation === 1) { if (Math.random() > 0.55) { var len = ctx.sampleRate * 0.04, buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0); for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.25)); var src = ctx.createBufferSource(); src.buffer = buf; var f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 4000 + Math.random() * 6000; f.Q.value = 3; var g = ctx.createGain(); g.gain.value = 0.012; src.connect(f); f.connect(g); connectDry(g); connectWet(g, 0.7); src.start(time + Math.random() * dur * 0.6); } }
+        else if (variation === 2 && s % 8 === 0) { var osc1 = ctx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = NOTES.G3; var osc2 = ctx.createOscillator(); osc2.type = 'sine'; osc2.frequency.value = NOTES.G3 * 1.003; var g = ctx.createGain(); g.gain.setValueAtTime(0, time); g.gain.linearRampToValueAtTime(0.025, time + dur * 4); g.gain.exponentialRampToValueAtTime(0.001, time + dur * 8); osc1.connect(g); osc2.connect(g); connectDry(g); connectWet(g, 0.8); osc1.start(time); osc1.stop(time + dur * 9); osc2.start(time); osc2.stop(time + dur * 9); }
+        else if (variation === 3 && Math.random() > 0.65) { var len = ctx.sampleRate * 0.008, buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0); for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1); var src = ctx.createBufferSource(); src.buffer = buf; var g = ctx.createGain(); g.gain.value = 0.008; src.connect(g); connectDry(g); src.start(time + Math.random() * dur); }
+        else if (variation === 4 && s % 4 === 0) { var len = ctx.sampleRate * 0.6, buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0); for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1); var src = ctx.createBufferSource(); src.buffer = buf; var f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 300 + Math.random() * 400; f.Q.value = 0.4; var g = ctx.createGain(); g.gain.setValueAtTime(0, time); g.gain.linearRampToValueAtTime(0.02, time + 0.2); g.gain.exponentialRampToValueAtTime(0.001, time + 0.6); src.connect(f); f.connect(g); connectDry(g); connectWet(g, 0.5); src.start(time); }
+    }
 
-        // ==========================================
-        // AUDIO ENGINE
-        // ==========================================
-        function buildAudioGraph() {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            var ctx = audioCtx;
-            compressor = ctx.createDynamicsCompressor();
-            compressor.threshold.value = -24; compressor.knee.value = 12;
-            compressor.ratio.value = 4; compressor.attack.value = 0.01; compressor.release.value = 0.15;
-            compressor.connect(ctx.destination);
-            masterFilter = ctx.createBiquadFilter();
-            masterFilter.type = 'lowpass'; masterFilter.frequency.value = 5000; masterFilter.Q.value = 0.5;
-            masterFilter.connect(compressor);
-            masterGain = ctx.createGain(); masterGain.gain.value = 0.7; masterGain.connect(masterFilter);
-            reverbSend = ctx.createGain(); reverbSend.gain.value = 0.35;
-            var delays = [0.037, 0.079, 0.113, 0.151, 0.197, 0.251];
-            var reverbMix = ctx.createGain(); reverbMix.gain.value = 0.4; reverbMix.connect(masterFilter);
-            delays.forEach(function(dt) {
-                var d = ctx.createDelay(1.0); d.delayTime.value = dt;
-                var g = ctx.createGain(); g.gain.value = 0.18;
-                var f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 2500 - dt * 4000; f.Q.value = 0.3;
-                reverbSend.connect(d); d.connect(f); f.connect(g); g.connect(d); g.connect(reverbMix);
-            });
+    var schedulers = [scheduleRhythm, scheduleBass, scheduleChords, scheduleMelody, scheduleTexture];
+    function scheduleStepFn(time) {
+        var dur = stepDuration();
+        for (var li = 0; li < LAYERS.length; li++) schedulers[li](activeVariation[li], time, dur);
+    }
+    function advanceSeqStep() { currentStep++; }
+    function scheduler() {
+        if (!audioCtx || !isPlaying) return;
+        while (nextStepTime < audioCtx.currentTime + 0.12) {
+            scheduleStepFn(nextStepTime); advanceSeqStep(); nextStepTime += stepDuration();
         }
-        function stepDuration() { return 60.0 / BPM / 4; }
-        function connectDry(node) { node.connect(masterGain); }
-        function connectWet(node, amount) {
-            var g = audioCtx.createGain(); g.gain.value = amount || 1; node.connect(g); g.connect(reverbSend);
-        }
+        schedulerTimer = setTimeout(scheduler, 20);
+    }
 
-        // --- RHYTHM ---
-        function scheduleRhythm(variation, time, dur) {
-            if (variation === 0) return;
-            var ctx = audioCtx, s = currentStep % STEPS;
-            function softHit(t, freq, vol, decay) {
-                var len = ctx.sampleRate * decay, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
-                for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.2));
-                var src = ctx.createBufferSource(); src.buffer = buf;
-                var f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 1.2;
-                var g = ctx.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + decay);
-                src.connect(f); f.connect(g); connectDry(g); connectWet(g, 0.3); src.start(t);
-            }
-            function softKick(t, vol) {
-                var osc = ctx.createOscillator(); osc.type = 'sine';
-                osc.frequency.setValueAtTime(90, t); osc.frequency.exponentialRampToValueAtTime(35, t + 0.15);
-                var g = ctx.createGain(); g.gain.setValueAtTime(vol, t); g.gain.setValueAtTime(vol * 0.8, t + 0.05);
-                g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
-                osc.connect(g); connectDry(g); osc.start(t); osc.stop(t + 0.4);
-            }
-            if (variation === 1) { if (s % 4 === 0) softKick(time, 0.2); if (s % 2 === 0) softHit(time, 7000, 0.04, 0.06); }
-            else if (variation === 2) { if (s % 4 === 0) softKick(time, 0.15); if (Math.random() > 0.5) softHit(time + Math.random() * dur * 0.3, 5000 + Math.random() * 4000, 0.025, 0.04); }
-            else if (variation === 3) { if (s % 8 === 0 || s === 6) softKick(time, 0.15); if (s % 3 === 0) softHit(time, 6000, 0.03, 0.07); }
-            else if (variation === 4) { if (s === 0 || s === 5 || s === 10) softKick(time, 0.12); if (s % 5 === 2) softHit(time, 4000, 0.02, 0.09); }
-        }
-        // --- BASS ---
-        function scheduleBass(variation, time, dur) {
-            if (variation === 0) return;
-            var ctx = audioCtx, s = currentStep % STEPS;
-            function bassNote(t, freq, length, vol) {
-                var osc1 = ctx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = freq;
-                var osc2 = ctx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.value = freq;
-                var f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = freq * 3; f.Q.value = 0.7;
-                var g1 = ctx.createGain(); g1.gain.value = vol * 0.7;
-                var g2 = ctx.createGain(); g2.gain.value = vol * 0.3;
-                var master = ctx.createGain();
-                master.gain.setValueAtTime(0, t); master.gain.linearRampToValueAtTime(1, t + 0.025);
-                master.gain.setValueAtTime(1, t + length * 0.6); master.gain.exponentialRampToValueAtTime(0.001, t + length);
-                osc1.connect(g1); g1.connect(f); osc2.connect(g2); g2.connect(f);
-                f.connect(master); connectDry(master); connectWet(master, 0.15);
-                osc1.start(t); osc1.stop(t + length + 0.1); osc2.start(t); osc2.stop(t + length + 0.1);
-            }
-            if (variation === 1) { if (s % 8 === 0) bassNote(time, NOTES.C2, dur * 6, 0.18); }
-            else if (variation === 2) { var walk = [NOTES.C2, 0, 0, NOTES.Eb2, 0, 0, NOTES.F2, 0, 0, NOTES.G2, 0, 0, NOTES.Bb2, 0, 0, 0]; if (walk[s]) bassNote(time, walk[s], dur * 2.5, 0.14); }
-            else if (variation === 3) { if (s % 4 === 0) bassNote(time, NOTES.C2, dur * 3.5, 0.16); }
-            else if (variation === 4) { if (s % 16 === 0) { var osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = NOTES.C2 * 0.5; var g = ctx.createGain(); g.gain.setValueAtTime(0, time); g.gain.linearRampToValueAtTime(0.22, time + dur * 4); g.gain.setValueAtTime(0.22, time + dur * 10); g.gain.exponentialRampToValueAtTime(0.001, time + dur * 16); osc.connect(g); connectDry(g); osc.start(time); osc.stop(time + dur * 17); } }
-        }
-        // --- CHORDS ---
-        function scheduleChords(variation, time, dur) {
-            if (variation === 0) return;
-            var ctx = audioCtx, s = currentStep % STEPS;
-            if (s % 8 !== 0) return;
-            var chordSets = { 1: [NOTES.C3, NOTES.Eb3, NOTES.G3, NOTES.Bb3], 2: [NOTES.C4, NOTES.G4, NOTES.C5], 3: [NOTES.C3, NOTES.F3, NOTES.Bb3], 4: [NOTES.G3, NOTES.C4, NOTES.Eb4, NOTES.Bb4] };
-            var notes = chordSets[variation]; if (!notes) return;
-            var length = dur * 7, waveType = variation === 2 ? 'sine' : 'triangle';
-            notes.forEach(function(freq) {
-                for (var d = -1; d <= 1; d += 2) {
-                    var osc = ctx.createOscillator(); osc.type = waveType; osc.frequency.value = freq; osc.detune.value = d * (variation === 2 ? 3 : 6);
-                    var g = ctx.createGain(); var vol = 0.025;
-                    g.gain.setValueAtTime(0, time); g.gain.linearRampToValueAtTime(vol, time + dur * 3);
-                    g.gain.setValueAtTime(vol * 0.8, time + length * 0.7); g.gain.exponentialRampToValueAtTime(0.001, time + length);
-                    osc.connect(g); connectDry(g); connectWet(g, 0.6); osc.start(time); osc.stop(time + length + 0.2);
-                }
-            });
-        }
-        // --- MELODY ---
-        var melodyData = { 1: [NOTES.C4,0,0,NOTES.Eb4,0,0,NOTES.G4,0,0,0,NOTES.F4,0,0,NOTES.Eb4,0,0], 2: [NOTES.G4,0,0,0,NOTES.Bb4,0,0,0,NOTES.C5,0,0,0,NOTES.Bb4,0,0,0], 3: [0,0,0,NOTES.Eb5,0,0,0,0,0,0,0,NOTES.C5,0,0,0,0], 4: [NOTES.G4,0,0,0,0,0,0,0,0,0,NOTES.Bb4,0,NOTES.G4,0,0,0] };
-        function scheduleMelody(variation, time, dur) {
-            if (variation === 0 || !melodyData[variation]) return;
-            var s = currentStep % STEPS, freq = melodyData[variation][s]; if (!freq) return;
-            var ctx = audioCtx, length = dur * 4;
-            var osc1 = ctx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = freq;
-            var osc2 = ctx.createOscillator(); osc2.type = 'sine'; osc2.frequency.value = freq * 2.01;
-            var g1 = ctx.createGain(); g1.gain.value = 0.07; var g2 = ctx.createGain(); g2.gain.value = 0.015;
-            var env = ctx.createGain();
-            env.gain.setValueAtTime(0, time); env.gain.linearRampToValueAtTime(1, time + 0.04);
-            env.gain.setValueAtTime(0.7, time + length * 0.4); env.gain.exponentialRampToValueAtTime(0.001, time + length);
-            osc1.connect(g1); g1.connect(env); osc2.connect(g2); g2.connect(env);
-            connectDry(env); connectWet(env, 0.5);
-            osc1.start(time); osc1.stop(time + length + 0.1); osc2.start(time); osc2.stop(time + length + 0.1);
-        }
-        // --- TEXTURE ---
-        function scheduleTexture(variation, time, dur) {
-            if (variation === 0) return;
-            var ctx = audioCtx, s = currentStep % STEPS;
-            if (variation === 1) { if (Math.random() > 0.55) { var len = ctx.sampleRate * 0.04, buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0); for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.25)); var src = ctx.createBufferSource(); src.buffer = buf; var f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 4000 + Math.random() * 6000; f.Q.value = 3; var g = ctx.createGain(); g.gain.value = 0.012; src.connect(f); f.connect(g); connectDry(g); connectWet(g, 0.7); src.start(time + Math.random() * dur * 0.6); } }
-            else if (variation === 2 && s % 8 === 0) { var osc1 = ctx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = NOTES.G3; var osc2 = ctx.createOscillator(); osc2.type = 'sine'; osc2.frequency.value = NOTES.G3 * 1.003; var g = ctx.createGain(); g.gain.setValueAtTime(0, time); g.gain.linearRampToValueAtTime(0.025, time + dur * 4); g.gain.exponentialRampToValueAtTime(0.001, time + dur * 8); osc1.connect(g); osc2.connect(g); connectDry(g); connectWet(g, 0.8); osc1.start(time); osc1.stop(time + dur * 9); osc2.start(time); osc2.stop(time + dur * 9); }
-            else if (variation === 3 && Math.random() > 0.65) { var len = ctx.sampleRate * 0.008, buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0); for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1); var src = ctx.createBufferSource(); src.buffer = buf; var g = ctx.createGain(); g.gain.value = 0.008; src.connect(g); connectDry(g); src.start(time + Math.random() * dur); }
-            else if (variation === 4 && s % 4 === 0) { var len = ctx.sampleRate * 0.6, buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0); for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1); var src = ctx.createBufferSource(); src.buffer = buf; var f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 300 + Math.random() * 400; f.Q.value = 0.4; var g = ctx.createGain(); g.gain.setValueAtTime(0, time); g.gain.linearRampToValueAtTime(0.02, time + 0.2); g.gain.exponentialRampToValueAtTime(0.001, time + 0.6); src.connect(f); f.connect(g); connectDry(g); connectWet(g, 0.5); src.start(time); }
-        }
-
-        var schedulers = [scheduleRhythm, scheduleBass, scheduleChords, scheduleMelody, scheduleTexture];
-
-        function scheduleStep(time) {
-            var dur = stepDuration();
-            for (var li = 0; li < LAYERS.length; li++) { schedulers[li](activeVariation[li], time, dur); }
-        }
-        function advanceSeqStep() {
-            currentStep++;
-            var s = currentStep % STEPS;
-
-            // Flash result grid cells on beats
-            if (phase === 'done' && s % 4 === 0 && resultWinnerCells.length > 0) {
-                resultWinnerCells.forEach(function(cell, li) {
-                    if (!cell) return;
-                    setTimeout(function() {
-                        cell.classList.add('flash');
-                        setTimeout(function() { cell.classList.remove('flash'); }, 180);
-                    }, li * 60); // stagger: ripple top to bottom
-                });
-            }
-        }
-        function scheduler() {
-            if (!audioCtx || !isPlaying) return;
-            while (nextStepTime < audioCtx.currentTime + 0.12) {
-                scheduleStep(nextStepTime); advanceSeqStep(); nextStepTime += stepDuration();
-            }
-            schedulerTimer = setTimeout(scheduler, 20);
-        }
-        function startPlayback() {
-            if (audioCtx) audioCtx.close().catch(function(){});
-            buildAudioGraph();
-            if (audioCtx.state === 'suspended') audioCtx.resume().then(beginPlay);
-            else beginPlay();
-        }
-        function beginPlay() {
-            isPlaying = true; currentStep = -1; nextStepTime = audioCtx.currentTime + 0.05;
+    // ============== AUDIO INIT (MIRO pattern for iOS) ==============
+    function ensureAudio(callback) {
+        if (audioCtx && audioCtx.state === 'running') { if (callback) callback(); return; }
+        if (audioCtx) try { audioCtx.close(); } catch(_) {}
+        var AC = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AC();
+        audioCtx.resume().then(function() {
+            buildAudioGraph_inResume();
+            if (callback) callback();
+        }).catch(function() {
+            buildAudioGraph_inResume();
+            if (callback) callback();
+        });
+    }
+    function buildAudioGraph_inResume() {
+        // Build the actual graph (audio nodes need to exist within the resume() callback for iOS)
+        var ctx = audioCtx;
+        compressor = ctx.createDynamicsCompressor();
+        compressor.threshold.value = -24; compressor.knee.value = 12;
+        compressor.ratio.value = 4; compressor.attack.value = 0.01; compressor.release.value = 0.15;
+        compressor.connect(ctx.destination);
+        masterFilter = ctx.createBiquadFilter();
+        masterFilter.type = 'lowpass'; masterFilter.frequency.value = 5000; masterFilter.Q.value = 0.5;
+        masterFilter.connect(compressor);
+        masterGain = ctx.createGain(); masterGain.gain.value = 0.7; masterGain.connect(masterFilter);
+        reverbSend = ctx.createGain(); reverbSend.gain.value = 0.35;
+        var delays = [0.037, 0.079, 0.113, 0.151, 0.197, 0.251];
+        var reverbMix = ctx.createGain(); reverbMix.gain.value = 0.4; reverbMix.connect(masterFilter);
+        delays.forEach(function(dt) {
+            var d = ctx.createDelay(1.0); d.delayTime.value = dt;
+            var g = ctx.createGain(); g.gain.value = 0.18;
+            var f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 2500 - dt * 4000; f.Q.value = 0.3;
+            reverbSend.connect(d); d.connect(f); f.connect(g); g.connect(d); g.connect(reverbMix);
+        });
+    }
+    function startPlayback() {
+        ensureAudio(function() {
+            isPlaying = true;
+            currentStep = -1;
+            nextStepTime = audioCtx.currentTime + 0.05;
+            beatStartTime = nextStepTime;
             scheduler();
-        }
-        function stopPlayback() {
-            isPlaying = false;
-            if (schedulerTimer) { clearTimeout(schedulerTimer); schedulerTimer = null; }
-            if (audioCtx) { audioCtx.close().catch(function(){}); audioCtx = null; }
-        }
+            stopBtn.disabled = false;
+            stopBtn.classList.add('live');
+        });
+    }
+    function stopPlayback() {
+        isPlaying = false;
+        if (schedulerTimer) { clearTimeout(schedulerTimer); schedulerTimer = null; }
+        if (audioCtx) { try { audioCtx.close(); } catch(_) {} audioCtx = null; }
+        beatStartTime = 0;
+        stopBtn.classList.remove('live');
+        stopBtn.disabled = true;
+    }
 
-        // Init
-        showStep();
-    })();
-    </script>
+
+    // ============== CABLES (cloth-braided patch cords, desktop only) ==============
+    function drawCableInOverlay(svg, fromEl, toEl, color) {
+        if (!fromEl || !toEl) return;
+        var rackEl = document.getElementById('rack');
+        var rackRect = rackEl.getBoundingClientRect();
+        var fromRect = fromEl.getBoundingClientRect();
+        var toRect = toEl.getBoundingClientRect();
+
+        var x1 = fromRect.left - rackRect.left + fromRect.width / 2;
+        var y1 = fromRect.top  - rackRect.top  + fromRect.height / 2;
+        var x2 = toRect.left   - rackRect.left + toRect.width / 2;
+        var y2 = toRect.top    - rackRect.top  + toRect.height / 2;
+
+        // gravity-based hanging curve
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        var sag = Math.min(70, Math.max(25, dist * 0.18));
+        var c1x = x1 + dx * 0.30;
+        var c1y = y1 + dy * 0.30 + sag;
+        var c2x = x1 + dx * 0.70;
+        var c2y = y1 + dy * 0.70 + sag;
+
+        var d = 'M ' + x1 + ' ' + y1 +
+                ' C ' + c1x + ' ' + c1y +
+                ', ' + c2x + ' ' + c2y +
+                ', ' + x2 + ' ' + y2;
+
+        var ns = 'http://www.w3.org/2000/svg';
+
+        var shadow = document.createElementNS(ns, 'path');
+        shadow.setAttribute('d', d);
+        shadow.setAttribute('stroke', 'rgba(0,0,0,0.32)');
+        shadow.setAttribute('stroke-width', '7');
+        shadow.setAttribute('fill', 'none');
+        shadow.setAttribute('stroke-linecap', 'round');
+        shadow.setAttribute('transform', 'translate(2, 4)');
+        svg.appendChild(shadow);
+
+        var body = document.createElementNS(ns, 'path');
+        body.setAttribute('d', d);
+        body.setAttribute('stroke', color);
+        body.setAttribute('stroke-width', '5.5');
+        body.setAttribute('fill', 'none');
+        body.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(body);
+
+        var braid = document.createElementNS(ns, 'path');
+        braid.setAttribute('d', d);
+        braid.setAttribute('stroke', 'rgba(0,0,0,0.18)');
+        braid.setAttribute('stroke-width', '5.5');
+        braid.setAttribute('fill', 'none');
+        braid.setAttribute('stroke-linecap', 'butt');
+        braid.setAttribute('stroke-dasharray', '2 4');
+        svg.appendChild(braid);
+
+        var hl = document.createElementNS(ns, 'path');
+        hl.setAttribute('d', d);
+        hl.setAttribute('stroke', 'rgba(255,255,255,0.22)');
+        hl.setAttribute('stroke-width', '1.4');
+        hl.setAttribute('fill', 'none');
+        hl.setAttribute('stroke-linecap', 'round');
+        hl.setAttribute('transform', 'translate(0, -1.2)');
+        svg.appendChild(hl);
+
+        // plugs
+        function plug(x, y) {
+            var p = document.createElementNS(ns, 'circle');
+            p.setAttribute('cx', x); p.setAttribute('cy', y);
+            p.setAttribute('r', '5'); p.setAttribute('fill', '#c4bca1');
+            p.setAttribute('stroke', '#15140F'); p.setAttribute('stroke-width', '0.8');
+            svg.appendChild(p);
+            var c = document.createElementNS(ns, 'circle');
+            c.setAttribute('cx', x); c.setAttribute('cy', y);
+            c.setAttribute('r', '1.8'); c.setAttribute('fill', '#15140F');
+            svg.appendChild(c);
+        }
+        plug(x1, y1);
+        plug(x2, y2);
+    }
+
+    function repaintCables() {
+        var overlay = document.getElementById('cableOverlay');
+        var rackEl = document.getElementById('rack');
+        if (!overlay || !rackEl) return;
+        overlay.innerHTML = '';
+        if (isMobileLayout()) return;
+        var rackRect = rackEl.getBoundingClientRect();
+        overlay.setAttribute('width', rackRect.width);
+        overlay.setAttribute('height', rackRect.height);
+        overlay.setAttribute('viewBox', '0 0 ' + rackRect.width + ' ' + rackRect.height);
+        overlay.style.width = rackRect.width + 'px';
+        overlay.style.height = rackRect.height + 'px';
+
+        var tallyOut = document.querySelector('#patchOuts [data-id="tally-out"] .socket');
+        var scoreOut = document.querySelector('#patchOuts [data-id="score-out"] .socket');
+        var tallyIn  = document.querySelector('#tallyInJack .socket');
+        var scoreIn  = document.querySelector('#scoreInJack .socket');
+
+        // vintage cloth-cord colors — same palette as piano-bbg for cross-prototype continuity:
+        // faded denim for the transient "scope-like" data, dusty rose for the recording "tape-like" data
+        drawCableInOverlay(overlay, tallyOut, tallyIn, '#6E89B0');
+        drawCableInOverlay(overlay, scoreOut, scoreIn, '#B68585');
+    }
+
+
+    // ============== REPAINT ALL ==============
+    function repaintAll() {
+        drawTally();
+        drawScore();
+        repaintCables();
+    }
+    window.addEventListener('resize', repaintAll);
+
+
+    // ============== MODULE DRAG (desktop only) ==============
+    var dragState = null;
+    var rackEl = document.getElementById('rack');
+    document.querySelectorAll('.module-header').forEach(function(head) {
+        head.addEventListener('pointerdown', function(e) {
+            if (isMobileLayout()) return;
+            var moduleEl = head.closest('.module');
+            if (!moduleEl) return;
+            var x = parseFloat(moduleEl.dataset.x) || 0;
+            var y = parseFloat(moduleEl.dataset.y) || 0;
+            dragState = {
+                head: head,
+                moduleEl: moduleEl,
+                rackRect: rackEl.getBoundingClientRect(),
+                startX: x,
+                startY: y,
+                startMouseX: e.clientX,
+                startMouseY: e.clientY
+            };
+            moduleEl.classList.add('dragging');
+            try { head.setPointerCapture(e.pointerId); } catch(_) {}
+            e.preventDefault();
+        });
+        head.addEventListener('pointermove', function(e) {
+            if (!dragState || dragState.head !== head) return;
+            var dx = e.clientX - dragState.startMouseX;
+            var dy = e.clientY - dragState.startMouseY;
+            var modW = dragState.moduleEl.offsetWidth;
+            var modH = dragState.moduleEl.offsetHeight;
+            var nx = Math.max(0, Math.min(dragState.rackRect.width - modW, dragState.startX + dx));
+            var ny = Math.max(0, Math.min(dragState.rackRect.height - modH, dragState.startY + dy));
+            dragState.moduleEl.dataset.x = nx;
+            dragState.moduleEl.dataset.y = ny;
+            dragState.moduleEl.style.transform = 'translate(' + nx + 'px, ' + ny + 'px)';
+            repaintCables();
+        });
+        function endDrag() {
+            if (dragState && dragState.head === head) {
+                dragState.moduleEl.classList.remove('dragging');
+                dragState = null;
+            }
+        }
+        head.addEventListener('pointerup', endDrag);
+        head.addEventListener('pointercancel', endDrag);
+        head.addEventListener('lostpointercapture', endDrag);
+    });
+
+
+    // ============== MANUAL MODAL ==============
+    var manualToggle = document.getElementById('manualToggle');
+    var manualOverlay = document.getElementById('manualOverlay');
+    var manualClose = document.getElementById('manualClose');
+    function openManual() {
+        manualOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeManual() {
+        manualOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    if (manualToggle) manualToggle.addEventListener('click', openManual);
+    if (manualClose) manualClose.addEventListener('click', closeManual);
+    if (manualOverlay) {
+        manualOverlay.addEventListener('click', function(e) {
+            if (e.target === manualOverlay) closeManual();
+        });
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && manualOverlay && manualOverlay.classList.contains('open')) {
+            closeManual();
+        }
+    });
+
+
+    // ============== INIT ==============
+    // build UI immediately so layout settles before user clicks power-on
+    buildProgressDots();
+    buildLedger();
+    updateLedger();
+    buildLegend();
+    showLayer(0);
+    // start render loop right away so canvases paint behind the overlay
+    requestAnimationFrame(animLoop);
+    // paint cables after first layout pass
+    setTimeout(repaintAll, 80);
+
+    startBtn.addEventListener('click', function() {
+        // user gesture — safe to init audio
+        ensureAudio(function() {
+            startOverlay.style.display = 'none';
+            statusStrip.innerHTML = '<span class="acc">' + LAYERS[0].name.toUpperCase() + '</span> · pick a variation to preview';
+            setTimeout(repaintAll, 80);
+        });
+    });
+
+})();
+</script>
+
 </body>
 </html>
