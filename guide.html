@@ -266,20 +266,17 @@
         .card-container + .chapter-break { padding-top: 32px; }
         .prototype-embed {
             position: relative;
-            --embed-width: min(1140px, calc(100vw - 24px));
+            --embed-width: min(1140px, calc(100vw - 64px));
             width: var(--embed-width);
-            /* Escape the 640px content column up to 1140px, but never exceed
-               the visible viewport (avoiding the 100vw scrollbar overflow that
-               was clipping the right edge on desktop). Uses negative margins
-               instead of transform so .reveal's translateY isn't overridden. */
+            /* Escape the 640px content column up to 1140px wide while keeping
+               clear of the viewport edges. Uses negative margins (not transform)
+               so .reveal's translateY isn't overridden. */
             margin-left: calc((100% - var(--embed-width)) / 2);
             margin-right: calc((100% - var(--embed-width)) / 2);
             margin-top: 64px;
             margin-bottom: 64px;
         }
         .prototype-embed > * {
-            padding-left: 16px;
-            padding-right: 16px;
             box-sizing: border-box;
         }
         .prototype-embed .prototype-frame {
@@ -319,8 +316,8 @@
         .colophon a:hover { color: var(--text-mid); }
         .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
-        @media (max-width: 740px) { .prototype-embed > * { padding-left: 8px; padding-right: 8px; } }
-        @media (max-width: 600px) { html { font-size: 17px; } .prototype-frame iframe { min-height: 1100px; }  .chapter-break h2 { font-size: 1.4rem; } .figure-pair { grid-template-columns: 1fr; } .prototype-embed > * { padding-left: 8px; padding-right: 8px; } .card-container svg { max-width: 260px; } }
+        @media (max-width: 740px) { .prototype-embed { --embed-width: min(1140px, calc(100vw - 32px)); } }
+        @media (max-width: 600px) { html { font-size: 17px; } .prototype-frame iframe { min-height: 1100px; }  .chapter-break h2 { font-size: 1.4rem; } .figure-pair { grid-template-columns: 1fr; } .prototype-embed { --embed-width: min(1140px, calc(100vw - 16px)); } .card-container svg { max-width: 260px; } }
     </style>
 </head>
 <body>
