@@ -266,19 +266,19 @@
         .card-container + .chapter-break { padding-top: 32px; }
         .prototype-embed {
             position: relative;
-            margin-top: 64px;
-            margin-bottom: 64px;
-            /* Escape the 640px content column up to 1140px, but never exceed
-               the visible viewport (avoiding the 100vw scrollbar overflow that
-               was clipping the right edge on desktop). */
-            width: min(1140px, calc(100vw - 24px));
+            margin: 64px 0;
+            /* Escape the 640px content column to span up to 1140px wide */
+            width: 100vw;
             left: 50%;
-            transform: translateX(-50%);
+            margin-left: -50vw;
+            margin-right: -50vw;
         }
         .prototype-embed > * {
+            max-width: 1140px;
+            margin-left: auto;
+            margin-right: auto;
             padding-left: 16px;
             padding-right: 16px;
-            box-sizing: border-box;
         }
         .prototype-embed .prototype-frame {
             box-sizing: border-box;
