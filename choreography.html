@@ -249,7 +249,7 @@
             padding-bottom: 8px;
         }
         .rack {
-            width: 1240px;
+            width: 1100px;
             height: 1080px;
             display: block;
             position: relative;
@@ -969,7 +969,7 @@
     <svg class="cable-overlay" id="cableOverlay"></svg>
 
     <!-- CH·01 INSTRUMENT -->
-    <section class="module instrument" id="ch01" data-x="250" data-y="20" style="transform: translate(250px, 20px);">
+    <section class="module instrument" id="ch01" data-x="180" data-y="20" style="transform: translate(180px, 20px);">
         <header class="module-header">
             <span class="model">ch·01</span>
             <span class="model-name">choreography</span>
@@ -1046,7 +1046,7 @@
     </section>
 
     <!-- CH·02 SCOPE -->
-    <section class="module display scope" id="ch02" data-x="60" data-y="720" style="transform: translate(60px, 720px);">
+    <section class="module display scope" id="ch02" data-x="10" data-y="720" style="transform: translate(10px, 720px);">
         <header class="module-header">
             <span class="model">ch·02</span>
             <span class="model-name">scope</span>
@@ -1076,7 +1076,7 @@
     </section>
 
     <!-- CH·03 TAPE -->
-    <section class="module display tape" id="ch03" data-x="640" data-y="720" style="transform: translate(640px, 720px);">
+    <section class="module display tape" id="ch03" data-x="550" data-y="720" style="transform: translate(550px, 720px);">
         <header class="module-header">
             <span class="model">ch·03</span>
             <span class="model-name">tape</span>
@@ -1304,8 +1304,8 @@
             // restart audio if playing (different graph for partials)
             if (isPlaying) {
                 if (audioCtx) audioCtx.close().catch(function(){});
-                buildAudio();
-                audioCtx.resume();
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                audioCtx.resume().then(buildAudioGraph_inResume).catch(buildAudioGraph_inResume);
             }
             // clear tape
             clearTape();
@@ -1661,8 +1661,10 @@
     }
 
     // ============== AUDIO ==============
-    function buildAudio() {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // iOS-safe MIRO pattern: the AudioContext is created in the user-gesture
+    // click handler, then resume() is called, and ALL audio nodes are built
+    // inside the resume().then() callback — never before.
+    function buildAudioGraph_inResume() {
         var ac = audioCtx;
 
         compressor = ac.createDynamicsCompressor();
@@ -2151,8 +2153,9 @@
     playBtn.addEventListener('click', function() {
         if (isPlaying) return;
         if (audioCtx) audioCtx.close().catch(function(){});
-        buildAudio();
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         var begin = function() {
+            buildAudioGraph_inResume();
             isPlaying = true;
             playBtn.classList.add('live');
             tapeRec.classList.add('on');
@@ -2160,8 +2163,7 @@
             // reset note step trackers to avoid retroactive spam
             dancers.forEach(function(d) { d.lastArpStep = -1; d.lastPhaseStep = -1; });
         };
-        if (audioCtx.state === 'suspended') audioCtx.resume().then(begin);
-        else begin();
+        audioCtx.resume().then(begin).catch(begin);
     });
     stopBtn.addEventListener('click', function() {
         if (!isPlaying) return;

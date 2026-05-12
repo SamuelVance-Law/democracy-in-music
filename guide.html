@@ -171,6 +171,15 @@
             text-transform: uppercase;
         }
 
+        .scroll-cue {
+            margin-top: clamp(48px, 7vw, 72px);
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink-mid, #57534E);
+        }
+
         @media (max-width: 560px) {
             .cover-top {
                 grid-template-columns: 1fr auto;
@@ -241,11 +250,11 @@
             content: ""; display: block;
             width: 28px; height: 1px;
             background: var(--c-piano);
-            margin: 22px auto 0;
+            margin: 60px auto 0;
             opacity: 0.6;
         }
         .chapter-break h2 { font-size: 1.7rem; font-weight: 400; line-height: 1.35; max-width: 480px; margin: 0 auto; }
-        .chapter-rule { width: 40px; height: 1px; background: var(--rule); margin: 60px auto 0; }
+        .chapter-rule { display: none; }
         .prose { padding-bottom: 20px; }
         .prose p { margin-bottom: 1.35em; }
         .prose p:last-child { margin-bottom: 0; }
@@ -266,12 +275,11 @@
         .card-container + .chapter-break { padding-top: 32px; }
         .prototype-embed {
             position: relative;
-            --embed-width: min(1600px, calc(100vw - 32px));
+            --embed-width: min(1140px, calc(100vw - 32px));
             width: var(--embed-width);
-            /* Wide enough to fit the multi-panel prototype layouts
-               (Mean Mode terminal, MIRO scope+tape, etc.) without clipping
-               internal content. Uses negative margins (not transform) so
-               .reveal's translateY isn't overridden. */
+            /* All six prototype racks are 1100px wide, so a 1140px embed sits
+               them with comfortable margin. Uses negative margins (not transform)
+               so .reveal's translateY isn't overridden. */
             margin-left: calc((100% - var(--embed-width)) / 2);
             margin-right: calc((100% - var(--embed-width)) / 2);
             margin-top: 64px;
@@ -317,8 +325,8 @@
         .colophon a:hover { color: var(--text-mid); }
         .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
-        @media (max-width: 740px) { .prototype-embed { --embed-width: min(1600px, calc(100vw - 16px)); } }
-        @media (max-width: 600px) { html { font-size: 17px; } .prototype-frame iframe { min-height: 1100px; }  .chapter-break h2 { font-size: 1.4rem; } .figure-pair { grid-template-columns: 1fr; } .prototype-embed { --embed-width: min(1600px, calc(100vw - 8px)); } .card-container svg { max-width: 260px; } }
+        @media (max-width: 740px) { .prototype-embed { --embed-width: min(1140px, calc(100vw - 16px)); } }
+        @media (max-width: 600px) { html { font-size: 17px; } .prototype-frame iframe { min-height: 1100px; }  .chapter-break h2 { font-size: 1.4rem; } .figure-pair { grid-template-columns: 1fr; } .prototype-embed { --embed-width: min(1140px, calc(100vw - 8px)); } .card-container svg { max-width: 260px; } }
     </style>
 </head>
 <body>
