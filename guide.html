@@ -266,19 +266,21 @@
         .card-container + .chapter-break { padding-top: 32px; }
         .prototype-embed {
             position: relative;
-            margin: 64px 0;
-            /* Escape the 640px content column to span up to 1140px wide */
-            width: 100vw;
-            left: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
+            --embed-width: min(1140px, calc(100vw - 24px));
+            width: var(--embed-width);
+            /* Escape the 640px content column up to 1140px, but never exceed
+               the visible viewport (avoiding the 100vw scrollbar overflow that
+               was clipping the right edge on desktop). Uses negative margins
+               instead of transform so .reveal's translateY isn't overridden. */
+            margin-left: calc((100% - var(--embed-width)) / 2);
+            margin-right: calc((100% - var(--embed-width)) / 2);
+            margin-top: 64px;
+            margin-bottom: 64px;
         }
         .prototype-embed > * {
-            max-width: 1140px;
-            margin-left: auto;
-            margin-right: auto;
             padding-left: 16px;
             padding-right: 16px;
+            box-sizing: border-box;
         }
         .prototype-embed .prototype-frame {
             box-sizing: border-box;
