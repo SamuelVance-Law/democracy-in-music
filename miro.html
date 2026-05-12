@@ -35,6 +35,14 @@
             --te-blue:      #3D7DCC;
             --te-green:     #5FAF52;
             --te-red:       #D4322A;
+
+            /* Bloomberg terminal palette — shared with piano/meanmode */
+            --bbg-amber:      #F7901E;
+            --bbg-yellow:     #F0C840;
+            --bbg-green:      #4FB85F;
+            --bbg-red:        #D43030;
+            --bbg-cyan:       #50C8E6;
+            --bbg-black:      #0A0A0A;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -236,7 +244,7 @@
             padding-bottom: 8px;
         }
         .rack {
-            width: 1240px;
+            width: 1100px;
             height: 940px;
             display: block;
             position: relative;
@@ -691,44 +699,58 @@
             .scope .screen-and-fader { grid-template-columns: 1fr 44px; gap: 10px; }
         }
 
-        /* transport */
+        /* transport — Bloomberg keyboard keys */
         .transport {
             display: flex;
-            gap: 12px;
+            gap: 8px;
             align-items: center;
             margin-bottom: 22px;
         }
         .trans-btn {
-            background: var(--cream-deep);
+            background: var(--bbg-yellow);
             border: none;
             font-family: 'Hanken Grotesk', sans-serif;
             font-size: 10px;
             font-weight: 800;
             letter-spacing: 1.6px;
-            padding: 12px 18px;
-            border-radius: 6px;
+            padding: 12px 18px 10px;
+            border-radius: 3px;
             cursor: pointer;
-            color: var(--ink);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 2px rgba(0,0,0,0.18);
+            color: #000;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.50),
+                inset 0 -2px 0 rgba(0,0,0,0.20),
+                0 1px 2px rgba(0,0,0,0.20);
             position: relative;
-            min-width: 70px;
+            min-width: 72px;
             transition: all 0.1s;
             text-transform: uppercase;
         }
-        .trans-btn:hover { background: var(--cream-edge); }
-        .trans-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        .trans-btn:hover:not(:disabled) { filter: brightness(1.06); }
+        .trans-btn:active:not(:disabled) {
+            box-shadow:
+                inset 0 1px 3px rgba(0,0,0,0.32),
+                inset 0 0 0 1px rgba(0,0,0,0.12);
+        }
+        .trans-btn:disabled { opacity: 0.40; cursor: not-allowed; }
         .trans-btn .led {
             position: absolute;
-            top: 5px; right: 5px;
+            top: 5px; right: 6px;
             width: 4px; height: 4px;
             border-radius: 50%;
-            background: var(--ink-mid);
-            opacity: 0.3;
+            background: rgba(0,0,0,0.30);
             transition: all 0.15s;
         }
-        .trans-btn.live .led { background: var(--te-green); opacity: 1; box-shadow: 0 0 4px var(--te-green); }
-        .trans-btn.alarm { color: var(--te-red); }
-        .trans-btn.alarm .led { background: var(--te-red); opacity: 0.7; }
+        /* PLAY = green GO key, STOP & CLEAR = red CANCEL keys */
+        #playBtn { background: var(--bbg-green); color: #000; }
+        #stopBtn, #clearBtn { background: var(--bbg-red); color: #fff; }
+        #stopBtn .led, #clearBtn .led { background: rgba(255,255,255,0.35); }
+        .trans-btn.live .led {
+            background: #FFFFFF;
+            box-shadow: 0 0 5px rgba(255,255,255,0.85);
+        }
+        .trans-btn.alarm { color: #fff; }
+        .trans-btn.alarm .led { background: rgba(255,255,255,0.35); }
 
         .transport-rule {
             flex: 1;
@@ -973,6 +995,36 @@
             .trans-btn { padding: 10px 14px; min-width: 56px; }
         }
 
+        /* MOBILE LAYOUT — rack collapses to a vertical stack of full-width modules.
+           Mirrors piano.html: absolute positioning is suspended below 800px so
+           modules become normal block children in document order. */
+        @media (max-width: 800px) {
+            .rack-shell {
+                overflow-x: visible;
+                padding: 0 12px;
+            }
+            .rack {
+                width: 100%;
+                height: auto;
+                min-height: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+            }
+            .module {
+                position: relative !important;
+                transform: none !important;
+                width: auto !important;
+                max-width: 100%;
+            }
+            .module-header,
+            .module-header:active { cursor: default; }
+            .cable-overlay { display: none; }
+            /* On mobile, the scope's side-mounted water fader needs a sensible
+               minimum height since the screen above it shrinks. */
+            .scope .screen-and-fader { grid-template-columns: 1fr 44px; gap: 10px; }
+        }
+
         .start-overlay {
             position: fixed;
             inset: 0;
@@ -1052,7 +1104,7 @@
                 <li>Tap or drag on the canvas to vote. Each touch adds intensity at that location.</li>
                 <li>Multiple votes in the same region grow into a darker, larger blob.</li>
                 <li>Drag the WATER fader (on the SCOPE module) up to filter out everything below a threshold of agreement; the canvas and terrain update together.</li>
-                <li>Press <b>SCAN</b> to play the surviving marks as a left-to-right musical score.</li>
+                <li>Press <b>PLAY</b> to play the surviving marks as a left-to-right musical score.</li>
             </ol>
 
             <h3>Controls</h3>
@@ -1079,7 +1131,7 @@
     <svg class="cable-overlay" id="cableOverlay"></svg>
 
     <!-- DP—01 INSTRUMENT -->
-    <section class="module instrument" id="dp01" data-x="260" data-y="20" style="transform: translate(260px, 20px);">
+    <section class="module instrument" id="dp01" data-x="190" data-y="20" style="transform: translate(190px, 20px);">
         <header class="module-header">
             <span class="model">MI·01</span>
             <span class="model-name">miro</span>
@@ -1109,7 +1161,7 @@
             </div>
 
             <div class="transport">
-                <button class="trans-btn" id="playBtn"><span class="led"></span>▶ SCAN</button>
+                <button class="trans-btn" id="playBtn"><span class="led"></span>▶ PLAY</button>
                 <button class="trans-btn" id="stopBtn"><span class="led"></span>■ STOP</button>
                 <div class="transport-rule"></div>
                 <button class="trans-btn alarm" id="clearBtn"><span class="led"></span>CLEAR</button>
@@ -1129,7 +1181,7 @@
     </section>
 
     <!-- DP—02 SCOPE (3D wireframe terrain) -->
-    <section class="module display scope" id="dp02" data-x="60" data-y="510" style="transform: translate(60px, 510px);">
+    <section class="module display scope" id="dp02" data-x="10" data-y="510" style="transform: translate(10px, 510px);">
         <header class="module-header">
             <span class="model">MI·02</span>
             <span class="model-name">scope</span>
@@ -1175,7 +1227,7 @@
     </section>
 
     <!-- DP—03 TAPE (sonification score) -->
-    <section class="module display tape" id="dp03" data-x="640" data-y="510" style="transform: translate(640px, 510px);">
+    <section class="module display tape" id="dp03" data-x="550" data-y="510" style="transform: translate(550px, 510px);">
         <header class="module-header">
             <span class="model">MI·03</span>
             <span class="model-name">tape</span>
@@ -1234,6 +1286,9 @@
     for (var i = 0; i < colorSeeds.length; i++) colorSeeds[i] = Math.random();
     var maxIntensity = 0;
     var voteCount = 0;
+    // Each entry = the (col, row) cell where a tap was registered.
+    // Used to count how many *votes* (not grid cells) survive the water threshold.
+    var voteCenters = [];
     var scanProgress = -1;     // -1 = not scanning, 0..1 = active
     var sonifying = false;
     var audioCtx = null;
@@ -1356,21 +1411,48 @@
             }
         }
         voteCount++;
+        // Clamp center cell to grid bounds before storing
+        var ccol = Math.max(0, Math.min(GRID_COLS - 1, col));
+        var crow = Math.max(0, Math.min(GRID_ROWS - 1, row));
+        voteCenters.push(ccol * GRID_ROWS + crow); // pack as int for efficiency
         canvasWrap.classList.add('has-marks');
     }
 
     function drawBlob(ctx, cx, cy, r, seed1, seed2) {
-        ctx.beginPath();
-        var pts = 6 + Math.floor(seed1 * 4);
-        for (var i = 0; i <= pts; i++) {
+        // Nearly circular with the slightest hand-painted wobble — Miró's
+        // Bleu blobs are essentially round with subtle asymmetry, not amoeboid.
+        var pts = 16;
+        var points = new Array(pts);
+        for (var i = 0; i < pts; i++) {
             var a = (i / pts) * Math.PI * 2;
-            var rv = r * (0.85 + (((seed1 * 7 + i * 13) % 1) * 0.30));
-            var x = cx + Math.cos(a) * rv;
-            var y = cy + Math.sin(a) * rv;
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
+            var wobble = 0.055 * Math.sin(seed1 * 11 + a * 2)
+                       + 0.035 * Math.sin(seed2 * 17 + a * 3);
+            var rv = r * (1.0 + wobble);
+            points[i] = { x: cx + Math.cos(a) * rv, y: cy + Math.sin(a) * rv };
+        }
+        // Smooth closed curve through midpoints between successive points.
+        ctx.beginPath();
+        var first = points[0], second = points[1];
+        ctx.moveTo((first.x + second.x) / 2, (first.y + second.y) / 2);
+        for (var k = 0; k < pts; k++) {
+            var cur = points[(k + 1) % pts];
+            var nxt = points[(k + 2) % pts];
+            ctx.quadraticCurveTo(cur.x, cur.y, (cur.x + nxt.x) / 2, (cur.y + nxt.y) / 2);
         }
         ctx.closePath();
+    }
+
+    function drawScanLine(ctx, W, H) {
+        if (scanProgress < 0 || scanProgress > 1) return;
+        var sx = scanProgress * W;
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.42)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(sx, 0); ctx.lineTo(sx, H);
+        ctx.stroke();
+        ctx.restore();
     }
 
     function render2D() {
@@ -1380,65 +1462,88 @@
         var cellH = H / GRID_ROWS;
         ctx.clearRect(0, 0, W, H);
 
-        // Miró cerulean texture: irregular patches of lighter and darker blue
-        // (canvas already has --canvas-blue background; we paint variation on top)
-        for (var t = 0; t < 32; t++) {
+        // Watercolor washes — broad rotated radial-gradient ellipses for a
+        // hand-painted cerulean ground (Miró's gouache surface).
+        for (var t = 0; t < 16; t++) {
             var seed = colorSeeds[t * 7 + 1] || 0.5;
             var px = ((colorSeeds[t * 13] || 0.5) * W);
             var py = ((colorSeeds[t * 13 + 7] || 0.5) * H);
-            var pw = 30 + ((colorSeeds[t * 13 + 1] || 0.5) * 80);
-            var ph = 20 + ((colorSeeds[t * 13 + 2] || 0.5) * 60);
-            ctx.fillStyle = seed > 0.5 ? 'rgba(21,144,216,0.04)' : 'rgba(14,106,168,0.05)';
-            ctx.fillRect(px, py, pw, ph);
-        }
-
-        if (maxIntensity === 0) return;
-
-        for (var r = 0; r < GRID_ROWS; r++) {
-            for (var c = 0; c < GRID_COLS; c++) {
-                var idx = gridIdx(c, r);
-                var val = grid[idx];
-                if (val <= 0) continue;
-                var norm = val / maxIntensity;
-                if (norm < waterLevel) continue;
-
-                var seed1 = colorSeeds[idx];
-                var seed2 = colorSeeds[(idx + 13) % colorSeeds.length];
-                var minR = cellW * 0.30;
-                var maxR = cellW * 3.5;
-                var radius = minR + (maxR - minR) * Math.pow(norm, 0.6);
-                var cx = c * cellW + cellW / 2 + (seed1 - 0.5) * cellW * 0.4;
-                var cy = r * cellH + cellH / 2 + (seed2 - 0.5) * cellH * 0.4;
-
-                // Black blobs (Bleu II style) with intensity-modulated alpha
-                var alpha = 0.55 + 0.40 * Math.pow(norm, 0.5);
-                ctx.fillStyle = 'rgba(8,8,12,' + alpha + ')';
-                drawBlob(ctx, cx, cy, radius, seed1, seed2);
-                ctx.fill();
-
-                if (norm > 0.5) {
-                    ctx.save();
-                    ctx.globalAlpha = 0.18 * norm;
-                    ctx.fillStyle = '#000';
-                    drawBlob(ctx, cx + radius * 0.10, cy + radius * 0.15, radius * 1.05, seed1, seed2);
-                    ctx.fill();
-                    ctx.restore();
-                }
-            }
-        }
-
-        // scan line — bright on blue
-        if (scanProgress >= 0 && scanProgress <= 1) {
-            var sx = scanProgress * W;
+            var pw = 60 + ((colorSeeds[t * 13 + 1] || 0.5) * 160);
+            var ph = 40 + ((colorSeeds[t * 13 + 2] || 0.5) * 110);
+            var rot = ((colorSeeds[t * 13 + 3] || 0.5) - 0.5) * 0.6;
             ctx.save();
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([4, 4]);
+            ctx.translate(px, py);
+            ctx.rotate(rot);
+            var grad = ctx.createRadialGradient(0, 0, 0, 0, 0, Math.max(pw, ph));
+            if (seed > 0.5) {
+                grad.addColorStop(0, 'rgba(21,144,216,0.07)');
+                grad.addColorStop(1, 'rgba(21,144,216,0)');
+            } else {
+                grad.addColorStop(0, 'rgba(10,82,140,0.09)');
+                grad.addColorStop(1, 'rgba(10,82,140,0)');
+            }
+            ctx.fillStyle = grad;
             ctx.beginPath();
-            ctx.moveTo(sx, 0); ctx.lineTo(sx, H);
-            ctx.stroke();
+            ctx.ellipse(0, 0, pw, ph, 0, 0, Math.PI * 2);
+            ctx.fill();
             ctx.restore();
         }
+
+        if (voteCenters.length === 0 || maxIntensity === 0) {
+            drawScanLine(ctx, W, H);
+            return;
+        }
+
+        // Tally votes per unique cell. Each tally entry will render as ONE
+        // Bleu-style blob — not one blob per falloff cell (which is what was
+        // producing the smeary halo before). This is the key change that gets
+        // us discrete dots instead of overlapping smaller dots.
+        var votesByCell = {};
+        for (var i = 0; i < voteCenters.length; i++) {
+            var packed = voteCenters[i];
+            votesByCell[packed] = (votesByCell[packed] || 0) + 1;
+        }
+
+        var minR = cellW * 0.85;
+        var maxR = cellW * 3.0;
+
+        for (var key in votesByCell) {
+            if (!votesByCell.hasOwnProperty(key)) continue;
+            var ip = parseInt(key, 10);
+            var col = Math.floor(ip / GRID_ROWS);
+            var row = ip % GRID_ROWS;
+            var idx = gridIdx(col, row);
+
+            // Water filter uses the smoothed intensity so isolated votes
+            // disappear before clustered ones (water = agreement threshold).
+            var cellNorm = grid[idx] / maxIntensity;
+            if (cellNorm < waterLevel) continue;
+
+            // Size scales with smoothed intensity — clustered taps grow
+            // their dot, isolated taps stay smaller.
+            var radius = minR + (maxR - minR) * Math.pow(cellNorm, 0.55);
+
+            var seed1 = colorSeeds[idx];
+            var seed2 = colorSeeds[(idx + 13) % colorSeeds.length];
+            var cx = col * cellW + cellW / 2 + (seed1 - 0.5) * cellW * 0.25;
+            var cy = row * cellH + cellH / 2 + (seed2 - 0.5) * cellH * 0.25;
+
+            // Soft drop shadow with a small bottom-right offset — gives the
+            // "blob sitting on paper" depth from the Bleu series. Critically,
+            // this is offset shadow (not just blur), so the edge of the blob
+            // stays crisp instead of bleeding outward.
+            ctx.save();
+            ctx.shadowColor = 'rgba(0,5,15,0.30)';
+            ctx.shadowBlur = 8;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 3;
+            ctx.fillStyle = 'rgba(8,10,18,0.96)';
+            drawBlob(ctx, cx, cy, radius, seed1, seed2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        drawScanLine(ctx, W, H);
     }
 
     // pointer drawing
@@ -1490,11 +1595,17 @@
     }
 
     function updateAboveCount() {
+        // Count how many *votes* (cast taps) land on cells that survive the water
+        // threshold. Previously this counted lit grid cells, which over-reported
+        // dramatically because each tap spreads intensity into a ~37-cell radius.
         var n = 0;
         if (maxIntensity > 0) {
-            for (var i = 0; i < grid.length; i++) {
-                var nv = grid[i] / maxIntensity;
-                if (grid[i] > 0 && nv >= waterLevel) n++;
+            for (var i = 0; i < voteCenters.length; i++) {
+                var packed = voteCenters[i];
+                var col = Math.floor(packed / GRID_ROWS);
+                var row = packed % GRID_ROWS;
+                var v = grid[gridIdx(col, row)];
+                if (v > 0 && (v / maxIntensity) >= waterLevel) n++;
             }
         }
         lcdAbove.textContent = pad3(Math.min(999, n));
@@ -1904,6 +2015,7 @@
         grid.fill(0);
         for (var i = 0; i < colorSeeds.length; i++) colorSeeds[i] = Math.random();
         maxIntensity = 0; voteCount = 0;
+        voteCenters.length = 0;
         canvasWrap.classList.remove('has-marks');
         lcdVotes.textContent = '000';
         lcdAbove.textContent = '000';
@@ -2014,11 +2126,13 @@
 
 
     // ============== MODULE DRAG ==============
-    // header is the drag handle; modules absolute-positioned within rack
+    // header is the drag handle; modules absolute-positioned within rack.
+    // Suppressed on mobile where the rack collapses to a vertical stack.
     var dragState = null;
     var rackElDrag = document.getElementById('rack');
     document.querySelectorAll('.module-header').forEach(function(head) {
         head.addEventListener('pointerdown', function(e) {
+            if (window.innerWidth <= 800) return;  // mobile: no dragging
             var moduleEl = head.closest('.module');
             if (!moduleEl) return;
             var x = parseFloat(moduleEl.dataset.x) || 0;
