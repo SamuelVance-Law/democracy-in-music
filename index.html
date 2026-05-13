@@ -97,6 +97,22 @@
                 0 0 12px rgba(79,184,95,0.32);
         }
         .selector .knob::after {
+            /* indicator moved out to .indicator-arm so it can rotate independently
+               of the green body (whose inset shadow would look weird rotating) */
+            display: none;
+        }
+        .indicator-arm {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            transition: transform 0.5s cubic-bezier(0.34, 1.32, 0.4, 1);
+        }
+        /* During drag, snap between detents quickly — like a real stepped rotary
+           encoder. The springy transition above is restored on release. */
+        .indicator-arm.stepping {
+            transition: transform 0.1s cubic-bezier(0.2, 0.8, 0.3, 1);
+        }
+        .indicator-arm::before {
             content: "";
             position: absolute;
             top: 6px; left: 50%;
@@ -113,8 +129,22 @@
             letter-spacing: 0.08em;
             color: var(--c, var(--ink, #1C1917));
             text-transform: uppercase;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%) scale(var(--s, 1));
             white-space: nowrap;
+            background: none;
+            border: none;
+            padding: 6px 8px;
+            cursor: pointer;
+            transition: filter 0.2s, transform 0.25s cubic-bezier(0.34, 1.32, 0.4, 1);
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+        }
+        .selector .lbl:hover {
+            --s: 1.08;
+            filter: brightness(1.18);
+        }
+        .selector .lbl.selected {
+            --s: 1.14;
+            filter: brightness(1.25) drop-shadow(0 0 6px var(--c));
         }
         .lbl-12 { top: 20px;  left: 50%; }
         .lbl-2  { top: 32%;   left: 86%; }
@@ -129,6 +159,142 @@
             align-self: center;
             justify-self: end;
             display: block;
+        }
+
+        /* ===== Readout — middle column of cover-top ===== */
+        .readout {
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 8px;
+        }
+        .readout-default,
+        .readout-selected {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 12px 4px;
+            transition: opacity 0.35s ease, transform 0.35s ease;
+        }
+        .readout-default {
+            opacity: 1;
+            transform: translateY(0);
+            font-family: 'EB Garamond', Georgia, serif;
+            font-style: italic;
+            font-size: clamp(15px, 1.6vw, 18px);
+            line-height: 1.45;
+            color: var(--ink-mid, #57534E);
+            text-align: center;
+        }
+        .readout-selected {
+            opacity: 0;
+            transform: translateY(6px);
+            pointer-events: none;
+            align-items: flex-start;
+            text-align: left;
+            gap: 2px;
+        }
+        .readout.has-selection .readout-default {
+            opacity: 0;
+            transform: translateY(-6px);
+        }
+        .readout.has-selection .readout-selected {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .readout-selected .code {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: var(--proto-c, var(--ink));
+            margin-bottom: 6px;
+        }
+        .readout-selected .name {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-weight: 900;
+            font-size: clamp(28px, 3.4vw, 40px);
+            line-height: 1.0;
+            letter-spacing: -0.02em;
+            color: var(--ink, #1C1917);
+            text-transform: uppercase;
+        }
+        .readout-selected .method {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 10.5px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink-mid, #57534E);
+            margin-top: 8px;
+            margin-bottom: 14px;
+        }
+        .readout-selected .desc {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 13px;
+            line-height: 1.45;
+            color: var(--ink-mid, #57534E);
+            margin-bottom: 14px;
+            max-width: 340px;
+        }
+        .readout-selected .play {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--proto-c, var(--ink));
+            text-decoration: none;
+            padding: 8px 14px;
+            border: 1px solid var(--proto-c, var(--ink));
+            border-radius: 3px;
+            background: transparent;
+            cursor: pointer;
+            align-self: flex-start;
+            transition: background 0.15s, color 0.15s, transform 0.15s;
+        }
+        .readout-selected .play:hover {
+            background: var(--proto-c, var(--ink));
+            color: #fff;
+            transform: translateX(2px);
+        }
+        .readout-selected .play .arr {
+            font-size: 13px;
+            line-height: 1;
+        }
+
+        /* When a prototype is selected, the green center picks up a subtle colored glow */
+        .selector .knob {
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .selector .knob.dragging { cursor: grabbing; }
+        .selector.has-selection .knob::before {
+            box-shadow:
+                inset 0 -4px 6px rgba(0,0,0,0.28),
+                inset 0 1px 2px rgba(255,255,255,0.45),
+                0 0 18px var(--proto-c, rgba(79,184,95,0.55));
+            transition: box-shadow 0.35s;
+        }
+
+        /* Click pulse — fires each time the knob steps to a new detent.
+           Subtle scale up so each click has a tactile-feeling beat. */
+        @keyframes knobClickPulse {
+            0%   { transform: translate(-50%, -50%) scale(1); }
+            38%  { transform: translate(-50%, -50%) scale(1.045); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+        .selector .knob.click-pulse {
+            animation: knobClickPulse 0.16s ease-out;
         }
 
         .cover-title {
@@ -168,13 +334,23 @@
 
         @media (max-width: 560px) {
             .cover-top {
-                grid-template-columns: 1fr auto;
-                gap: 18px;
+                grid-template-columns: 1fr;
+                justify-items: center;
+                gap: 24px;
             }
-            .cover-top > div:nth-child(2) { display: none; }
+            .cover-top > .selector { order: 1; }
+            .cover-top > .readout { order: 2; min-height: 0; }
+            .cover-top > .cover-logo { order: 3; }
+            .readout-default,
+            .readout-selected { position: relative; inset: auto; padding: 0; }
+            .readout-selected { align-items: center; text-align: center; }
+            .readout-selected .play { align-self: center; }
             .selector { width: 170px; height: 170px; }
-            .cover-logo { height: 96px; }
+            .cover-logo { height: 96px; justify-self: center; }
             .lbl { font-size: 10.5px; }
+            /* DEMOCRACY is the widest word and was overflowing the card
+               at this breakpoint — scale the headline down explicitly. */
+            .cover-title { font-size: clamp(36px, 11vw, 56px); }
             .cover-bottom {
                 flex-direction: column;
                 align-items: flex-start;
@@ -214,34 +390,98 @@
 
         /* ── Nav links ── */
         .nav {
-            display: flex; align-items: center; justify-content: center; gap: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
-        .nav a {
-            display: block; text-decoration: none; padding: 14px 28px;
-            text-align: center; transition: color 0.2s;
-            /* Equal min-width keeps both anchors the same size so the
-               divider lands on the page centerline regardless of label
-               or sub-label width. */
-            min-width: 180px;
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 24px;
+            border: 1px solid var(--c-piano);
+            border-radius: 3px;
+            text-decoration: none;
+            color: var(--ink);
+            background: transparent;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.22em;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            min-width: 160px;
+            justify-content: center;
         }
-        .nav a .label {
-            font-size: 1.15rem; font-weight: 400; color: var(--ink);
-            letter-spacing: 0.03em;
+        .nav-btn:hover {
+            background: var(--c-piano);
+            color: var(--bg);
+            border-color: var(--c-piano);
         }
-        .nav a .sub {
-            font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase;
-            color: var(--light); margin-top: 2px;
-            /* Compensate for letter-spacing trailing space so the sub
-               visually centers under the label above it. */
-            text-indent: 2px;
+        .nav-btn .nav-arr {
+            font-size: 0.95rem;
+            line-height: 1;
+            transition: transform 0.2s;
         }
-        .nav a:hover .label { color: var(--mid); }
-        
-        
-        .nav-divider { width: 1px; height: 32px; background: var(--rule); }
+        .nav-btn:hover .nav-arr { transform: translateX(3px); }
 
         /* ── Prototypes ── */
         .prototypes { padding: 0 0 60px; }
+
+        /* ===== Intro prose ====================================== */
+        .intro {
+            max-width: 640px;
+            margin: 0 auto 48px;
+            padding: 0 24px;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: clamp(17px, 1.8vw, 19px);
+            line-height: 1.6;
+            color: var(--ink);
+        }
+        .intro p { margin-bottom: 1em; }
+        .intro p:last-child { margin-bottom: 0; }
+        .intro .intro-sign {
+            margin-top: 1.4em;
+            font-style: italic;
+            color: var(--mid);
+        }
+        @media (max-width: 600px) {
+            .intro { margin-bottom: 36px; }
+        }
+        /* ======================================================== */
+
+        /* ===== Pull quote ======================================= */
+        .pull-quote {
+            max-width: 620px;
+            margin: 0 auto 88px;
+            padding: 12px 24px 0;
+            text-align: center;
+            position: relative;
+        }
+        .pull-quote::before {
+            content: "";
+            display: block;
+            width: 40px;
+            height: 1px;
+            background: var(--ink);
+            opacity: 0.45;
+            margin: 0 auto 32px;
+        }
+        .pull-quote p {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-style: italic;
+            font-size: clamp(22px, 3vw, 30px);
+            line-height: 1.3;
+            letter-spacing: -0.005em;
+            color: var(--ink);
+            margin: 0;
+        }
+        @media (max-width: 600px) {
+            .pull-quote { margin-bottom: 64px; padding-top: 4px; }
+            .pull-quote::before { margin-bottom: 24px; }
+        }
+        /* ======================================================== */
         .section-label {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.72rem; letter-spacing: 0.28em; text-transform: uppercase;
@@ -260,7 +500,7 @@
             display: grid; grid-template-columns: 1fr 1fr; gap: 0;
         }
         .proto-card {
-            padding: 22px 24px 24px;
+            padding: 0;
             border: 1px solid var(--rule-light);
             border-top: 2px solid var(--card-c, var(--rule));
             margin: -0.5px;
@@ -269,10 +509,34 @@
             background: rgba(255,255,255,0.35);
             transition: background 0.2s, transform 0.2s;
             position: relative;
+            overflow: hidden;
+        }
+        .proto-card-body {
+            padding: 22px 24px 24px;
         }
         .proto-card:hover {
             background: rgba(255,255,255,0.7);
         }
+        /* ── Per-card illustration (screenshot variant) ────────── */
+        /* All screenshots pre-cropped to 2:1 → uniform card rhythm */
+        .proto-illu {
+            aspect-ratio: 2 / 1;
+            background: var(--cream-warm, #FBF6EA);
+            border-bottom: 1px solid var(--rule-light);
+            overflow: hidden;
+            position: relative;
+        }
+        .proto-illu img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .proto-card:hover .proto-illu img {
+            transform: scale(1.025);
+        }
+        /* ───────────────────────────────────────────────────────── */
         .proto-code {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
@@ -298,25 +562,115 @@
 
         /* ── Footer ── */
         .footer {
-            text-align: center; padding: 60px 28px 80px;
             border-top: 1px solid var(--rule-light);
-            margin-top: 40px;
+            padding: 72px 28px 88px;
+            margin-top: 56px;
+            text-align: center;
         }
-        .footer-year {
-            font-size: 0.75rem; letter-spacing: 6px; color: var(--dim); margin-bottom: 10px;
+        .footer-inner {
+            max-width: 520px;
+            margin: 0 auto;
         }
-        .footer-contact {
-            font-size: 0.8rem; color: var(--light); font-style: italic;
+        .footer-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 24px;
+            border: 1px solid var(--c-piano);
+            border-radius: 3px;
+            text-decoration: none;
+            color: var(--ink);
+            background: transparent;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.22em;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            margin-bottom: 56px;
         }
-        .footer-contact a { color: var(--light); text-decoration: none; }
-        .footer-contact a:hover { color: var(--mid); }
+        .footer-cta:hover {
+            background: var(--c-piano);
+            color: var(--bg);
+            border-color: var(--c-piano);
+        }
+        .footer-cta .cta-arr {
+            font-size: 0.95rem;
+            line-height: 1;
+            transition: transform 0.2s;
+        }
+        .footer-cta:hover .cta-arr { transform: translateX(3px); }
+
+        .footer-dots {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 44px;
+        }
+        .footer-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .footer-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 56px;
+            margin-bottom: 52px;
+        }
+        .footer-col-label {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 0.66rem;
+            letter-spacing: 0.24em;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--ink);
+            margin-bottom: 14px;
+        }
+        .footer-col a,
+        .footer-col span {
+            display: block;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--mid);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-col a:hover { color: var(--ink); }
+
+        .footer-meta {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 0.66rem;
+            letter-spacing: 0.22em;
+            color: var(--dim);
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 540px) {
+            .footer { padding: 56px 24px 72px; }
+            .footer-cta {
+                margin-bottom: 44px;
+                font-size: 0.68rem;
+                letter-spacing: 0.18em;
+                padding: 12px 20px;
+            }
+            .footer-dots { margin-bottom: 36px; }
+            .footer-cols {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                margin-bottom: 40px;
+            }
+        }
 
         @media (max-width: 600px) {
             html { font-size: 15px; }
             
             .proto-grid { grid-template-columns: 1fr; }
-            .nav { flex-direction: column; gap: 0; }
-            .nav-divider { width: 32px; height: 1px; }
+            .nav { flex-direction: column; gap: 10px; }
+            .nav-btn { width: 100%; max-width: 280px; }
         }
     </style>
 </head>
@@ -325,7 +679,7 @@
 <div class="cover">
     <div class="cover-card">
         <div class="cover-top">
-            <div class="selector">
+            <div class="selector" id="selector">
                 <svg class="ticks" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
                     <g>
                         <line x1="110" y1="48" x2="110" y2="58"/>
@@ -336,15 +690,29 @@
                         <line x1="59" y1="76" x2="65" y2="80"/>
                     </g>
                 </svg>
-                <div class="knob"></div>
-                <span class="lbl lbl-12" style="--c: var(--c-piano)">DP·01</span>
-                <span class="lbl lbl-2"  style="--c: var(--c-meanmode)">MM·01</span>
-                <span class="lbl lbl-4"  style="--c: var(--c-miro)">MI·01</span>
-                <span class="lbl lbl-6"  style="--c: var(--c-assembly)">DA·01</span>
-                <span class="lbl lbl-8"  style="--c: var(--c-parliament)">PA·01</span>
-                <span class="lbl lbl-10" style="--c: var(--c-choreo)">CH·01</span>
+                <div class="knob" id="knob">
+                    <div class="indicator-arm" id="indicator-arm"></div>
+                </div>
+                <button class="lbl lbl-12" data-code="DP·01" data-link="piano.html"        data-name="Piano"        data-method="Democratic Instrument" data-color="var(--c-piano)"      style="--c: var(--c-piano)">DP·01</button>
+                <button class="lbl lbl-2"  data-code="MM·01" data-link="meanmode.html"     data-name="Mean Mode"    data-method="Continuous Pitch"      data-color="var(--c-meanmode)"   style="--c: var(--c-meanmode)">MM·01</button>
+                <button class="lbl lbl-4"  data-code="MI·01" data-link="miro.html"         data-name="Miro"         data-method="Spatial Voting"        data-color="var(--c-miro)"       style="--c: var(--c-miro)">MI·01</button>
+                <button class="lbl lbl-6"  data-code="DA·01" data-link="assembly.html"     data-name="Assembly"     data-method="Layered Composition"   data-color="var(--c-assembly)"   style="--c: var(--c-assembly)">DA·01</button>
+                <button class="lbl lbl-8"  data-code="PA·01" data-link="parliament.html"   data-name="Parliament"   data-method="Redistricting"         data-color="var(--c-parliament)" style="--c: var(--c-parliament)">PA·01</button>
+                <button class="lbl lbl-10" data-code="CH·01" data-link="choreography.html" data-name="Choreography" data-method="Body as Instrument"    data-color="var(--c-choreo)"     style="--c: var(--c-choreo)">CH·01</button>
             </div>
-            <div></div>
+            <div class="readout" id="readout">
+                <div class="readout-default">
+                    What happens when we apply democratic governance to musical composition and ownership?
+                </div>
+                <div class="readout-selected">
+                    <div class="code" id="ro-code">DP·01</div>
+                    <div class="name" id="ro-name">Piano</div>
+                    <div class="method" id="ro-method">Democratic Instrument</div>
+                    <a class="play" id="ro-play" href="piano.html">
+                        <span>Play</span><span class="arr">↗</span>
+                    </a>
+                </div>
+            </div>
             <img class="cover-logo" src="svl-logo.png" alt="Sam Vance-Law">
         </div>
         <h1 class="cover-title">
@@ -359,67 +727,324 @@
     </div>
 
     <div class="nav">
-        <a href="guide.html">
-            <div class="label">Guide</div>
-            <div class="sub">Full document</div>
+        <a class="nav-btn" href="guide.html">
+            <span>Guide</span>
+            <span class="nav-arr">→</span>
         </a>
-        <div class="nav-divider"></div>
-        <a href="https://github.com/SamuelVance-Law/democracy-in-music">
-            <div class="label">Source</div>
-            <div class="sub">GitHub</div>
+        <a class="nav-btn" href="https://github.com/SamuelVance-Law/democracy-in-music">
+            <span>Source</span>
+            <span class="nav-arr">→</span>
         </a>
     </div>
 </div>
 
 <div class="page">
+    <div class="intro">
+        <p>I've been thinking for a while now about how we might be able to create music democratically. Where voting choices could be built into musical instruments. Where the resulting music could be collectively owned.</p>
+        <p>What follows is a set of prototypes for communal composition. Models for how large groups of people might create and own music together using democratic decision making. Each one explores a different mechanism: averaging, spatial voting, electoral systems, embodied representation. They are working demonstrations.</p>
+        <p>None of these are finished pieces of music. They are instruments you can play with. All of them are single player for now, though they all have ways of tallying votes. Hope you enjoy them.</p>
+        <p class="intro-sign">— Sam Vance-Law</p>
+    </div>
+    <blockquote class="pull-quote">
+        <p>Made together. Heard together. Owned together.</p>
+    </blockquote>
     <div class="prototypes">
-        <div class="section-label">Six Prototypes</div>
         <div class="proto-grid">
             <a class="proto-card" href="piano.html" style="--card-c: var(--c-piano)">
-                <div class="proto-code">DP·01</div>
-                <div class="proto-name">Piano</div>
-                <div class="proto-method">Democratic Instrument</div>
-                <div class="proto-desc">A digital piano that only works with two or more players. Everyone picks a note; you hear the most popular choice, or a chord of the top votes.</div>
+                <div class="proto-illu"><img src="images/piano.png" alt="Democratic Piano prototype" /></div>
+                <div class="proto-card-body">
+                    <div class="proto-code">DP·01</div>
+                    <div class="proto-name">Piano</div>
+                    <div class="proto-method">Democratic Instrument</div>
+                    <div class="proto-desc">A digital piano that only works with two or more players. Everyone picks a note; you hear the most popular choice, or a chord of the top votes.</div>
+                </div>
             </a>
             <a class="proto-card" href="meanmode.html" style="--card-c: var(--c-meanmode)">
-                <div class="proto-code">MM·01</div>
-                <div class="proto-name">Mean Mode</div>
-                <div class="proto-method">Continuous Pitch</div>
-                <div class="proto-desc">Like the piano, but on a continuous pitch line. You can watch the collective swing from one position to another, and hear it as the mean, the most popular bin, or a chord.</div>
+                <div class="proto-illu"><img src="images/meanmode.png" alt="Mean Mode prototype" /></div>
+                <div class="proto-card-body">
+                    <div class="proto-code">MM·01</div>
+                    <div class="proto-name">Mean Mode</div>
+                    <div class="proto-method">Continuous Pitch</div>
+                    <div class="proto-desc">Like the piano, but on a continuous pitch line. You can watch the collective swing from one position to another, and hear it as the mean, the most popular bin, or a chord.</div>
+                </div>
             </a>
             <a class="proto-card" href="miro.html" style="--card-c: var(--c-miro)">
-                <div class="proto-code">MI·01</div>
-                <div class="proto-name">Miro</div>
-                <div class="proto-method">Spatial Voting</div>
-                <div class="proto-desc">A 3D voter graph seen from above, like a Joan Miró dot painting. Each touch is a vote; overlapping votes form peaks. Raise the water level and only the strongest survive.</div>
+                <div class="proto-illu"><img src="images/miro.png" alt="Miro prototype" /></div>
+                <div class="proto-card-body">
+                    <div class="proto-code">MI·01</div>
+                    <div class="proto-name">Miro</div>
+                    <div class="proto-method">Spatial Voting</div>
+                    <div class="proto-desc">A 3D voter graph seen from above, like a Joan Miró dot painting. Each touch is a vote; overlapping votes form peaks. Raise the water level and only the strongest survive.</div>
+                </div>
             </a>
             <a class="proto-card" href="assembly.html" style="--card-c: var(--c-assembly)">
-                <div class="proto-code">DA·01</div>
-                <div class="proto-name">Assembly</div>
-                <div class="proto-method">Layered Composition</div>
-                <div class="proto-desc">Five layers (rhythm, bass, chords, melody, texture), four variations each. Like a Musikalische Würfelspiel of the 1700s, but the audience votes instead of rolling dice.</div>
+                <div class="proto-illu"><img src="images/assembly.png" alt="Democratic Assembly prototype" /></div>
+                <div class="proto-card-body">
+                    <div class="proto-code">DA·01</div>
+                    <div class="proto-name">Assembly</div>
+                    <div class="proto-method">Layered Composition</div>
+                    <div class="proto-desc">Five layers (rhythm, bass, chords, melody, texture), four variations each. Like a Musikalische Würfelspiel of the 1700s, but the audience votes instead of rolling dice.</div>
+                </div>
             </a>
             <a class="proto-card" href="parliament.html" style="--card-c: var(--c-parliament)">
-                <div class="proto-code">PA·01</div>
-                <div class="proto-name">Parliament</div>
-                <div class="proto-method">Redistricting</div>
-                <div class="proto-desc">Electoral systems applied to musical composition. Five seats elected from five districts, 160 fixed voters. Drag the seeds, redraw the districts, and hear the parliament shift.</div>
+                <div class="proto-illu"><img src="images/parliament.png" alt="Parliament prototype" /></div>
+                <div class="proto-card-body">
+                    <div class="proto-code">PA·01</div>
+                    <div class="proto-name">Parliament</div>
+                    <div class="proto-method">Redistricting</div>
+                    <div class="proto-desc">Electoral systems applied to musical composition. Five seats elected from five districts, 160 fixed voters. Drag the seeds, redraw the districts, and hear the parliament shift.</div>
+                </div>
             </a>
             <a class="proto-card" href="choreography.html" style="--card-c: var(--c-choreo)">
-                <div class="proto-code">CH·01</div>
-                <div class="proto-name">Choreography</div>
-                <div class="proto-method">Body as Instrument</div>
-                <div class="proto-desc">The body as musical instrument. Six dancers, each with their own tempo. When they fall in step the music takes on a recognizable pattern; when they scatter, it could fall into dissonance.</div>
+                <div class="proto-illu"><img src="images/choreography.png" alt="Choreography prototype" /></div>
+                <div class="proto-card-body">
+                    <div class="proto-code">CH·01</div>
+                    <div class="proto-name">Choreography</div>
+                    <div class="proto-method">Body as Instrument</div>
+                    <div class="proto-desc">The body as musical instrument. Six dancers, each with their own tempo. When they fall in step the music takes on a recognizable pattern; when they scatter, it could fall into dissonance.</div>
+                </div>
             </a>
         </div>
     </div>
 </div>
 
-<div class="footer">
-    <div class="footer-year">2 0 2 6</div>
-    <div class="footer-contact"><a href="mailto:samuelvancelaw@gmail.com">samuelvancelaw@gmail.com</a></div>
-    <div class="footer-contact"><a href="https://samvancelaw.com">samvancelaw.com</a></div>
-</div>
+<footer class="footer">
+    <div class="footer-inner">
+        <a class="footer-cta" href="guide.html">
+            <span>Read the full guide</span>
+            <span class="cta-arr">→</span>
+        </a>
 
+        <div class="footer-dots" aria-hidden="true">
+            <span class="footer-dot" style="background: var(--c-piano)"></span>
+            <span class="footer-dot" style="background: var(--c-meanmode)"></span>
+            <span class="footer-dot" style="background: var(--c-miro)"></span>
+            <span class="footer-dot" style="background: var(--c-assembly)"></span>
+            <span class="footer-dot" style="background: var(--c-parliament)"></span>
+            <span class="footer-dot" style="background: var(--c-choreo)"></span>
+        </div>
+
+        <div class="footer-cols">
+            <div class="footer-col">
+                <div class="footer-col-label">Contact</div>
+                <a href="mailto:samuelvancelaw@gmail.com">samuelvancelaw@gmail.com</a>
+                <a href="https://samvancelaw.com">samvancelaw.com</a>
+            </div>
+            <div class="footer-col">
+                <div class="footer-col-label">Code</div>
+                <a href="https://github.com/SamuelVance-Law/democracy-in-music">GitHub repository</a>
+                <a href="https://github.com/SamuelVance-Law/democracy-in-music/blob/main/LICENSE">MIT License</a>
+            </div>
+        </div>
+
+        <div class="footer-meta">Berlin · 2026</div>
+    </div>
+</footer>
+
+<script>
+(function(){
+    // Six clock positions, 60° apart. Index 0 = 12 o'clock.
+    var order = ['DP·01','MM·01','MI·01','DA·01','PA·01','CH·01'];
+
+    var selector  = document.getElementById('selector');
+    var readout   = document.getElementById('readout');
+    var arm       = document.getElementById('indicator-arm');
+    var knob      = document.getElementById('knob');
+    var roCode    = document.getElementById('ro-code');
+    var roName    = document.getElementById('ro-name');
+    var roMethod  = document.getElementById('ro-method');
+    var roPlay    = document.getElementById('ro-play');
+    var labels    = document.querySelectorAll('.selector .lbl');
+
+    // armAngle is an accumulating value (can exceed 360 / go negative).
+    // CSS transitions handle the rotation animation correctly as long as
+    // we keep it monotonically tracking the indicator's true position.
+    var armAngle    = 0;
+    var currentStep = -1;     // -1 = default (no selection); 0–5 = a position
+
+    function setArmAngle(deg) {
+        armAngle = deg;
+        arm.style.transform = 'rotate(' + deg + 'deg)';
+    }
+
+    function rotateArmTo(step, forceClockwise) {
+        // Rotate the arm to a target step.
+        // forceClockwise: +1 forces clockwise, -1 counterclockwise, 0 shortest path.
+        var target = step * 60;
+        var current = ((armAngle % 360) + 360) % 360;
+        var diff = target - current;
+        if (forceClockwise > 0) {
+            if (diff <= 0) diff += 360;
+        } else if (forceClockwise < 0) {
+            if (diff >= 0) diff -= 360;
+        } else {
+            while (diff > 180)  diff -= 360;
+            while (diff < -180) diff += 360;
+        }
+        setArmAngle(armAngle + diff);
+    }
+
+    function applySelection(step, opts) {
+        // step: 0–5
+        // opts.rotateDir: -1, 0, or 1 (which way to rotate the arm). 0 = shortest path.
+        // opts.skipRotate: true = caller already set armAngle (used during drag)
+        opts = opts || {};
+        var code = order[step];
+        var btn = document.querySelector('.lbl[data-code="' + code + '"]');
+        if (!btn) return;
+        var name   = btn.dataset.name;
+        var method = btn.dataset.method;
+        var link   = btn.dataset.link;
+        var color  = btn.dataset.color;
+
+        if (!opts.skipRotate) {
+            rotateArmTo(step, opts.rotateDir || 0);
+        }
+
+        roCode.textContent   = code;
+        roName.textContent   = name.toUpperCase();
+        roMethod.textContent = method;
+        roPlay.href          = link;
+        readout.style.setProperty('--proto-c', color);
+        selector.style.setProperty('--proto-c', color);
+
+        readout.classList.add('has-selection');
+        selector.classList.add('has-selection');
+        labels.forEach(function(l){ l.classList.toggle('selected', l === btn); });
+        currentStep = step;
+    }
+
+    function resetToDefault() {
+        readout.classList.remove('has-selection');
+        selector.classList.remove('has-selection');
+        labels.forEach(function(l){ l.classList.remove('selected'); });
+        // Rotate the arm back to the nearest "up" position (shortest path).
+        var current = ((armAngle % 360) + 360) % 360;
+        var diff = -current;
+        if (diff < -180) diff += 360;
+        setArmAngle(armAngle + diff);
+        currentStep = -1;
+    }
+
+    // ── Label clicks: jump directly to that step (shortest-path rotation) ──
+    labels.forEach(function(btn){
+        btn.addEventListener('click', function(){
+            var step = order.indexOf(btn.dataset.code);
+            applySelection(step, { rotateDir: 0 });
+        });
+    });
+
+    // ── Drag-to-step on the knob ──
+    var pointerStartXY   = null;
+    var pointerStartAng  = 0;
+    var armStartAngle    = 0;
+    var stepAtStart      = 0;
+    var didDrag          = false;
+
+    function angleFromCenter(x, y, cx, cy) {
+        // Angle in degrees where 0 = up (12 o'clock), clockwise positive.
+        var deg = Math.atan2(y - cy, x - cx) * 180 / Math.PI;
+        return deg + 90;
+    }
+
+    knob.addEventListener('pointerdown', function(e){
+        var rect = selector.getBoundingClientRect();
+        var cx = rect.left + rect.width / 2;
+        var cy = rect.top  + rect.height / 2;
+        pointerStartXY  = { x: e.clientX, y: e.clientY, cx: cx, cy: cy };
+        pointerStartAng = angleFromCenter(e.clientX, e.clientY, cx, cy);
+        armStartAngle   = armAngle;
+        stepAtStart     = currentStep === -1 ? 0 : currentStep;
+        didDrag         = false;
+        // Switch to fast "stepping" transition for crisp detent-to-detent clicks.
+        arm.classList.add('stepping');
+        knob.classList.add('dragging');
+        knob.setPointerCapture(e.pointerId);
+    });
+
+    knob.addEventListener('pointermove', function(e){
+        if (!pointerStartXY) return;
+        var dx = e.clientX - pointerStartXY.x;
+        var dy = e.clientY - pointerStartXY.y;
+        // 6px deadzone before we count it as a drag.
+        if (Math.sqrt(dx*dx + dy*dy) < 6) return;
+        didDrag = true;
+
+        var ang   = angleFromCenter(e.clientX, e.clientY, pointerStartXY.cx, pointerStartXY.cy);
+        var delta = ang - pointerStartAng;
+        // Unwrap across the 0/360 boundary.
+        while (delta > 180)  delta -= 360;
+        while (delta < -180) delta += 360;
+
+        // 2:1 angular ratio — finger has to rotate twice as far as the indicator,
+        // so each detent click requires a deliberate ~60° of drag. Lower this
+        // value (e.g. 0.6, 0.7) to make the knob more responsive; raise toward 1
+        // for the old 1:1 feel.
+        var SENSITIVITY = 0.5;
+        // Extra travel required past each detent boundary before clicking to the
+        // next one. Prevents the indicator flickering when the finger wobbles
+        // near a threshold.
+        var HYSTERESIS  = 5;
+
+        // Stepped behavior with hysteresis: from the current detent, only step
+        // when scaled rotation exceeds 30° + HYSTERESIS past its center.
+        var scaledAngle = armStartAngle + delta * SENSITIVITY;
+        var detent      = armAngle;
+        var offset      = scaledAngle - detent;
+
+        while (offset > 30 + HYSTERESIS) { detent += 60; offset -= 60; }
+        while (offset < -(30 + HYSTERESIS)) { detent -= 60; offset += 60; }
+
+        if (detent !== armAngle) {
+            setArmAngle(detent);
+            var stepIdx = (((detent / 60) % 6) + 6) % 6;
+            if (stepIdx !== currentStep) {
+                applySelection(stepIdx, { skipRotate: true });
+            }
+            pulseKnob();
+        }
+    });
+
+    // Trigger the click-pulse animation. Removing and re-adding the class
+    // (with a forced reflow between) restarts the animation on every call.
+    function pulseKnob() {
+        knob.classList.remove('click-pulse');
+        void knob.offsetWidth;
+        knob.classList.add('click-pulse');
+    }
+
+    function endDrag(e) {
+        if (!pointerStartXY) return;
+        pointerStartXY = null;
+        knob.classList.remove('dragging');
+        try { knob.releasePointerCapture(e.pointerId); } catch(_) {}
+        // Restore the springy transition for non-drag operations.
+        arm.classList.remove('stepping');
+        if (!didDrag) {
+            // Click without drag → reset to default.
+            resetToDefault();
+        }
+        // No final snap needed — the indicator already lives at a detent.
+    }
+    knob.addEventListener('pointerup',     endDrag);
+    knob.addEventListener('pointercancel', endDrag);
+
+    // ── Click outside the cover-card also clears selection ──
+    document.addEventListener('click', function(e){
+        if (!selector.contains(e.target) && !readout.contains(e.target)) {
+            if (currentStep !== -1) resetToDefault();
+        }
+    });
+
+    // ── Keyboard convenience: 1–6 = clockwise positions, Esc = reset ──
+    document.addEventListener('keydown', function(e){
+        if (e.key >= '1' && e.key <= '6') {
+            applySelection(parseInt(e.key, 10) - 1, { rotateDir: 0 });
+        } else if (e.key === 'Escape') {
+            resetToDefault();
+        }
+    });
+})();
+</script>
 </body>
 </html>
