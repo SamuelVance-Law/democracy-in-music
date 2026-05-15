@@ -189,6 +189,9 @@
             .selector { width: 170px; height: 170px; }
             .cover-logo { height: 96px; }
             .lbl { font-size: 10.5px; }
+            /* DEMOCRACY is the widest word and was overflowing the card
+               at this breakpoint — scale the headline down explicitly. */
+            .cover-title { font-size: clamp(36px, 11vw, 56px); }
             .cover-bottom {
                 flex-direction: column;
                 align-items: flex-start;
