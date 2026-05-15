@@ -245,7 +245,7 @@
             padding-bottom: 8px;
         }
         .rack {
-            width: 1100px;
+            width: 1240px;
             height: 940px;
             display: block;
             position: relative;
@@ -723,6 +723,32 @@
         /* STOP & CLEAR = red CANCEL keys */
         #stopBtn, #clearBtn { background: var(--bbg-red); color: #fff; }
         #stopBtn .led, #clearBtn .led { background: rgba(255,255,255,0.35); }
+
+        /* small action button used inside display modules (e.g. MIDI export on tape) */
+        .io-btn {
+            background: var(--bbg-amber);
+            border: none;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            padding: 7px 11px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            color: #000;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.45),
+                inset 0 -2px 0 rgba(0,0,0,0.18),
+                0 1px 2px rgba(0,0,0,0.18);
+            text-transform: uppercase;
+            transition: all 0.1s;
+            white-space: nowrap;
+        }
+        .io-btn:hover:not(:disabled) { filter: brightness(1.06); }
+        .io-btn:active:not(:disabled) {
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.32);
+        }
+        .io-btn:disabled { opacity: 0.35; cursor: not-allowed; }
         /* live state: white LED with glow (works on green or red) */
         .trans-btn.live .led {
             background: #FFFFFF;
@@ -1103,6 +1129,7 @@
             <div class="ctrl"><span class="k">Voters</span><span>Crowd size, 3 to 24.</span></div>
             <div class="ctrl"><span class="k">Voices</span><span>How many sustained voices the synth holds.</span></div>
             <div class="ctrl"><span class="k">Tempo</span><span>For visual feedback only: the speed at which votes settle.</span></div>
+            <div class="ctrl"><span class="k">↓ MIDI</span><span>Export the tape as a standard MIDI file — one round per beat at the chosen tempo. Drag it into Live, Logic, or any DAW.</span></div>
 
             <h3>What this demonstrates</h3>
             <p>The simplest case in the project: one decision (which note to play) shared among many. Mode voting rewards distinct preferences and produces stranger collective harmonies: clusters of taste, not averages of them. With more voters, the result drifts further from your individual choice. The same patterns play out at every scale.</p>
@@ -1127,7 +1154,7 @@
     <!-- ============================================== -->
     <!--   DP—01 · INSTRUMENT                          -->
     <!-- ============================================== -->
-    <section class="module instrument" id="dp01" data-x="190" data-y="20" style="transform: translate(190px, 20px);">
+    <section class="module instrument" id="dp01" data-x="260" data-y="20" style="transform: translate(260px, 20px);">
         <header class="module-header">
             <span class="model">dp·01</span>
             <span class="model-name">democratic piano</span>
@@ -1204,7 +1231,7 @@
     <!-- ============================================== -->
     <!--   DP—02 · SCOPE                               -->
     <!-- ============================================== -->
-    <section class="module display scope" id="dp02" data-x="10" data-y="510" style="transform: translate(10px, 510px);">
+    <section class="module display scope" id="dp02" data-x="60" data-y="510" style="transform: translate(60px, 510px);">
         <header class="module-header">
             <span class="model">dp·02</span>
             <span class="model-name">scope</span>
@@ -1238,7 +1265,7 @@
     <!-- ============================================== -->
     <!--   DP—03 · TAPE                                -->
     <!-- ============================================== -->
-    <section class="module display tape" id="dp03" data-x="550" data-y="510" style="transform: translate(550px, 510px);">
+    <section class="module display tape" id="dp03" data-x="640" data-y="510" style="transform: translate(640px, 510px);">
         <header class="module-header">
             <span class="model">dp·03</span>
             <span class="model-name">tape</span>
@@ -1256,6 +1283,7 @@
                     <div class="dot"></div>
                     <span id="tapeRecLabel">stand by</span>
                 </div>
+                <button class="io-btn" id="exportBtn">↓ MIDI</button>
             </div>
 
             <div class="screen tape-screen">
@@ -1335,6 +1363,7 @@
     var playBtn = document.getElementById('playBtn');
     var stopBtn = document.getElementById('stopBtn');
     var clearBtn = document.getElementById('clearBtn');
+    var exportBtn = document.getElementById('exportBtn');
     var scopeCanvas = document.getElementById('scopeCanvas');
     var tapeCanvas = document.getElementById('tapeCanvas');
     var startOverlay = document.getElementById('startOverlay');
@@ -1724,6 +1753,7 @@
 
             statusStrip.innerHTML = '<span class="acc">RD ' + pad3(roundLog.length) + '</span> · play another · or PLAY';
             playBtn.disabled = false;
+            exportBtn.disabled = false;
         });
     }
 
@@ -2050,6 +2080,7 @@
         playBtn.classList.remove('live');
         playBtn.disabled = roundLog.length === 0;
         stopBtn.disabled = true;
+        exportBtn.disabled = roundLog.length === 0;
         tapeRec.classList.remove('on');
         tapeRecLabel.textContent = 'stand by';
         statusStrip.innerHTML = '<span class="acc">RD ' + pad3(roundLog.length) + '</span> · ready';
@@ -2065,8 +2096,121 @@
         return ('0' + mm).slice(-2) + ':' + ('0' + ss).slice(-2);
     }
 
+    // ============== MIDI EXPORT ==============
+    // Writes a Standard MIDI File (format 0) from roundLog.
+    // One round = one quarter note at the current tempo (knob value).
+    // Mode mode exports the chord of top-N voices (N = current numVoices),
+    // mirroring playback. Mean mode exports the nearest chromatic note —
+    // i.e. what the LCD shows. Exact mean frequencies would need pitch bend.
+    function vlq(value) {
+        if (value <= 0) return [0];
+        var bytes = [value & 0x7F];
+        value >>>= 7;
+        while (value > 0) {
+            bytes.unshift((value & 0x7F) | 0x80);
+            value >>>= 7;
+        }
+        return bytes;
+    }
+
+    function exportMidi() {
+        if (!roundLog.length) return;
+
+        var TPQ = 480;                       // ticks per quarter
+        var TICKS_PER_ROUND = TPQ;           // one quarter per round
+        var NOTE_TICKS = TPQ - 4;            // tiny gap before retrigger
+        var VELOCITY = 100;
+        var CHANNEL = 0;
+        var usPerQ = Math.round(60000000 / bpm);
+
+        // Build (tick, bytes) events
+        var events = [];
+        // Tempo
+        events.push({ tick: 0, bytes: [0xFF, 0x51, 0x03,
+            (usPerQ >> 16) & 0xFF, (usPerQ >> 8) & 0xFF, usPerQ & 0xFF] });
+        // Track name (ASCII only for DAW compatibility)
+        var name = 'Democracy in Music - Piano';
+        var nameBytes = [];
+        for (var c = 0; c < name.length; c++) nameBytes.push(name.charCodeAt(c) & 0x7F);
+        events.push({ tick: 0, bytes: [0xFF, 0x03].concat(vlq(nameBytes.length)).concat(nameBytes) });
+
+        // Notes — mirror playback
+        roundLog.forEach(function(rnd, i) {
+            var rec = recomputeVoices(rnd, numVoices);
+            var voices = rec.voices && rec.voices.length ? rec.voices : [rec.nearestIdx];
+            var startTick = i * TICKS_PER_ROUND;
+            var endTick = startTick + NOTE_TICKS;
+            voices.forEach(function(idx) {
+                var midiNote = idx + 48;  // KEY_DATA[0] = C3 = MIDI 48
+                events.push({ tick: startTick, bytes: [0x90 | CHANNEL, midiNote, VELOCITY] });
+                events.push({ tick: endTick,   bytes: [0x80 | CHANNEL, midiNote, 0] });
+            });
+        });
+
+        // Stable sort by tick (note-offs before note-ons at same tick when retriggering)
+        events.forEach(function(e, i) { e._i = i; });
+        events.sort(function(a, b) {
+            if (a.tick !== b.tick) return a.tick - b.tick;
+            var aOff = (a.bytes[0] & 0xF0) === 0x80;
+            var bOff = (b.bytes[0] & 0xF0) === 0x80;
+            if (aOff !== bOff) return aOff ? -1 : 1;
+            return a._i - b._i;
+        });
+
+        // End of track
+        var lastTick = events[events.length - 1].tick;
+        events.push({ tick: lastTick, bytes: [0xFF, 0x2F, 0x00] });
+
+        // Delta-time stream
+        var track = [];
+        var prev = 0;
+        events.forEach(function(ev) {
+            var d = ev.tick - prev;
+            track = track.concat(vlq(d)).concat(ev.bytes);
+            prev = ev.tick;
+        });
+
+        // Header chunk + track chunk
+        var header = [
+            0x4D, 0x54, 0x68, 0x64,       // "MThd"
+            0x00, 0x00, 0x00, 0x06,
+            0x00, 0x00,                   // format 0
+            0x00, 0x01,                   // 1 track
+            (TPQ >> 8) & 0xFF, TPQ & 0xFF
+        ];
+        var trkLen = track.length;
+        var trackHdr = [
+            0x4D, 0x54, 0x72, 0x6B,       // "MTrk"
+            (trkLen >> 24) & 0xFF, (trkLen >> 16) & 0xFF,
+            (trkLen >> 8) & 0xFF, trkLen & 0xFF
+        ];
+        var all = header.concat(trackHdr).concat(track);
+        var bytes = new Uint8Array(all);
+
+        // Filename: democracy-piano-YYYYMMDD-HHMM-MODE-BPM.mid
+        var d = new Date();
+        function pz(n) { return ('0' + n).slice(-2); }
+        var stamp = d.getFullYear() + pz(d.getMonth() + 1) + pz(d.getDate())
+                  + '-' + pz(d.getHours()) + pz(d.getMinutes());
+        var fname = 'democracy-piano-' + stamp + '-' + demoMode + '-' + bpm + 'bpm.mid';
+
+        // Download
+        var blob = new Blob([bytes], { type: 'audio/midi' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = fname;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+
+        statusStrip.innerHTML = '<span class="acc">EXPORTED</span> · ' + pad3(roundLog.length) + ' rds · ' + bpm + ' bpm';
+    }
+
     playBtn.addEventListener('click', startPlayback);
     stopBtn.addEventListener('click', stopPlayback);
+    exportBtn.addEventListener('click', exportMidi);
 
     clearBtn.addEventListener('click', function() {
         if (voting) return;
@@ -2083,6 +2227,7 @@
         statusStrip.innerHTML = '<span class="acc">CLEAR</span> · choose a note to begin';
         playBtn.disabled = true;
         stopBtn.disabled = true;
+        exportBtn.disabled = true;
         lastScopeState = null;
         drawTape();
         drawScopeIdle();
@@ -2231,6 +2376,7 @@
 
     playBtn.disabled = true;
     stopBtn.disabled = true;
+    exportBtn.disabled = true;
 
     startBtn.addEventListener('click', function() {
         ensureAudio(function() {
