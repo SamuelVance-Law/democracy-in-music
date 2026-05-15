@@ -1056,6 +1056,21 @@
         }
         .midi-help.error .acc { color: var(--bbg-red); }
 
+        /* Two-block tooltip — MIDI block + CSV block. On desktop, hovering a
+           button reveals only its block (via data-mode). On mobile, both stack. */
+        .midi-help-block { display: block; }
+        @media (hover: hover) {
+            .midi-help[data-mode="midi"] .csv-block { display: none; }
+            .midi-help[data-mode="csv"] .midi-block { display: none; }
+        }
+        @media (hover: none) {
+            .midi-help-block + .midi-help-block {
+                margin-top: 11px;
+                padding-top: 11px;
+                border-top: 1px dashed rgba(0,0,0,0.14);
+            }
+        }
+
         @media (hover: none) {
             .midi-help {
                 position: static;
@@ -1376,8 +1391,13 @@
                     <button class="io-btn" id="exportBtn">↓ MIDI</button>
                     <button class="io-btn" id="csvBtn">↓ CSV</button>
                 </div>
-                <div class="midi-help" id="midiHelp">
-                    <span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. The score streams column-by-column as the scan plays — each grid cell above the water threshold is one note at the row's pitch in A minor, velocity scaled by intensity. <span class="acc">↓ MIDI</span> downloads the current score as a 96 BPM file (one cell = one sixteenth). <span class="acc">↓ CSV</span> downloads the tap-event log (single-player has one voter; networked sessions will tag each tap with its participant).
+                <div class="midi-help" id="midiHelp" data-mode="midi">
+                    <div class="midi-help-block midi-block">
+                        <span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. The score streams column-by-column as the scan plays — each grid cell above the water threshold is one note at the row's pitch in A minor, velocity scaled by intensity. <span class="acc">↓ MIDI</span> downloads the current score as a 96 BPM file (one cell = one sixteenth).
+                    </div>
+                    <div class="midi-help-block csv-block">
+                        <span class="acc">Voter data export.</span> Tap-event log — col, row, and voter ID for each touch. <span class="acc">Note:</span> single-player has one voter; networked sessions tag each tap with its participant ID.
+                    </div>
                 </div>
             </div>
 
@@ -2105,10 +2125,15 @@
 
     // ----- Web MIDI lifecycle -----
 
-    function setMidiHelp(html, isError) {
-        midiHelp.innerHTML = html;
+    var CSV_HELP_TEXT = '<span class="acc">Voter data export.</span> Tap-event log — col, row, and voter ID for each touch. <span class="acc">Note:</span> single-player has one voter; networked sessions tag each tap with its participant ID.';
+
+    function renderMidiHelp(midiHtml, isError) {
+        midiHelp.innerHTML =
+            '<div class="midi-help-block midi-block">' + midiHtml + '</div>' +
+            '<div class="midi-help-block csv-block">' + CSV_HELP_TEXT + '</div>';
         midiHelp.classList.toggle('error', !!isError);
     }
+    function setMidiHelp(html, isError) { renderMidiHelp(html, isError); }
 
     function refreshMidiPorts() {
         if (!midiAccess) return;
@@ -2177,17 +2202,35 @@
         selectPort(midiPortSelect.value);
     });
 
-    function showMidiHelp() { midiHelp.classList.add('show'); }
+    // Per-button hover tooltips: ENABLE / port / ↓ MIDI reveal the MIDI block;
+    // ↓ CSV reveals the voter-data block. On mobile both stack inline (CSS).
+    var csvBtn = document.getElementById('csvBtn');
+    function showMidiSection() {
+        midiHelp.dataset.mode = 'midi';
+        midiHelp.classList.add('show');
+    }
+    function showCsvSection() {
+        midiHelp.dataset.mode = 'csv';
+        midiHelp.classList.add('show');
+    }
     function hideMidiHelp() { midiHelp.classList.remove('show'); }
-    midiEnableBtn.addEventListener('mouseenter', showMidiHelp);
+    midiEnableBtn.addEventListener('mouseenter', showMidiSection);
     midiEnableBtn.addEventListener('mouseleave', hideMidiHelp);
-    midiEnableBtn.addEventListener('focus', showMidiHelp);
+    midiEnableBtn.addEventListener('focus', showMidiSection);
     midiEnableBtn.addEventListener('blur', hideMidiHelp);
-    midiPortSelect.addEventListener('mouseenter', showMidiHelp);
+    midiPortSelect.addEventListener('mouseenter', showMidiSection);
     midiPortSelect.addEventListener('mouseleave', hideMidiHelp);
-    midiPortSelect.addEventListener('focus', showMidiHelp);
+    midiPortSelect.addEventListener('focus', showMidiSection);
     midiPortSelect.addEventListener('blur', hideMidiHelp);
-    midiHelp.addEventListener('mouseenter', showMidiHelp);
+    exportBtn.addEventListener('mouseenter', showMidiSection);
+    exportBtn.addEventListener('mouseleave', hideMidiHelp);
+    exportBtn.addEventListener('focus', showMidiSection);
+    exportBtn.addEventListener('blur', hideMidiHelp);
+    csvBtn.addEventListener('mouseenter', showCsvSection);
+    csvBtn.addEventListener('mouseleave', hideMidiHelp);
+    csvBtn.addEventListener('focus', showCsvSection);
+    csvBtn.addEventListener('blur', hideMidiHelp);
+    midiHelp.addEventListener('mouseenter', function() { midiHelp.classList.add('show'); });
     midiHelp.addEventListener('mouseleave', hideMidiHelp);
 
     initMidi();
@@ -2285,7 +2328,6 @@
     exportBtn.addEventListener('click', exportMidi);
 
     // ===== CSV: voter tap-event export =====
-    var csvBtn = document.getElementById('csvBtn');
 
     function csvEscape(v) {
         if (v == null) return '';

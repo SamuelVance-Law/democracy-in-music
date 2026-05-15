@@ -952,6 +952,22 @@
         }
         .midi-help.error .acc { color: var(--bbg-red); }
 
+        /* Two-block tooltip: the strip's help text splits into a MIDI block and
+           a CSV block. On desktop, hovering a button reveals only that button's
+           block (via data-mode on the help element). On mobile, both stack. */
+        .midi-help-block { display: block; }
+        @media (hover: hover) {
+            .midi-help[data-mode="midi"] .csv-block { display: none; }
+            .midi-help[data-mode="csv"] .midi-block { display: none; }
+        }
+        @media (hover: none) {
+            .midi-help-block + .midi-help-block {
+                margin-top: 11px;
+                padding-top: 11px;
+                border-top: 1px dashed rgba(0,0,0,0.14);
+            }
+        }
+
         /* MIDI download button — blue, distinct from ENABLE's amber */
         #exportBtn { background: var(--bbg-cyan); color: var(--ink); }
         #csvBtn { background: var(--bbg-yellow); color: var(--ink); }
@@ -1403,8 +1419,13 @@
                     <button class="io-btn" id="exportBtn">↓ MIDI</button>
                     <button class="io-btn" id="csvBtn">↓ CSV</button>
                 </div>
-                <div class="midi-help" id="midiHelp">
-                    <span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. Live votes and tape playback both stream out. <span class="acc">↓ CSV</span> downloads voter-data — per-round, per-voter pitch choices (simulated agents, networked sessions will use real participants).
+                <div class="midi-help" id="midiHelp" data-mode="midi">
+                    <div class="midi-help-block midi-block">
+                        <span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. Live votes and tape playback both stream out.
+                    </div>
+                    <div class="midi-help-block csv-block">
+                        <span class="acc">Voter data export.</span> Per-round, per-voter pitch choices — every cascade-revealed vote captured, with the mode at the time and the winning pitch. <span class="acc">Note:</span> single-player crowd is simulated; networked sessions use the same schema with real participants.
+                    </div>
                 </div>
             </div>
 
@@ -1503,6 +1524,7 @@
     var midiEnableBtn = document.getElementById('midiEnableBtn');
     var midiPortSelect = document.getElementById('midiPortSelect');
     var midiHelp = document.getElementById('midiHelp');
+    var csvBtn = document.getElementById('csvBtn');
 
     // ============== UTIL ==============
     function pad3(n) { return ('000' + n).slice(-3); }
@@ -2341,11 +2363,15 @@
     var MIDI_CHANNEL = 0;
     var MIDI_VELOCITY = 100;
     var MIDI_HELP_DEFAULT = '<span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. Live votes and tape playback both stream out.';
+    var CSV_HELP_TEXT = '<span class="acc">Voter data export.</span> Per-round, per-voter pitch choices — every cascade-revealed vote captured, with the mode at the time and the winning pitch. <span class="acc">Note:</span> single-player crowd is simulated; networked sessions use the same schema with real participants.';
 
-    function setMidiHelp(html, isError) {
-        midiHelp.innerHTML = html;
+    function renderMidiHelp(midiHtml, isError) {
+        midiHelp.innerHTML =
+            '<div class="midi-help-block midi-block">' + midiHtml + '</div>' +
+            '<div class="midi-help-block csv-block">' + CSV_HELP_TEXT + '</div>';
         midiHelp.classList.toggle('error', !!isError);
     }
+    function setMidiHelp(html, isError) { renderMidiHelp(html, isError); }
 
     function refreshMidiPorts() {
         if (!midiAccess) return;
@@ -2435,21 +2461,37 @@
         });
     });
 
-    // Hovering or focusing ENABLE or the port dropdown reveals the setup/status tooltip;
-    // errors stay visible regardless. The dropdown listener covers the post-enable lifecycle —
-    // once ENABLE is hidden, hovering the select still surfaces "Streaming to X" / "select a port".
-    function showMidiHelp() { midiHelp.classList.add('show'); }
+    // Per-button hover tooltips: hovering ENABLE / port / ↓ MIDI reveals the
+    // MIDI setup block; hovering ↓ CSV reveals the voter-data block. On mobile
+    // both blocks stack inline (handled in CSS), so this mode toggle only
+    // applies on hover-capable devices.
+    function showMidiSection() {
+        midiHelp.dataset.mode = 'midi';
+        midiHelp.classList.add('show');
+    }
+    function showCsvSection() {
+        midiHelp.dataset.mode = 'csv';
+        midiHelp.classList.add('show');
+    }
     function hideMidiHelp() { midiHelp.classList.remove('show'); }
-    midiEnableBtn.addEventListener('mouseenter', showMidiHelp);
+    midiEnableBtn.addEventListener('mouseenter', showMidiSection);
     midiEnableBtn.addEventListener('mouseleave', hideMidiHelp);
-    midiEnableBtn.addEventListener('focus', showMidiHelp);
+    midiEnableBtn.addEventListener('focus', showMidiSection);
     midiEnableBtn.addEventListener('blur', hideMidiHelp);
-    midiPortSelect.addEventListener('mouseenter', showMidiHelp);
+    midiPortSelect.addEventListener('mouseenter', showMidiSection);
     midiPortSelect.addEventListener('mouseleave', hideMidiHelp);
-    midiPortSelect.addEventListener('focus', showMidiHelp);
+    midiPortSelect.addEventListener('focus', showMidiSection);
     midiPortSelect.addEventListener('blur', hideMidiHelp);
-    // Allow the user to move into the tooltip without it vanishing
-    midiHelp.addEventListener('mouseenter', showMidiHelp);
+    exportBtn.addEventListener('mouseenter', showMidiSection);
+    exportBtn.addEventListener('mouseleave', hideMidiHelp);
+    exportBtn.addEventListener('focus', showMidiSection);
+    exportBtn.addEventListener('blur', hideMidiHelp);
+    csvBtn.addEventListener('mouseenter', showCsvSection);
+    csvBtn.addEventListener('mouseleave', hideMidiHelp);
+    csvBtn.addEventListener('focus', showCsvSection);
+    csvBtn.addEventListener('blur', hideMidiHelp);
+    // Hovering the tooltip itself keeps it visible in whatever mode is active
+    midiHelp.addEventListener('mouseenter', function() { midiHelp.classList.add('show'); });
     midiHelp.addEventListener('mouseleave', hideMidiHelp);
 
     midiPortSelect.addEventListener('change', function() {
@@ -2463,7 +2505,6 @@
     exportBtn.addEventListener('click', exportMidi);
 
     // ===== CSV: voter data export =====
-    var csvBtn = document.getElementById('csvBtn');
 
     function csvEscape(v) {
         if (v == null) return '';
