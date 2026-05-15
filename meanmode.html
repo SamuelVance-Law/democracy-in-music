@@ -639,6 +639,128 @@
         .trans-btn.alarm { color: #fff; }
         .trans-btn.alarm .led { background: rgba(255,255,255,0.35); }
 
+        /* ===== MIDI STRIP ===== */
+        .io-btn {
+            background: var(--bbg-amber);
+            border: none;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            padding: 7px 11px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            color: #000;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.45),
+                inset 0 -2px 0 rgba(0,0,0,0.18),
+                0 1px 2px rgba(0,0,0,0.18);
+            text-transform: uppercase;
+            transition: all 0.1s;
+            white-space: nowrap;
+        }
+        .io-btn:hover:not(:disabled) { filter: brightness(1.06); }
+        .io-btn:active:not(:disabled) { box-shadow: inset 0 1px 3px rgba(0,0,0,0.32); }
+        .io-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        .midi-select {
+            background: var(--cream-deep);
+            border: 1px solid rgba(0,0,0,0.18);
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.4px;
+            color: var(--ink);
+            padding: 5px 8px;
+            cursor: pointer;
+            min-width: 220px;
+            max-width: 320px;
+        }
+        .midi-select:focus { outline: 1px solid var(--bbg-amber); outline-offset: 1px; }
+        .midi-select:disabled { opacity: 0.45; cursor: not-allowed; }
+
+        /* MIDI download button — blue, distinct from ENABLE's amber */
+        #exportBtn { background: var(--bbg-cyan); color: var(--ink); }
+
+        .midi-strip {
+            position: relative;
+            margin-top: 14px;
+            padding: 12px 0 10px;
+            border-top: 1px dashed rgba(0,0,0,0.18);
+        }
+        .midi-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .midi-help {
+            position: absolute;
+            top: calc(100% - 2px);
+            left: 0;
+            right: 0;
+            background: #F2EBD6;
+            border: 1px solid rgba(0,0,0,0.14);
+            border-radius: 0 0 6px 6px;
+            padding: 11px 16px 13px;
+            box-shadow: 0 10px 22px rgba(0,0,0,0.14);
+            z-index: 10;
+
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9.5px;
+            letter-spacing: 0.6px;
+            color: var(--ink-mid);
+            text-transform: uppercase;
+            line-height: 1.7;
+
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-4px);
+            transition: opacity 0.18s ease, transform 0.18s ease;
+        }
+        .midi-help.show, .midi-help.error {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .midi-help .acc { color: var(--ink); font-weight: 700; }
+        .midi-help.error {
+            border-color: rgba(212,48,48,0.45);
+            color: var(--bbg-red);
+        }
+        .midi-help.error .acc { color: var(--bbg-red); }
+
+        /* MIDI strip — touch/mobile handling.
+           Hover doesn't fire on touch devices, so the tooltip is converted to
+           an inline block that's always visible. Errors still flag in red. */
+        @media (hover: none) {
+            .midi-help {
+                position: static;
+                opacity: 1;
+                pointer-events: auto;
+                transform: none;
+                background: transparent;
+                border: none;
+                border-top: 1px dashed rgba(0,0,0,0.18);
+                border-radius: 0;
+                box-shadow: none;
+                margin-top: 10px;
+                padding: 10px 0 0;
+            }
+            .midi-help.error {
+                border-top-color: rgba(212,48,48,0.45);
+            }
+        }
+        @media (max-width: 800px) {
+            .midi-select {
+                min-width: 0;
+                flex: 1 1 160px;
+                max-width: 100%;
+            }
+            .midi-controls { gap: 10px; }
+        }
+
         .transport-rule {
             flex: 1;
             height: 1px;
@@ -869,6 +991,17 @@
                 </div>
             </div>
 
+            <div class="midi-strip">
+                <div class="midi-controls">
+                    <button class="io-btn" id="midiEnableBtn">↗ ENABLE</button>
+                    <select id="midiPortSelect" class="midi-select" style="display:none;"></select>
+                    <button class="io-btn" id="exportBtn">↓ MIDI</button>
+                </div>
+                <div class="midi-help" id="midiHelp">
+                    <span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. The collective vote streams continuously — pitch bend tracks mean-mode microtones; notes retrigger when the collective sweeps across semitones. <span class="acc">↓ MIDI</span> downloads the last 30 seconds as a file.
+                </div>
+            </div>
+
             <div class="transport">
                 <button class="trans-btn live" id="playBtn"><span class="led"></span>▶ PLAY</button>
                 <button class="trans-btn" id="stopBtn"><span class="led"></span>■ STOP</button>
@@ -946,6 +1079,11 @@
     var metaYou = document.getElementById('metaYou');
     var metaOut = document.getElementById('metaOut');
     var valVoters = document.getElementById('valVoters');
+
+    var midiEnableBtn = document.getElementById('midiEnableBtn');
+    var midiPortSelect = document.getElementById('midiPortSelect');
+    var exportBtn = document.getElementById('exportBtn');
+    var midiHelp = document.getElementById('midiHelp');
 
     // ============== UTIL ==============
     function freqToFrac(freq) {
@@ -1623,16 +1761,415 @@
     }
 
 
+    // ============== MIDI ==============
+    // Continuous streaming of the collective vote as MIDI.
+    // Strategy: hold one note per active voice slot. Each frame, decide whether
+    // the held note(s) should be released and retriggered based on:
+    //   (a) the collective sweeping across a semitone boundary (with hysteresis)
+    //   (b) the held note exceeding a max duration (force refresh for envelopes)
+    // Mean mode emits pitch bend so the held note's audible pitch tracks the
+    // collective's true microtonal frequency. Mode/chord modes keep bend = 0.
+    // The same frame logic drives both live streaming and the .mid file export.
+
+    var midiAccess = null;
+    var midiOutput = null;
+    var MIDI_CHANNEL = 0;
+    var MIDI_VELOCITY = 100;
+    var MIDI_HYSTERESIS_CENTS = 15;     // mode/chord: require crossing this far past the boundary before retrigger
+    var MIDI_MEAN_BEND_LIMIT = 150;     // mean mode: let the held note's bend cover this much (±) before retriggering — keeps the voice continuous, uses pitch bend rather than retriggers to track the collective
+    var MIDI_MAX_NOTE_SEC = 4;          // mode/chord: refresh held notes at least this often (envelope safety)
+    var MIDI_MEAN_MAX_NOTE_SEC = 30;    // mean mode: only force-refresh after a very long hold — mean is meant to sustain, so we let it ride
+    var MIDI_BEND_THRESHOLD = 16;       // ~0.4 cents — minimum change to send a new bend message
+    var MIDI_HELP_DEFAULT = '<span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. The collective vote streams continuously — pitch bend tracks mean-mode microtones; notes retrigger when the collective sweeps across semitones. <span class="acc">↓ MIDI</span> downloads the last 30 seconds as a file.';
+
+    var liveMidiState = { held: {}, bend: 0x2000 };
+
+    function pitchBendForCents(cents) {
+        var bend = Math.round(0x2000 + (cents / 200) * 8192);
+        return Math.max(0, Math.min(0x3FFF, bend));
+    }
+
+    function freqOfMidi(midiNote) {
+        for (var i = 0; i < NOTES.length; i++) {
+            if (NOTES[i].midi === midiNote) return NOTES[i].freq;
+        }
+        return 440 * Math.pow(2, (midiNote - 69) / 12);
+    }
+
+    // Pure function: takes (state, time, mode, mainFreq, chordFreqs, chordWeights)
+    // and returns an ordered list of {type, ...} events to emit. Mutates state.
+    //
+    // Strategy:
+    //   1. Determine which slots should be active this frame.
+    //   2. Release any slots that should no longer be held.
+    //   3. Decide which active slots need a retrigger (bend can't cover the new
+    //      pitch — either we've moved past the bend limit, or it's a fresh slot,
+    //      or the held note has exceeded max duration).
+    //   4. Emit events in MIDI-correct order: noteOffs → pitch bend → noteOns,
+    //      where the pitch bend is computed for the *post-retrigger* held note
+    //      so the new noteOn lands at the right audible pitch immediately.
+    function midiFrame(state, time, mode, mainFreq, chordFreqsArg, chordWeightsArg) {
+        var events = [];
+
+        // 1. What slots should be active this frame?
+        var targets = [];
+        if (mode === 'mean' || mode === 'mode') {
+            if (mainFreq) targets.push({ slot: 0, freq: mainFreq });
+        } else if (mode === 'chord') {
+            for (var i = 0; i < 3; i++) {
+                if (chordWeightsArg[i] > 0 && chordFreqsArg[i]) {
+                    targets.push({ slot: i, freq: chordFreqsArg[i] });
+                }
+            }
+        }
+        var active = {};
+        targets.forEach(function(t) { active[t.slot] = true; });
+
+        // 2. Release any held slots no longer active (mode switch dropped voices,
+        // or chord mode lost a voice as votes dispersed)
+        Object.keys(state.held).forEach(function(slot) {
+            if (!active[slot]) {
+                events.push({ type: 'noteOff', note: state.held[slot].midiNote });
+                delete state.held[slot];
+            }
+        });
+
+        // 3. Decide retriggers (without yet emitting noteOffs/noteOns)
+        var retriggers = []; // { slot, oldNote (or null), newNote }
+        // Mean mode rides one note via bend — only retrigger when the pitch pushes
+        // past the bend's comfortable working range. Mode/chord use the tighter
+        // semitone-crossing threshold since they're chromatic by design.
+        var threshold = (mode === 'mean') ? MIDI_MEAN_BEND_LIMIT : (50 + MIDI_HYSTERESIS_CENTS);
+        var maxDur = (mode === 'mean') ? MIDI_MEAN_MAX_NOTE_SEC : MIDI_MAX_NOTE_SEC;
+        targets.forEach(function(target) {
+            var slot = target.slot;
+            var held = state.held[slot];
+            var nearest = nearestNote(target.freq);
+            if (!held) {
+                retriggers.push({ slot: slot, oldNote: null, newNote: nearest.midi });
+                return;
+            }
+            var centsFromHeld = 1200 * Math.log2(target.freq / freqOfMidi(held.midiNote));
+            if (Math.abs(centsFromHeld) > threshold) {
+                retriggers.push({ slot: slot, oldNote: held.midiNote, newNote: nearest.midi });
+            } else if (time - held.startTime > maxDur) {
+                retriggers.push({ slot: slot, oldNote: held.midiNote, newNote: held.midiNote, isRefresh: true });
+            }
+        });
+
+        // 4a. Emit noteOffs first
+        retriggers.forEach(function(r) {
+            if (r.oldNote !== null) events.push({ type: 'noteOff', note: r.oldNote });
+        });
+
+        // 4b. Compute desired bend for the post-retrigger held state.
+        // Only mean mode (single voice) carries non-zero bend; mode/chord stay at 0.
+        var desiredBend = 0x2000;
+        if (mode === 'mean' && targets.length === 1) {
+            var t0 = targets[0];
+            var rt = null;
+            for (var ri = 0; ri < retriggers.length; ri++) {
+                if (retriggers[ri].slot === 0) { rt = retriggers[ri]; break; }
+            }
+            var heldMidi;
+            if (rt && !rt.isRefresh) {
+                heldMidi = rt.newNote;
+            } else if (state.held[0]) {
+                heldMidi = state.held[0].midiNote;
+            } else if (rt) {
+                heldMidi = rt.newNote;
+            }
+            if (heldMidi != null) {
+                var cents = 1200 * Math.log2(t0.freq / freqOfMidi(heldMidi));
+                // clamp to ±200 cents (standard bend range); should rarely hit this
+                // because retriggers fire at 150c
+                cents = Math.max(-200, Math.min(200, cents));
+                desiredBend = pitchBendForCents(cents);
+            }
+        }
+        if (Math.abs(desiredBend - state.bend) >= MIDI_BEND_THRESHOLD) {
+            events.push({ type: 'pitchBend', value: desiredBend });
+            state.bend = desiredBend;
+        }
+
+        // 4c. Emit noteOns and update held state
+        retriggers.forEach(function(r) {
+            events.push({ type: 'noteOn', note: r.newNote });
+            state.held[r.slot] = { midiNote: r.newNote, startTime: time };
+        });
+
+        return events;
+    }
+
+    function emitLiveEvents(events) {
+        if (!midiOutput) return;
+        events.forEach(function(ev) {
+            try {
+                if (ev.type === 'noteOn') {
+                    midiOutput.send([0x90 | MIDI_CHANNEL, ev.note, MIDI_VELOCITY]);
+                } else if (ev.type === 'noteOff') {
+                    midiOutput.send([0x80 | MIDI_CHANNEL, ev.note, 0]);
+                } else if (ev.type === 'pitchBend') {
+                    midiOutput.send([0xE0 | MIDI_CHANNEL, ev.value & 0x7F, (ev.value >> 7) & 0x7F]);
+                }
+            } catch (e) {}
+        });
+    }
+
+    function midiAllNotesOff() {
+        if (midiOutput) {
+            try {
+                midiOutput.send([0xB0 | MIDI_CHANNEL, 123, 0]);
+                midiOutput.send([0xB0 | MIDI_CHANNEL, 120, 0]);
+                // also send bend back to center for hygiene
+                midiOutput.send([0xE0 | MIDI_CHANNEL, 0x00, 0x40]);
+            } catch (e) {}
+        }
+        liveMidiState.held = {};
+        liveMidiState.bend = 0x2000;
+    }
+
+    // ----- Web MIDI lifecycle -----
+
+    function setMidiHelp(html, isError) {
+        midiHelp.innerHTML = html;
+        midiHelp.classList.toggle('error', !!isError);
+    }
+
+    function refreshMidiPorts() {
+        if (!midiAccess) return;
+        var prevId = midiOutput ? midiOutput.id : '';
+        midiPortSelect.innerHTML = '';
+        var noneOpt = document.createElement('option');
+        noneOpt.value = '';
+        noneOpt.textContent = '— none —';
+        midiPortSelect.appendChild(noneOpt);
+        var count = 0;
+        midiAccess.outputs.forEach(function(out) {
+            var opt = document.createElement('option');
+            opt.value = out.id;
+            opt.textContent = out.name + (out.manufacturer ? ' · ' + out.manufacturer : '');
+            if (out.id === prevId) opt.selected = true;
+            midiPortSelect.appendChild(opt);
+            count++;
+        });
+        if (prevId) midiOutput = midiAccess.outputs.get(prevId) || null;
+        if (count === 0) {
+            setMidiHelp('<span class="acc">No MIDI ports found.</span> Enable IAC Driver (Mac · Audio MIDI Setup) or install loopMIDI (Windows). New ports appear here automatically. Or use the <span class="acc">↓ MIDI</span> button to download a file.', true);
+        } else if (!midiOutput) {
+            setMidiHelp('<span class="acc">' + count + ' port' + (count > 1 ? 's' : '') + ' available.</span> Select one above to start streaming. In your DAW, set this port as MIDI input on a track and arm record.', false);
+        }
+    }
+
+    function selectPort(id) {
+        if (!midiAccess) return;
+        // any change of port = release any notes still held on the old one
+        midiAllNotesOff();
+        midiOutput = id ? midiAccess.outputs.get(id) : null;
+        if (midiOutput) {
+            setMidiHelp('<span class="acc">Streaming to ' + midiOutput.name + '.</span> Open Live, Logic or any DAW, route this port to a MIDI track, and arm record. Mean mode rides on continuous pitch bend; mode and chord emit chromatic notes.', false);
+        } else {
+            setMidiHelp(MIDI_HELP_DEFAULT, false);
+        }
+    }
+
+    function initMidi() {
+        if (!navigator.requestMIDIAccess) {
+            midiEnableBtn.disabled = true;
+            midiEnableBtn.textContent = 'UNSUPPORTED';
+            setMidiHelp('<span class="acc">Browser unsupported.</span> Live MIDI needs Chrome, Edge, or a recent Safari. The <span class="acc">↓ MIDI</span> download button works in any browser.', true);
+            return;
+        }
+        setMidiHelp(MIDI_HELP_DEFAULT, false);
+    }
+
+    midiEnableBtn.addEventListener('click', function() {
+        if (!navigator.requestMIDIAccess) return;
+        midiEnableBtn.disabled = true;
+        midiEnableBtn.textContent = '... requesting';
+        navigator.requestMIDIAccess({ sysex: false }).then(function(access) {
+            midiAccess = access;
+            access.onstatechange = refreshMidiPorts;
+            midiEnableBtn.style.display = 'none';
+            midiPortSelect.style.display = '';
+            refreshMidiPorts();
+        }, function(err) {
+            midiEnableBtn.disabled = false;
+            midiEnableBtn.textContent = '↗ ENABLE';
+            setMidiHelp('<span class="acc">Permission denied.</span> Refresh the page and allow MIDI access when prompted. The <span class="acc">↓ MIDI</span> download button works without permission.', true);
+        });
+    });
+
+    midiPortSelect.addEventListener('change', function() {
+        selectPort(midiPortSelect.value);
+    });
+
+    function showMidiHelp() { midiHelp.classList.add('show'); }
+    function hideMidiHelp() { midiHelp.classList.remove('show'); }
+    midiEnableBtn.addEventListener('mouseenter', showMidiHelp);
+    midiEnableBtn.addEventListener('mouseleave', hideMidiHelp);
+    midiEnableBtn.addEventListener('focus', showMidiHelp);
+    midiEnableBtn.addEventListener('blur', hideMidiHelp);
+    midiPortSelect.addEventListener('mouseenter', showMidiHelp);
+    midiPortSelect.addEventListener('mouseleave', hideMidiHelp);
+    midiPortSelect.addEventListener('focus', showMidiHelp);
+    midiPortSelect.addEventListener('blur', hideMidiHelp);
+    midiHelp.addEventListener('mouseenter', showMidiHelp);
+    midiHelp.addEventListener('mouseleave', hideMidiHelp);
+
+    initMidi();
+
+    // ----- MIDI file export (last 30s of tapeHistory) -----
+
+    function vlq(value) {
+        if (value <= 0) return [0];
+        var bytes = [value & 0x7F];
+        value >>>= 7;
+        while (value > 0) {
+            bytes.unshift((value & 0x7F) | 0x80);
+            value >>>= 7;
+        }
+        return bytes;
+    }
+
+    function exportMidi() {
+        if (!tapeHistory.length) return;
+
+        var TPQ = 480;
+        // 60 BPM → 1 beat = 1 second → tick = seconds * TPQ
+        var usPerQ = 1000000;
+        var latestT = tapeHistory[tapeHistory.length - 1].t;
+        var earliestT = Math.max(0, latestT - 30);
+        var samples = [];
+        for (var i = 0; i < tapeHistory.length; i++) {
+            if (tapeHistory[i].t >= earliestT) samples.push(tapeHistory[i]);
+        }
+        if (!samples.length) return;
+        var t0 = samples[0].t;
+
+        // Walk samples through the same frame logic to build raw events with absolute ticks
+        var state = { held: {}, bend: 0x2000 };
+        var rawEvents = [];
+        samples.forEach(function(s) {
+            var tickAt = Math.round((s.t - t0) * TPQ);
+            var frameEvs = midiFrame(state, s.t, s.mode, s.collectiveFreq, s.chordFreqs, s.chordWeights);
+            frameEvs.forEach(function(ev) {
+                rawEvents.push({ tick: tickAt, type: ev.type, note: ev.note, value: ev.value });
+            });
+        });
+        // Release any still-held notes one tick after the final sample
+        var endTick = Math.round((latestT - t0) * TPQ) + 1;
+        Object.keys(state.held).forEach(function(slot) {
+            rawEvents.push({ tick: endTick, type: 'noteOff', note: state.held[slot].midiNote });
+        });
+
+        // Convert to MIDI byte events
+        var events = [];
+        events.push({ tick: 0, bytes: [0xFF, 0x51, 0x03,
+            (usPerQ >> 16) & 0xFF, (usPerQ >> 8) & 0xFF, usPerQ & 0xFF] });
+        var name = 'Democracy in Music - Mean Mode';
+        var nameBytes = [];
+        for (var c = 0; c < name.length; c++) nameBytes.push(name.charCodeAt(c) & 0x7F);
+        events.push({ tick: 0, bytes: [0xFF, 0x03].concat(vlq(nameBytes.length)).concat(nameBytes) });
+
+        rawEvents.forEach(function(re) {
+            var bytes;
+            if (re.type === 'noteOn') {
+                bytes = [0x90 | MIDI_CHANNEL, re.note, MIDI_VELOCITY];
+            } else if (re.type === 'noteOff') {
+                bytes = [0x80 | MIDI_CHANNEL, re.note, 0];
+            } else if (re.type === 'pitchBend') {
+                bytes = [0xE0 | MIDI_CHANNEL, re.value & 0x7F, (re.value >> 7) & 0x7F];
+            }
+            events.push({ tick: re.tick, bytes: bytes });
+        });
+
+        // Sort by tick; within same tick, ordering: noteOff < pitchBend < noteOn
+        events.forEach(function(e, i) { e._i = i; });
+        function priority(bytes) {
+            var status = bytes[0] & 0xF0;
+            if (status === 0x80) return 0;
+            if (status === 0xE0) return 1;
+            if (status === 0x90) return 2;
+            return 0;
+        }
+        events.sort(function(a, b) {
+            if (a.tick !== b.tick) return a.tick - b.tick;
+            var pa = priority(a.bytes), pb = priority(b.bytes);
+            if (pa !== pb) return pa - pb;
+            return a._i - b._i;
+        });
+
+        var lastTick = events[events.length - 1].tick;
+        events.push({ tick: lastTick, bytes: [0xFF, 0x2F, 0x00] });
+
+        var track = [];
+        var prev = 0;
+        events.forEach(function(ev) {
+            var d = ev.tick - prev;
+            track = track.concat(vlq(d)).concat(ev.bytes);
+            prev = ev.tick;
+        });
+
+        var header = [
+            0x4D, 0x54, 0x68, 0x64, 0, 0, 0, 6,
+            0, 0, 0, 1, (TPQ >> 8) & 0xFF, TPQ & 0xFF
+        ];
+        var trkLen = track.length;
+        var trackHdr = [0x4D, 0x54, 0x72, 0x6B,
+            (trkLen >> 24) & 0xFF, (trkLen >> 16) & 0xFF,
+            (trkLen >> 8) & 0xFF, trkLen & 0xFF];
+        var bytes = new Uint8Array(header.concat(trackHdr).concat(track));
+
+        var d = new Date();
+        function pz(n) { return ('0' + n).slice(-2); }
+        var stamp = d.getFullYear() + pz(d.getMonth() + 1) + pz(d.getDate())
+                  + '-' + pz(d.getHours()) + pz(d.getMinutes());
+        var fname = 'democracy-meanmode-' + stamp + '.mid';
+
+        var blob = new Blob([bytes], { type: 'audio/midi' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = fname;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+    }
+
+    exportBtn.addEventListener('click', exportMidi);
+
+
     // ============== ANIMATION LOOP ==============
     function tick() {
         if (!running) { animFrame = null; return; }
         var now = (audioCtx ? audioCtx.currentTime : performance.now() / 1000);
-        var dt = lastTime > 0 ? Math.min(0.05, now - lastTime) : 1/60;
+        var rawDt = lastTime > 0 ? (now - lastTime) : 1/60;
+
+        // Detect time jumps — stop/play, MIDI download dialog, tab backgrounded,
+        // anything that lets wall-clock time advance without ticks running.
+        // Shift tapeStart forward to absorb the gap so the rolling tape window
+        // doesn't prune everything on resume.
+        if (rawDt < 0) {
+            // clock reset (rare); ignore
+            rawDt = 1/60;
+        } else if (rawDt > 0.3) {
+            tapeStart += (rawDt - 1/60);
+            rawDt = 1/60;
+        }
+
+        var dt = Math.min(0.05, rawDt);
         lastTime = now;
 
         driftVoters(dt);
         computeCollective();
         updateAudio();
+
+        // MIDI live-out: emit retrigger / bend / noteOff events for the current frame
+        if (midiOutput) {
+            emitLiveEvents(midiFrame(liveMidiState, now, demoMode, collectiveFreq, chordFreqs, chordWeights));
+        }
 
         // sample to history (~ 30 Hz) — drives the integrated canvas's time axis
         var t = now - tapeStart;
@@ -1678,7 +2215,8 @@
         stopBtn.classList.remove('live');
         statusStrip.innerHTML = '<span class="acc">RUNNING</span> · tap and drag the pitch field';
         if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-        lastTime = 0;
+        // intentionally do NOT reset lastTime — the next tick() uses the gap
+        // between lastTime and now to detect pauses and shift tapeStart forward
         if (!animFrame) animFrame = requestAnimationFrame(tick);
     }
     function stop() {
@@ -1687,6 +2225,7 @@
         playBtn.classList.remove('live');
         statusStrip.innerHTML = '<span class="acc">PAUSED</span> · press play';
         silenceAudio();
+        midiAllNotesOff();
         if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
     }
     playBtn.addEventListener('click', start);
@@ -1698,7 +2237,9 @@
         userFreq = null;
         pitchField.classList.remove('engaged');
         tapeHistory = [];
-        tapeStart = audioCtx ? audioCtx.currentTime : performance.now() / 1000;
+        var nowClear = audioCtx ? audioCtx.currentTime : performance.now() / 1000;
+        tapeStart = nowClear;
+        lastTime = nowClear; // keep gap-detector calibrated to this fresh start
         statusStrip.innerHTML = '<span class="acc">CLEAR</span> · voters reseeded';
         if (!running) renderIntegrated();
         setTimeout(function() {
