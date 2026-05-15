@@ -1007,6 +1007,7 @@
         .midi-select:disabled { opacity: 0.45; cursor: not-allowed; }
 
         #exportBtn { background: var(--bbg-cyan); color: var(--ink); }
+        #csvBtn { background: var(--bbg-yellow); color: var(--ink); }
 
         .midi-strip {
             position: relative;
@@ -1373,9 +1374,10 @@
                     <button class="io-btn" id="midiEnableBtn">↗ ENABLE</button>
                     <select id="midiPortSelect" class="midi-select" style="display:none;"></select>
                     <button class="io-btn" id="exportBtn">↓ MIDI</button>
+                    <button class="io-btn" id="csvBtn">↓ CSV</button>
                 </div>
                 <div class="midi-help" id="midiHelp">
-                    <span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. The score streams column-by-column as the scan plays — each grid cell above the water threshold is one note at the row's pitch in A minor, velocity scaled by intensity. <span class="acc">↓ MIDI</span> downloads the current score as a 96 BPM file (one cell = one sixteenth).
+                    <span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. The score streams column-by-column as the scan plays — each grid cell above the water threshold is one note at the row's pitch in A minor, velocity scaled by intensity. <span class="acc">↓ MIDI</span> downloads the current score as a 96 BPM file (one cell = one sixteenth). <span class="acc">↓ CSV</span> downloads the tap-event log (single-player has one voter; networked sessions will tag each tap with its participant).
                 </div>
             </div>
 
@@ -2281,6 +2283,59 @@
     }
 
     exportBtn.addEventListener('click', exportMidi);
+
+    // ===== CSV: voter tap-event export =====
+    var csvBtn = document.getElementById('csvBtn');
+
+    function csvEscape(v) {
+        if (v == null) return '';
+        var s = String(v);
+        if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0) {
+            return '"' + s.replace(/"/g, '""') + '"';
+        }
+        return s;
+    }
+    function csvRow(arr) { return arr.map(csvEscape).join(',') + '\n'; }
+
+    function exportVotersCsv() {
+        if (!voteCenters.length) {
+            setMidiHelp('<span class="acc">No taps recorded.</span> Touch or drag on the composition canvas before exporting CSV.', true);
+            return;
+        }
+        var d = new Date();
+        function pz(n) { return ('0' + n).slice(-2); }
+        var stamp = d.getFullYear() + pz(d.getMonth()+1) + pz(d.getDate())
+                  + '-' + pz(d.getHours()) + pz(d.getMinutes());
+
+        var out = '';
+        out += '# Democracy in Music - Miro\n';
+        out += '# Exported: ' + d.toISOString() + '\n';
+        out += '# Source: single-player tap-event log (one local voter)\n';
+        out += '# Grid dimensions: ' + GRID_COLS + ' cols x ' + GRID_ROWS + ' rows\n';
+        out += '# Pitch mapping: row 0 = highest pitch (A5), row ' + (GRID_ROWS-1) + ' = lowest (A2), via A-minor pentatonic + octaves.\n';
+        out += '# Total taps: ' + voteCenters.length + '\n';
+        out += '# Networked-session exports use the same schema with a real voter_id per participant.\n';
+        out += csvRow(['tap_index', 'col', 'row', 'voter_id']);
+
+        for (var i = 0; i < voteCenters.length; i++) {
+            var packed = voteCenters[i];
+            var col = Math.floor(packed / GRID_ROWS);
+            var row = packed % GRID_ROWS;
+            out += csvRow([i, col, row, 0]);
+        }
+
+        var blob = new Blob([out], { type: 'text/csv' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'democracy-miro-' + stamp + '-voters.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+    }
+
+    csvBtn.addEventListener('click', exportVotersCsv);
 
 
     function ensureAudio(cb) {

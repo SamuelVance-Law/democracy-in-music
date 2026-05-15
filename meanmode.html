@@ -681,6 +681,7 @@
 
         /* MIDI download button — blue, distinct from ENABLE's amber */
         #exportBtn { background: var(--bbg-cyan); color: var(--ink); }
+        #csvBtn { background: var(--bbg-yellow); color: var(--ink); }
 
         .midi-strip {
             position: relative;
@@ -996,9 +997,10 @@
                     <button class="io-btn" id="midiEnableBtn">↗ ENABLE</button>
                     <select id="midiPortSelect" class="midi-select" style="display:none;"></select>
                     <button class="io-btn" id="exportBtn">↓ MIDI</button>
+                    <button class="io-btn" id="csvBtn">↓ CSV</button>
                 </div>
                 <div class="midi-help" id="midiHelp">
-                    <span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. The collective vote streams continuously — pitch bend tracks mean-mode microtones; notes retrigger when the collective sweeps across semitones. <span class="acc">↓ MIDI</span> downloads the last 30 seconds as a file.
+                    <span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. The collective vote streams continuously — pitch bend tracks mean-mode microtones; notes retrigger when the collective sweeps across semitones. <span class="acc">↓ MIDI</span> downloads the last 30 seconds. <span class="acc">↓ CSV</span> downloads a snapshot of all voter frequencies at the moment of export (simulated agents; networked sessions will use real participants).
                 </div>
             </div>
 
@@ -2139,6 +2141,81 @@
     }
 
     exportBtn.addEventListener('click', exportMidi);
+
+    // ===== CSV: voter snapshot export =====
+    var csvBtn = document.getElementById('csvBtn');
+
+    function csvEscape(v) {
+        if (v == null) return '';
+        var s = String(v);
+        if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0) {
+            return '"' + s.replace(/"/g, '""') + '"';
+        }
+        return s;
+    }
+    function csvRow(arr) { return arr.map(csvEscape).join(',') + '\n'; }
+
+    function exportVotersCsv() {
+        if (!voters.length && userFreq == null) {
+            setMidiHelp('<span class="acc">No voters to export.</span> The simulation must be running for voter data to be present.', true);
+            return;
+        }
+
+        var d = new Date();
+        function pz(n) { return ('0' + n).slice(-2); }
+        var stamp = d.getFullYear() + pz(d.getMonth()+1) + pz(d.getDate())
+                  + '-' + pz(d.getHours()) + pz(d.getMinutes());
+
+        var out = '';
+        out += '# Democracy in Music - Mean Mode\n';
+        out += '# Exported: ' + d.toISOString() + '\n';
+        out += '# Source: simulated voter agents (single-player preview)\n';
+        out += '# Snapshot of all voter frequencies at the moment of export.\n';
+        out += '# mode_at_export: ' + demoMode + '\n';
+        out += '# collective_freq_hz: ' + collectiveFreq.toFixed(4) + '\n';
+        out += '# voter_count: ' + voters.length + (userFreq != null ? ' + 1 user' : '') + '\n';
+        out += '# Networked-session exports will use the same schema with real participants.\n';
+        out += csvRow([
+            'voter_id', 'is_user', 'frequency_hz',
+            'nearest_pitch_midi', 'nearest_pitch_name', 'cents_from_pitch', 'cluster_id'
+        ]);
+
+        for (var i = 0; i < voters.length; i++) {
+            var v = voters[i];
+            var n = nearestNote(v.freq);
+            var cents = 1200 * Math.log2(v.freq / n.freq);
+            out += csvRow([
+                i, 0,
+                v.freq.toFixed(4),
+                n.midi, n.name,
+                cents.toFixed(2),
+                (v.cluster != null) ? v.cluster : ''
+            ]);
+        }
+        if (userFreq != null) {
+            var un = nearestNote(userFreq);
+            var ucents = 1200 * Math.log2(userFreq / un.freq);
+            out += csvRow([
+                voters.length, 1,
+                userFreq.toFixed(4),
+                un.midi, un.name,
+                ucents.toFixed(2),
+                ''
+            ]);
+        }
+
+        var blob = new Blob([out], { type: 'text/csv' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'democracy-meanmode-' + stamp + '-voters.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+    }
+
+    csvBtn.addEventListener('click', exportVotersCsv);
 
 
     // ============== ANIMATION LOOP ==============

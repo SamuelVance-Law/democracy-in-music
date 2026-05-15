@@ -954,6 +954,7 @@
 
         /* MIDI download button — blue, distinct from ENABLE's amber */
         #exportBtn { background: var(--bbg-cyan); color: var(--ink); }
+        #csvBtn { background: var(--bbg-yellow); color: var(--ink); }
 
         /* MIDI strip inside DP-03 — port controls, download button, status help */
         .midi-strip {
@@ -1400,9 +1401,10 @@
                     <button class="io-btn" id="midiEnableBtn">↗ ENABLE</button>
                     <select id="midiPortSelect" class="midi-select" style="display:none;"></select>
                     <button class="io-btn" id="exportBtn">↓ MIDI</button>
+                    <button class="io-btn" id="csvBtn">↓ CSV</button>
                 </div>
                 <div class="midi-help" id="midiHelp">
-                    <span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. Live votes and tape playback both stream out.
+                    <span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. Live votes and tape playback both stream out. <span class="acc">↓ CSV</span> downloads voter-data — per-round, per-voter pitch choices (simulated agents, networked sessions will use real participants).
                 </div>
             </div>
 
@@ -1836,7 +1838,8 @@
                 mode: demoMode,
                 voters: numVoters,
                 voicesAtTime: numVoices,
-                result: result
+                result: result,
+                allVotes: allVotes.slice() // retain per-voter pitch choices for CSV export
             });
             tapeRecCount.textContent = pad3(roundLog.length);
 
@@ -2222,8 +2225,7 @@
     // Writes a Standard MIDI File (format 0) from roundLog.
     // One round = one quarter note at the current tempo (knob value).
     // Mode mode exports the chord of top-N voices (N = current numVoices),
-    // mirroring playback. Mean mode exports the nearest chromatic note —
-    // i.e. what the LCD shows. Exact mean frequencies would need pitch bend.
+    // mirroring playback.
     function vlq(value) {
         if (value <= 0) return [0];
         var bytes = [value & 0x7F];
@@ -2459,6 +2461,85 @@
     playBtn.addEventListener('click', startPlayback);
     stopBtn.addEventListener('click', stopPlayback);
     exportBtn.addEventListener('click', exportMidi);
+
+    // ===== CSV: voter data export =====
+    var csvBtn = document.getElementById('csvBtn');
+
+    function csvEscape(v) {
+        if (v == null) return '';
+        var s = String(v);
+        if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0) {
+            return '"' + s.replace(/"/g, '""') + '"';
+        }
+        return s;
+    }
+    function csvRow(arr) { return arr.map(csvEscape).join(',') + '\n'; }
+
+    function exportVotersCsv() {
+        if (!roundLog.length) {
+            setMidiHelp('<span class="acc">No rounds recorded.</span> Play at least one round before exporting CSV.', true);
+            return;
+        }
+
+        var d = new Date();
+        function pz(n) { return ('0' + n).slice(-2); }
+        var stamp = d.getFullYear() + pz(d.getMonth()+1) + pz(d.getDate())
+                  + '-' + pz(d.getHours()) + pz(d.getMinutes());
+
+        var out = '';
+        out += '# Democracy in Music - Piano\n';
+        out += '# Exported: ' + d.toISOString() + '\n';
+        out += '# Source: simulated voter agents (single-player preview)\n';
+        out += '# Rows: one per (round, voter). The user is the highest voter_id in each round.\n';
+        out += '# Networked-session exports use the same schema with real participants.\n';
+        out += csvRow([
+            'round', 'voter_id', 'is_user',
+            'voted_pitch_index', 'voted_pitch_name',
+            'mode_at_round', 'voters_at_round', 'voices_at_round',
+            'winner_index', 'winner_name'
+        ]);
+
+        for (var ri = 0; ri < roundLog.length; ri++) {
+            var rnd = roundLog[ri];
+            var av = rnd.allVotes || [];
+            // user is always the last entry (per runCascade's allVotes.push(userIdx))
+            var userVoterId = av.length - 1;
+            // winner: for mean mode use nearestIdx; for mode/chord use first voice
+            var winIdx = (rnd.mode === 'mean')
+                ? rnd.result.nearestIdx
+                : (rnd.result.voices && rnd.result.voices.length ? rnd.result.voices[0] : -1);
+            var winName = (winIdx >= 0 && typeof noteLabel === 'function') ? noteLabel(winIdx) : '';
+
+            for (var v = 0; v < av.length; v++) {
+                var pitchIdx = av[v];
+                var pitchName = (typeof noteLabel === 'function') ? noteLabel(pitchIdx) : pitchIdx;
+                out += csvRow([
+                    ri + 1,
+                    v,
+                    (v === userVoterId) ? 1 : 0,
+                    pitchIdx,
+                    pitchName,
+                    rnd.mode,
+                    rnd.voters,
+                    rnd.voicesAtTime,
+                    winIdx,
+                    winName,
+                ]);
+            }
+        }
+
+        var blob = new Blob([out], { type: 'text/csv' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'democracy-piano-' + stamp + '-voters.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+    }
+
+    csvBtn.addEventListener('click', exportVotersCsv);
 
     clearBtn.addEventListener('click', function() {
         if (voting) return;
