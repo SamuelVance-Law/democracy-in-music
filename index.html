@@ -16,7 +16,7 @@
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --bg: #F7F4EE; --ink: #1C1917; --mid: #57534E; --light: #6B6660;
+            --bg: #F7F4EE; --cream: #F7F4EE; --cream-warm: #F2EDE4; --ink: #1C1917; --mid: #57534E; --light: #6B6660;
             --dim: #8C857E; --rule: #D6D3D1; --rule-light: #E7E5E4;
 
             /* BBG prototype palette — single source of truth */
@@ -695,25 +695,26 @@
                 <div class="knob" id="knob">
                     <div class="indicator-arm" id="indicator-arm"></div>
                 </div>
-                <button class="lbl lbl-12" data-code="DP·01" data-link="piano.html"        data-name="Piano"        data-method="Democratic Instrument" data-color="var(--c-piano)"      style="--c: var(--c-piano)">DP·01</button>
-                <button class="lbl lbl-2"  data-code="MM·01" data-link="meanmode.html"     data-name="Mean Mode"    data-method="Continuous Pitch"      data-color="var(--c-meanmode)"   style="--c: var(--c-meanmode)">MM·01</button>
-                <button class="lbl lbl-4"  data-code="MI·01" data-link="miro.html"         data-name="Miro"         data-method="Spatial Voting"        data-color="var(--c-miro)"       style="--c: var(--c-miro)">MI·01</button>
-                <button class="lbl lbl-6"  data-code="DA·01" data-link="assembly.html"     data-name="Assembly"     data-method="Layered Composition"   data-color="var(--c-assembly)"   style="--c: var(--c-assembly)">DA·01</button>
-                <button class="lbl lbl-8"  data-code="PA·01" data-link="parliament.html"   data-name="Parliament"   data-method="Redistricting"         data-color="var(--c-parliament)" style="--c: var(--c-parliament)">PA·01</button>
-                <button class="lbl lbl-10" data-code="CH·01" data-link="choreography.html" data-name="Choreography" data-method="Body as Instrument"    data-color="var(--c-choreo)"     style="--c: var(--c-choreo)">CH·01</button>
+                <button class="lbl lbl-12" data-code="DP·01" data-link="piano.html"        data-name="Piano" data-desc="A digital piano that only works with two or more players."        data-method="Democratic Instrument" data-color="var(--c-piano)"      style="--c: var(--c-piano)">DP·01</button>
+                <button class="lbl lbl-2"  data-code="MM·01" data-link="meanmode.html"     data-name="Mean Mode" data-desc="The same vote on a continuous pitch line — mean, mode, or chord."    data-method="Continuous Pitch"      data-color="var(--c-meanmode)"   style="--c: var(--c-meanmode)">MM·01</button>
+                <button class="lbl lbl-4"  data-code="MI·01" data-link="miro.html"         data-name="Miro" data-desc="A 3D voter graph seen from above; overlapping votes form peaks."         data-method="Spatial Voting"        data-color="var(--c-miro)"       style="--c: var(--c-miro)">MI·01</button>
+                <button class="lbl lbl-6"  data-code="DA·01" data-link="assembly.html"     data-name="Assembly" data-desc="Five layers, four variations each — a Würfelspiel the crowd votes on."     data-method="Layered Composition"   data-color="var(--c-assembly)"   style="--c: var(--c-assembly)">DA·01</button>
+                <button class="lbl lbl-8"  data-code="PA·01" data-link="parliament.html"   data-name="Parliament" data-desc="Electoral systems applied to composition; redraw districts, hear them shift."   data-method="Redistricting"         data-color="var(--c-parliament)" style="--c: var(--c-parliament)">PA·01</button>
+                <button class="lbl lbl-10" data-code="CH·01" data-link="choreography.html" data-name="Choreography" data-desc="The body as instrument; six dancers, each with their own tempo." data-method="Body as Instrument"    data-color="var(--c-choreo)"     style="--c: var(--c-choreo)">CH·01</button>
             </div>
             <div class="readout" id="readout">
-                <div class="readout-default"></div>
+                <div class="readout-default">Turn the dial, or press a number.</div>
                 <div class="readout-selected">
                     <div class="code" id="ro-code">DP·01</div>
                     <div class="name" id="ro-name">Piano</div>
                     <div class="method" id="ro-method">Democratic Instrument</div>
+                    <div class="desc" id="ro-desc">A digital piano that only works with two or more players.</div>
                     <a class="play" id="ro-play" href="piano.html">
                         <span>Play</span><span class="arr">↗</span>
                     </a>
                 </div>
             </div>
-            <img class="cover-logo" src="svl-logo.png" alt="Sam Vance-Law">
+            <img class="cover-logo" src="svllogo.png" alt="Sam Vance-Law">
         </div>
         <h1 class="cover-title">
             <span class="l">A Guide to</span>
@@ -854,6 +855,7 @@
     var roName    = document.getElementById('ro-name');
     var roMethod  = document.getElementById('ro-method');
     var roPlay    = document.getElementById('ro-play');
+    var roDesc    = document.getElementById('ro-desc');
     var labels    = document.querySelectorAll('.selector .lbl');
 
     // armAngle is an accumulating value (can exceed 360 / go negative).
@@ -904,6 +906,7 @@
         roCode.textContent   = code;
         roName.textContent   = name.toUpperCase();
         roMethod.textContent = method;
+        roDesc.textContent   = btn.dataset.desc || '';
         roPlay.href          = link;
         readout.style.setProperty('--proto-c', color);
         selector.style.setProperty('--proto-c', color);

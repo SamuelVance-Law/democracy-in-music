@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>MI·SYSTEM — Miro · Democracy in Music</title>
+    <meta property="og:title" content="Miro · Democracy in Music">
+    <meta property="og:description" content="A 3D voter graph seen from above. Each touch is a vote; overlapping votes form peaks. Raise the water level and only the strongest survive.">
+    <meta property="og:image" content="https://democracyinmusic.com/ogimage.png">
+    <meta property="og:url" content="https://democracyinmusic.com/miro.html">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2315140F'/%3E%3Ccircle cx='9.5' cy='10' r='5' fill='%23F7901E'/%3E%3Ccircle cx='22' cy='9' r='4' fill='%23F0C840'/%3E%3Ccircle cx='15.5' cy='19' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23.5' r='3' fill='%23D43030'/%3E%3Ccircle cx='24' cy='22.5' r='3.2' fill='%234FB85F'/%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,14 +40,6 @@
             --te-blue:      #3D7DCC;
             --te-green:     #5FAF52;
             --te-red:       #D4322A;
-
-            /* Bloomberg terminal palette — shared with piano/meanmode */
-            --bbg-amber:      #F7901E;
-            --bbg-yellow:     #F0C840;
-            --bbg-green:      #4FB85F;
-            --bbg-red:        #D43030;
-            --bbg-cyan:       #50C8E6;
-            --bbg-black:      #0A0A0A;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -244,8 +241,8 @@
             padding-bottom: 8px;
         }
         .rack {
-            width: 1100px;
-            height: 1090px;
+            width: 1240px;
+            height: 940px;
             display: block;
             position: relative;
             flex-shrink: 0;
@@ -699,58 +696,44 @@
             .scope .screen-and-fader { grid-template-columns: 1fr 44px; gap: 10px; }
         }
 
-        /* transport — Bloomberg keyboard keys */
+        /* transport */
         .transport {
             display: flex;
-            gap: 8px;
+            gap: 12px;
             align-items: center;
             margin-bottom: 22px;
         }
         .trans-btn {
-            background: var(--bbg-yellow);
+            background: var(--cream-deep);
             border: none;
             font-family: 'Hanken Grotesk', sans-serif;
             font-size: 10px;
             font-weight: 800;
             letter-spacing: 1.6px;
-            padding: 12px 18px 10px;
-            border-radius: 3px;
+            padding: 12px 18px;
+            border-radius: 6px;
             cursor: pointer;
-            color: #000;
-            box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.50),
-                inset 0 -2px 0 rgba(0,0,0,0.20),
-                0 1px 2px rgba(0,0,0,0.20);
+            color: var(--ink);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 2px rgba(0,0,0,0.18);
             position: relative;
-            min-width: 72px;
+            min-width: 70px;
             transition: all 0.1s;
             text-transform: uppercase;
         }
-        .trans-btn:hover:not(:disabled) { filter: brightness(1.06); }
-        .trans-btn:active:not(:disabled) {
-            box-shadow:
-                inset 0 1px 3px rgba(0,0,0,0.32),
-                inset 0 0 0 1px rgba(0,0,0,0.12);
-        }
-        .trans-btn:disabled { opacity: 0.40; cursor: not-allowed; }
+        .trans-btn:hover { background: var(--cream-edge); }
+        .trans-btn:disabled { opacity: 0.45; cursor: not-allowed; }
         .trans-btn .led {
             position: absolute;
-            top: 5px; right: 6px;
+            top: 5px; right: 5px;
             width: 4px; height: 4px;
             border-radius: 50%;
-            background: rgba(0,0,0,0.30);
+            background: var(--ink-mid);
+            opacity: 0.3;
             transition: all 0.15s;
         }
-        /* PLAY = green GO key, STOP & CLEAR = red CANCEL keys */
-        #playBtn { background: var(--bbg-green); color: #000; }
-        #stopBtn, #clearBtn { background: var(--bbg-red); color: #fff; }
-        #stopBtn .led, #clearBtn .led { background: rgba(255,255,255,0.35); }
-        .trans-btn.live .led {
-            background: #FFFFFF;
-            box-shadow: 0 0 5px rgba(255,255,255,0.85);
-        }
-        .trans-btn.alarm { color: #fff; }
-        .trans-btn.alarm .led { background: rgba(255,255,255,0.35); }
+        .trans-btn.live .led { background: var(--te-green); opacity: 1; box-shadow: 0 0 4px var(--te-green); }
+        .trans-btn.alarm { color: var(--te-red); }
+        .trans-btn.alarm .led { background: var(--te-red); opacity: 0.7; }
 
         .transport-rule {
             flex: 1;
@@ -966,136 +949,6 @@
         .tape-footer .seg { display: flex; align-items: center; gap: 6px; }
         .tape-footer .seg .acc { color: var(--ink); font-weight: 700; }
 
-        /* ===== MIDI STRIP ===== */
-        .io-btn {
-            background: var(--bbg-amber);
-            border: none;
-            font-family: 'Hanken Grotesk', sans-serif;
-            font-size: 9px;
-            font-weight: 800;
-            letter-spacing: 1.4px;
-            padding: 7px 11px 6px;
-            border-radius: 3px;
-            cursor: pointer;
-            color: #000;
-            box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.45),
-                inset 0 -2px 0 rgba(0,0,0,0.18),
-                0 1px 2px rgba(0,0,0,0.18);
-            text-transform: uppercase;
-            transition: all 0.1s;
-            white-space: nowrap;
-        }
-        .io-btn:hover:not(:disabled) { filter: brightness(1.06); }
-        .io-btn:active:not(:disabled) { box-shadow: inset 0 1px 3px rgba(0,0,0,0.32); }
-        .io-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-
-        .midi-select {
-            background: var(--cream-deep);
-            border: 1px solid rgba(0,0,0,0.18);
-            border-radius: 3px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 0.4px;
-            color: var(--ink);
-            padding: 5px 8px;
-            cursor: pointer;
-            min-width: 220px;
-            max-width: 320px;
-        }
-        .midi-select:focus { outline: 1px solid var(--bbg-amber); outline-offset: 1px; }
-        .midi-select:disabled { opacity: 0.45; cursor: not-allowed; }
-
-        #exportBtn { background: var(--bbg-cyan); color: var(--ink); }
-        #csvBtn { background: var(--bbg-yellow); color: var(--ink); }
-
-        .midi-strip {
-            position: relative;
-            margin-top: 10px;
-            padding: 12px 0 10px;
-            border-top: 1px dashed rgba(0,0,0,0.18);
-        }
-        .midi-controls {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .midi-help {
-            position: absolute;
-            top: calc(100% - 2px);
-            left: 0;
-            right: 0;
-            background: #F2EBD6;
-            border: 1px solid rgba(0,0,0,0.14);
-            border-radius: 0 0 6px 6px;
-            padding: 11px 16px 13px;
-            box-shadow: 0 10px 22px rgba(0,0,0,0.14);
-            z-index: 10;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 9.5px;
-            letter-spacing: 0.6px;
-            color: var(--ink-mid);
-            text-transform: uppercase;
-            line-height: 1.7;
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(-4px);
-            transition: opacity 0.18s ease, transform 0.18s ease;
-        }
-        .midi-help.show, .midi-help.error {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateY(0);
-        }
-        .midi-help .acc { color: var(--ink); font-weight: 700; }
-        .midi-help.error {
-            border-color: rgba(212,48,48,0.45);
-            color: var(--bbg-red);
-        }
-        .midi-help.error .acc { color: var(--bbg-red); }
-
-        /* Two-block tooltip — MIDI block + CSV block. On desktop, hovering a
-           button reveals only its block (via data-mode). On mobile, both stack. */
-        .midi-help-block { display: block; }
-        @media (hover: hover) {
-            .midi-help[data-mode="midi"] .csv-block { display: none; }
-            .midi-help[data-mode="csv"] .midi-block { display: none; }
-        }
-        @media (hover: none) {
-            .midi-help-block + .midi-help-block {
-                margin-top: 11px;
-                padding-top: 11px;
-                border-top: 1px dashed rgba(0,0,0,0.14);
-            }
-        }
-
-        @media (hover: none) {
-            .midi-help {
-                position: static;
-                opacity: 1;
-                pointer-events: auto;
-                transform: none;
-                background: transparent;
-                border: none;
-                border-top: 1px dashed rgba(0,0,0,0.18);
-                border-radius: 0;
-                box-shadow: none;
-                margin-top: 10px;
-                padding: 10px 0 0;
-            }
-            .midi-help.error { border-top-color: rgba(212,48,48,0.45); }
-        }
-        @media (max-width: 800px) {
-            .midi-select {
-                min-width: 0;
-                flex: 1 1 160px;
-                max-width: 100%;
-            }
-            .midi-controls { gap: 10px; }
-        }
-
         @media (max-width: 800px) {
             body { padding: 18px 8px 36px; }
             .module-header { padding: 12px 18px 8px 18px; }
@@ -1123,36 +976,6 @@
             .patch-jack .socket { width: 18px; height: 18px; }
             .transport { flex-wrap: wrap; }
             .trans-btn { padding: 10px 14px; min-width: 56px; }
-        }
-
-        /* MOBILE LAYOUT — rack collapses to a vertical stack of full-width modules.
-           Mirrors piano.html: absolute positioning is suspended below 800px so
-           modules become normal block children in document order. */
-        @media (max-width: 800px) {
-            .rack-shell {
-                overflow-x: visible;
-                padding: 0 12px;
-            }
-            .rack {
-                width: 100%;
-                height: auto;
-                min-height: 0;
-                display: flex;
-                flex-direction: column;
-                gap: 18px;
-            }
-            .module {
-                position: relative !important;
-                transform: none !important;
-                width: auto !important;
-                max-width: 100%;
-            }
-            .module-header,
-            .module-header:active { cursor: default; }
-            .cable-overlay { display: none; }
-            /* On mobile, the scope's side-mounted water fader needs a sensible
-               minimum height since the screen above it shrinks. */
-            .scope .screen-and-fader { grid-template-columns: 1fr 44px; gap: 10px; }
         }
 
         .start-overlay {
@@ -1234,7 +1057,7 @@
                 <li>Tap or drag on the canvas to vote. Each touch adds intensity at that location.</li>
                 <li>Multiple votes in the same region grow into a darker, larger blob.</li>
                 <li>Drag the WATER fader (on the SCOPE module) up to filter out everything below a threshold of agreement; the canvas and terrain update together.</li>
-                <li>Press <b>PLAY</b> to play the surviving marks as a left-to-right musical score.</li>
+                <li>Press <b>SCAN</b> to play the surviving marks as a left-to-right musical score.</li>
             </ol>
 
             <h3>Controls</h3>
@@ -1261,7 +1084,7 @@
     <svg class="cable-overlay" id="cableOverlay"></svg>
 
     <!-- DP—01 INSTRUMENT -->
-    <section class="module instrument" id="dp01" data-x="190" data-y="20" style="transform: translate(190px, 20px);">
+    <section class="module instrument" id="dp01" data-x="260" data-y="20" style="transform: translate(260px, 20px);">
         <header class="module-header">
             <span class="model">MI·01</span>
             <span class="model-name">miro</span>
@@ -1291,7 +1114,7 @@
             </div>
 
             <div class="transport">
-                <button class="trans-btn" id="playBtn"><span class="led"></span>▶ PLAY</button>
+                <button class="trans-btn" id="playBtn"><span class="led"></span>▶ SCAN</button>
                 <button class="trans-btn" id="stopBtn"><span class="led"></span>■ STOP</button>
                 <div class="transport-rule"></div>
                 <button class="trans-btn alarm" id="clearBtn"><span class="led"></span>CLEAR</button>
@@ -1311,7 +1134,7 @@
     </section>
 
     <!-- DP—02 SCOPE (3D wireframe terrain) -->
-    <section class="module display scope" id="dp02" data-x="10" data-y="600" style="transform: translate(10px, 600px);">
+    <section class="module display scope" id="dp02" data-x="60" data-y="510" style="transform: translate(60px, 510px);">
         <header class="module-header">
             <span class="model">MI·02</span>
             <span class="model-name">scope</span>
@@ -1357,7 +1180,7 @@
     </section>
 
     <!-- DP—03 TAPE (sonification score) -->
-    <section class="module display tape" id="dp03" data-x="550" data-y="600" style="transform: translate(550px, 600px);">
+    <section class="module display tape" id="dp03" data-x="640" data-y="510" style="transform: translate(640px, 510px);">
         <header class="module-header">
             <span class="model">MI·03</span>
             <span class="model-name">tape</span>
@@ -1381,23 +1204,6 @@
                     <canvas id="tapeCanvas"></canvas>
                     <div class="screen-label" style="top:8px; left:10px;">SCORE · ROLL</div>
                     <div class="screen-label" style="top:8px; right:10px;" id="tapePos">0.0S / 10S</div>
-                </div>
-            </div>
-
-            <div class="midi-strip">
-                <div class="midi-controls">
-                    <button class="io-btn" id="midiEnableBtn">↗ ENABLE</button>
-                    <select id="midiPortSelect" class="midi-select" style="display:none;"></select>
-                    <button class="io-btn" id="exportBtn">↓ MIDI</button>
-                    <button class="io-btn" id="csvBtn">↓ CSV</button>
-                </div>
-                <div class="midi-help" id="midiHelp" data-mode="midi">
-                    <div class="midi-help-block midi-block">
-                        <span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. The score streams column-by-column as the scan plays — each grid cell above the water threshold is one note at the row's pitch in A minor, velocity scaled by intensity. <span class="acc">↓ MIDI</span> downloads the current score as a 96 BPM file (one cell = one sixteenth).
-                    </div>
-                    <div class="midi-help-block csv-block">
-                        <span class="acc">Voter data export.</span> Tap-event log — col, row, and voter ID for each touch. <span class="acc">Note:</span> single-player has one voter; networked sessions tag each tap with its participant ID.
-                    </div>
                 </div>
             </div>
 
@@ -1433,9 +1239,6 @@
     for (var i = 0; i < colorSeeds.length; i++) colorSeeds[i] = Math.random();
     var maxIntensity = 0;
     var voteCount = 0;
-    // Each entry = the (col, row) cell where a tap was registered.
-    // Used to count how many *votes* (not grid cells) survive the water threshold.
-    var voteCenters = [];
     var scanProgress = -1;     // -1 = not scanning, 0..1 = active
     var sonifying = false;
     var audioCtx = null;
@@ -1462,11 +1265,6 @@
     var tapeRec = document.getElementById('tapeRec');
     var tapeRecLabel = document.getElementById('tapeRecLabel');
     var tapePos = document.getElementById('tapePos');
-
-    var midiEnableBtn = document.getElementById('midiEnableBtn');
-    var midiPortSelect = document.getElementById('midiPortSelect');
-    var exportBtn = document.getElementById('exportBtn');
-    var midiHelp = document.getElementById('midiHelp');
 
     function pad3(n) { return ('000' + n).slice(-3); }
 
@@ -1563,48 +1361,21 @@
             }
         }
         voteCount++;
-        // Clamp center cell to grid bounds before storing
-        var ccol = Math.max(0, Math.min(GRID_COLS - 1, col));
-        var crow = Math.max(0, Math.min(GRID_ROWS - 1, row));
-        voteCenters.push(ccol * GRID_ROWS + crow); // pack as int for efficiency
         canvasWrap.classList.add('has-marks');
     }
 
     function drawBlob(ctx, cx, cy, r, seed1, seed2) {
-        // Nearly circular with the slightest hand-painted wobble — Miró's
-        // Bleu blobs are essentially round with subtle asymmetry, not amoeboid.
-        var pts = 16;
-        var points = new Array(pts);
-        for (var i = 0; i < pts; i++) {
-            var a = (i / pts) * Math.PI * 2;
-            var wobble = 0.055 * Math.sin(seed1 * 11 + a * 2)
-                       + 0.035 * Math.sin(seed2 * 17 + a * 3);
-            var rv = r * (1.0 + wobble);
-            points[i] = { x: cx + Math.cos(a) * rv, y: cy + Math.sin(a) * rv };
-        }
-        // Smooth closed curve through midpoints between successive points.
         ctx.beginPath();
-        var first = points[0], second = points[1];
-        ctx.moveTo((first.x + second.x) / 2, (first.y + second.y) / 2);
-        for (var k = 0; k < pts; k++) {
-            var cur = points[(k + 1) % pts];
-            var nxt = points[(k + 2) % pts];
-            ctx.quadraticCurveTo(cur.x, cur.y, (cur.x + nxt.x) / 2, (cur.y + nxt.y) / 2);
+        var pts = 6 + Math.floor(seed1 * 4);
+        for (var i = 0; i <= pts; i++) {
+            var a = (i / pts) * Math.PI * 2;
+            var rv = r * (0.85 + (((seed1 * 7 + i * 13) % 1) * 0.30));
+            var x = cx + Math.cos(a) * rv;
+            var y = cy + Math.sin(a) * rv;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
         }
         ctx.closePath();
-    }
-
-    function drawScanLine(ctx, W, H) {
-        if (scanProgress < 0 || scanProgress > 1) return;
-        var sx = scanProgress * W;
-        ctx.save();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.42)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([4, 4]);
-        ctx.beginPath();
-        ctx.moveTo(sx, 0); ctx.lineTo(sx, H);
-        ctx.stroke();
-        ctx.restore();
     }
 
     function render2D() {
@@ -1614,88 +1385,65 @@
         var cellH = H / GRID_ROWS;
         ctx.clearRect(0, 0, W, H);
 
-        // Watercolor washes — broad rotated radial-gradient ellipses for a
-        // hand-painted cerulean ground (Miró's gouache surface).
-        for (var t = 0; t < 16; t++) {
+        // Miró cerulean texture: irregular patches of lighter and darker blue
+        // (canvas already has --canvas-blue background; we paint variation on top)
+        for (var t = 0; t < 32; t++) {
             var seed = colorSeeds[t * 7 + 1] || 0.5;
             var px = ((colorSeeds[t * 13] || 0.5) * W);
             var py = ((colorSeeds[t * 13 + 7] || 0.5) * H);
-            var pw = 60 + ((colorSeeds[t * 13 + 1] || 0.5) * 160);
-            var ph = 40 + ((colorSeeds[t * 13 + 2] || 0.5) * 110);
-            var rot = ((colorSeeds[t * 13 + 3] || 0.5) - 0.5) * 0.6;
-            ctx.save();
-            ctx.translate(px, py);
-            ctx.rotate(rot);
-            var grad = ctx.createRadialGradient(0, 0, 0, 0, 0, Math.max(pw, ph));
-            if (seed > 0.5) {
-                grad.addColorStop(0, 'rgba(21,144,216,0.07)');
-                grad.addColorStop(1, 'rgba(21,144,216,0)');
-            } else {
-                grad.addColorStop(0, 'rgba(10,82,140,0.09)');
-                grad.addColorStop(1, 'rgba(10,82,140,0)');
+            var pw = 30 + ((colorSeeds[t * 13 + 1] || 0.5) * 80);
+            var ph = 20 + ((colorSeeds[t * 13 + 2] || 0.5) * 60);
+            ctx.fillStyle = seed > 0.5 ? 'rgba(21,144,216,0.04)' : 'rgba(14,106,168,0.05)';
+            ctx.fillRect(px, py, pw, ph);
+        }
+
+        if (maxIntensity === 0) return;
+
+        for (var r = 0; r < GRID_ROWS; r++) {
+            for (var c = 0; c < GRID_COLS; c++) {
+                var idx = gridIdx(c, r);
+                var val = grid[idx];
+                if (val <= 0) continue;
+                var norm = val / maxIntensity;
+                if (norm < waterLevel) continue;
+
+                var seed1 = colorSeeds[idx];
+                var seed2 = colorSeeds[(idx + 13) % colorSeeds.length];
+                var minR = cellW * 0.30;
+                var maxR = cellW * 3.5;
+                var radius = minR + (maxR - minR) * Math.pow(norm, 0.6);
+                var cx = c * cellW + cellW / 2 + (seed1 - 0.5) * cellW * 0.4;
+                var cy = r * cellH + cellH / 2 + (seed2 - 0.5) * cellH * 0.4;
+
+                // Black blobs (Bleu II style) with intensity-modulated alpha
+                var alpha = 0.55 + 0.40 * Math.pow(norm, 0.5);
+                ctx.fillStyle = 'rgba(8,8,12,' + alpha + ')';
+                drawBlob(ctx, cx, cy, radius, seed1, seed2);
+                ctx.fill();
+
+                if (norm > 0.5) {
+                    ctx.save();
+                    ctx.globalAlpha = 0.18 * norm;
+                    ctx.fillStyle = '#000';
+                    drawBlob(ctx, cx + radius * 0.10, cy + radius * 0.15, radius * 1.05, seed1, seed2);
+                    ctx.fill();
+                    ctx.restore();
+                }
             }
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.ellipse(0, 0, pw, ph, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
         }
 
-        if (voteCenters.length === 0 || maxIntensity === 0) {
-            drawScanLine(ctx, W, H);
-            return;
-        }
-
-        // Tally votes per unique cell. Each tally entry will render as ONE
-        // Bleu-style blob — not one blob per falloff cell (which is what was
-        // producing the smeary halo before). This is the key change that gets
-        // us discrete dots instead of overlapping smaller dots.
-        var votesByCell = {};
-        for (var i = 0; i < voteCenters.length; i++) {
-            var packed = voteCenters[i];
-            votesByCell[packed] = (votesByCell[packed] || 0) + 1;
-        }
-
-        var minR = cellW * 0.85;
-        var maxR = cellW * 3.0;
-
-        for (var key in votesByCell) {
-            if (!votesByCell.hasOwnProperty(key)) continue;
-            var ip = parseInt(key, 10);
-            var col = Math.floor(ip / GRID_ROWS);
-            var row = ip % GRID_ROWS;
-            var idx = gridIdx(col, row);
-
-            // Water filter uses the smoothed intensity so isolated votes
-            // disappear before clustered ones (water = agreement threshold).
-            var cellNorm = grid[idx] / maxIntensity;
-            if (cellNorm < waterLevel) continue;
-
-            // Size scales with smoothed intensity — clustered taps grow
-            // their dot, isolated taps stay smaller.
-            var radius = minR + (maxR - minR) * Math.pow(cellNorm, 0.55);
-
-            var seed1 = colorSeeds[idx];
-            var seed2 = colorSeeds[(idx + 13) % colorSeeds.length];
-            var cx = col * cellW + cellW / 2 + (seed1 - 0.5) * cellW * 0.25;
-            var cy = row * cellH + cellH / 2 + (seed2 - 0.5) * cellH * 0.25;
-
-            // Soft drop shadow with a small bottom-right offset — gives the
-            // "blob sitting on paper" depth from the Bleu series. Critically,
-            // this is offset shadow (not just blur), so the edge of the blob
-            // stays crisp instead of bleeding outward.
+        // scan line — bright on blue
+        if (scanProgress >= 0 && scanProgress <= 1) {
+            var sx = scanProgress * W;
             ctx.save();
-            ctx.shadowColor = 'rgba(0,5,15,0.30)';
-            ctx.shadowBlur = 8;
-            ctx.shadowOffsetX = 2;
-            ctx.shadowOffsetY = 3;
-            ctx.fillStyle = 'rgba(8,10,18,0.96)';
-            drawBlob(ctx, cx, cy, radius, seed1, seed2);
-            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(sx, 0); ctx.lineTo(sx, H);
+            ctx.stroke();
             ctx.restore();
         }
-
-        drawScanLine(ctx, W, H);
     }
 
     // pointer drawing
@@ -1747,17 +1495,11 @@
     }
 
     function updateAboveCount() {
-        // Count how many *votes* (cast taps) land on cells that survive the water
-        // threshold. Previously this counted lit grid cells, which over-reported
-        // dramatically because each tap spreads intensity into a ~37-cell radius.
         var n = 0;
         if (maxIntensity > 0) {
-            for (var i = 0; i < voteCenters.length; i++) {
-                var packed = voteCenters[i];
-                var col = Math.floor(packed / GRID_ROWS);
-                var row = packed % GRID_ROWS;
-                var v = grid[gridIdx(col, row)];
-                if (v > 0 && (v / maxIntensity) >= waterLevel) n++;
+            for (var i = 0; i < grid.length; i++) {
+                var nv = grid[i] / maxIntensity;
+                if (grid[i] > 0 && nv >= waterLevel) n++;
             }
         }
         lcdAbove.textContent = pad3(Math.min(999, n));
@@ -2027,359 +1769,6 @@
     }
 
     // ============== AUDIO / SONIFY ==============
-    // ============== MIDI ==============
-    // MIRO is already a step sequencer: 64 columns × 24 rows, scanning left-to-right.
-    // Each grid cell above the water threshold becomes one MIDI note event with
-    // pitch from the row's slot in the A-minor scale and velocity from intensity.
-    // The same logic drives both live streaming (during PLAY) and file export.
-
-    // Convert SCALE_AMIN (frequencies) to MIDI note numbers — A2..A5 across A minor pentatonic + octaves
-    var SCALE_AMIN_MIDI = [45, 48, 50, 52, 55, 57, 60, 62, 64, 67, 69, 72, 74, 76, 79, 81];
-    var MIDI_CHANNEL = 0;
-    var MIDI_TPQ = 480;
-    // 96 BPM with sixteenth-notes-per-column preserves the 156ms scan tempo exactly:
-    //   1 sixteenth at 96 BPM = 156.25ms  ≈  SCAN_DURATION / GRID_COLS (10s / 64)
-    var MIDI_BPM = 96;
-    var MIDI_TICKS_PER_COL = MIDI_TPQ / 4; // 120 ticks = 1 sixteenth at TPQ=480
-
-    var midiAccess = null;
-    var midiOutput = null;
-    var midiHeld = [];        // notes currently sounding in the live stream
-    var midiLastCol = -1;     // last column we fired noteOns for
-
-    var MIDI_HELP_DEFAULT = '<span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. The score streams column-by-column as the scan plays — each grid cell above the water threshold is one note at the row\'s pitch in A minor, velocity scaled by intensity. <span class="acc">↓ MIDI</span> downloads the current score as a 96 BPM file (one cell = one sixteenth).';
-
-    function midiNoteForRow(r) {
-        var fi = Math.round((1 - r / (GRID_ROWS - 1)) * (SCALE_AMIN_MIDI.length - 1));
-        fi = Math.max(0, Math.min(SCALE_AMIN_MIDI.length - 1, fi));
-        return SCALE_AMIN_MIDI[fi];
-    }
-
-    function midiVelocityForCell(norm) {
-        return Math.max(1, Math.min(127, Math.round(norm * 127)));
-    }
-
-    // Walk the grid → list of {col, row, midiNote, velocity} for cells above threshold
-    function gridToNotes() {
-        var notes = [];
-        if (maxIntensity <= 0) return notes;
-        for (var c = 0; c < GRID_COLS; c++) {
-            for (var r = 0; r < GRID_ROWS; r++) {
-                var val = grid[r * GRID_COLS + c];
-                if (val <= 0) continue;
-                var norm = val / maxIntensity;
-                if (norm < waterLevel) continue;
-                notes.push({ col: c, row: r, midiNote: midiNoteForRow(r), velocity: midiVelocityForCell(norm) });
-            }
-        }
-        return notes;
-    }
-
-    // Release all live-held MIDI notes (called on stop / scan-end / port change)
-    function midiAllNotesOff() {
-        if (midiOutput) {
-            try {
-                midiHeld.forEach(function(n) {
-                    midiOutput.send([0x80 | MIDI_CHANNEL, n, 0]);
-                });
-                // belt-and-braces: also send the CC All Notes Off
-                midiOutput.send([0xB0 | MIDI_CHANNEL, 123, 0]);
-                midiOutput.send([0xB0 | MIDI_CHANNEL, 120, 0]);
-            } catch (e) {}
-        }
-        midiHeld = [];
-        midiLastCol = -1;
-    }
-
-    // Called from tickScan as the visual scan progresses. Crosses column boundaries
-    // and fires the corresponding noteOff (prev col) / noteOn (new col) pairs.
-    function midiUpdateScan(progress) {
-        if (!midiOutput) return;
-        if (progress < 0 || progress > 1) { midiAllNotesOff(); return; }
-        var col = Math.floor(progress * GRID_COLS);
-        if (col === midiLastCol) return;
-        // release previous column
-        try {
-            midiHeld.forEach(function(n) {
-                midiOutput.send([0x80 | MIDI_CHANNEL, n, 0]);
-            });
-        } catch (e) {}
-        midiHeld = [];
-        // fire new column
-        if (col >= 0 && col < GRID_COLS) {
-            for (var r = 0; r < GRID_ROWS; r++) {
-                var val = grid[r * GRID_COLS + col];
-                if (val <= 0) continue;
-                var norm = val / maxIntensity;
-                if (norm < waterLevel) continue;
-                var note = midiNoteForRow(r);
-                var vel = midiVelocityForCell(norm);
-                try {
-                    midiOutput.send([0x90 | MIDI_CHANNEL, note, vel]);
-                    midiHeld.push(note);
-                } catch (e) {}
-            }
-        }
-        midiLastCol = col;
-    }
-
-    // ----- Web MIDI lifecycle -----
-
-    var CSV_HELP_TEXT = '<span class="acc">Voter data export.</span> Tap-event log — col, row, and voter ID for each touch. <span class="acc">Note:</span> single-player has one voter; networked sessions tag each tap with its participant ID.';
-
-    function renderMidiHelp(midiHtml, isError) {
-        midiHelp.innerHTML =
-            '<div class="midi-help-block midi-block">' + midiHtml + '</div>' +
-            '<div class="midi-help-block csv-block">' + CSV_HELP_TEXT + '</div>';
-        midiHelp.classList.toggle('error', !!isError);
-    }
-    function setMidiHelp(html, isError) { renderMidiHelp(html, isError); }
-
-    function refreshMidiPorts() {
-        if (!midiAccess) return;
-        var prevId = midiOutput ? midiOutput.id : '';
-        midiPortSelect.innerHTML = '';
-        var noneOpt = document.createElement('option');
-        noneOpt.value = '';
-        noneOpt.textContent = '— none —';
-        midiPortSelect.appendChild(noneOpt);
-        var count = 0;
-        midiAccess.outputs.forEach(function(out) {
-            var opt = document.createElement('option');
-            opt.value = out.id;
-            opt.textContent = out.name + (out.manufacturer ? ' · ' + out.manufacturer : '');
-            if (out.id === prevId) opt.selected = true;
-            midiPortSelect.appendChild(opt);
-            count++;
-        });
-        if (prevId) midiOutput = midiAccess.outputs.get(prevId) || null;
-        if (count === 0) {
-            setMidiHelp('<span class="acc">No MIDI ports found.</span> Enable IAC Driver (Mac · Audio MIDI Setup) or install loopMIDI (Windows). New ports appear here automatically. Or use the <span class="acc">↓ MIDI</span> button to download a file.', true);
-        } else if (!midiOutput) {
-            setMidiHelp('<span class="acc">' + count + ' port' + (count > 1 ? 's' : '') + ' available.</span> Select one above to start streaming. In your DAW, set this port as MIDI input on a track and arm record.', false);
-        }
-    }
-
-    function selectPort(id) {
-        if (!midiAccess) return;
-        midiAllNotesOff();
-        midiOutput = id ? midiAccess.outputs.get(id) : null;
-        if (midiOutput) {
-            setMidiHelp('<span class="acc">Streaming to ' + midiOutput.name + '.</span> Press PLAY to scan — each column fires the notes for the cells above the water threshold, with the pitch set by the row and velocity by intensity.', false);
-        } else {
-            setMidiHelp(MIDI_HELP_DEFAULT, false);
-        }
-    }
-
-    function initMidi() {
-        if (!navigator.requestMIDIAccess) {
-            midiEnableBtn.disabled = true;
-            midiEnableBtn.textContent = 'UNSUPPORTED';
-            setMidiHelp('<span class="acc">Browser unsupported.</span> Live MIDI needs Chrome, Edge, or a recent Safari. The <span class="acc">↓ MIDI</span> download button works in any browser.', true);
-            return;
-        }
-        setMidiHelp(MIDI_HELP_DEFAULT, false);
-    }
-
-    midiEnableBtn.addEventListener('click', function() {
-        if (!navigator.requestMIDIAccess) return;
-        midiEnableBtn.disabled = true;
-        midiEnableBtn.textContent = '... requesting';
-        navigator.requestMIDIAccess({ sysex: false }).then(function(access) {
-            midiAccess = access;
-            access.onstatechange = refreshMidiPorts;
-            midiEnableBtn.style.display = 'none';
-            midiPortSelect.style.display = '';
-            refreshMidiPorts();
-        }, function(err) {
-            midiEnableBtn.disabled = false;
-            midiEnableBtn.textContent = '↗ ENABLE';
-            setMidiHelp('<span class="acc">Permission denied.</span> Refresh the page and allow MIDI access when prompted. The <span class="acc">↓ MIDI</span> download button works without permission.', true);
-        });
-    });
-
-    midiPortSelect.addEventListener('change', function() {
-        selectPort(midiPortSelect.value);
-    });
-
-    // Per-button hover tooltips: ENABLE / port / ↓ MIDI reveal the MIDI block;
-    // ↓ CSV reveals the voter-data block. On mobile both stack inline (CSS).
-    var csvBtn = document.getElementById('csvBtn');
-    function showMidiSection() {
-        midiHelp.dataset.mode = 'midi';
-        midiHelp.classList.add('show');
-    }
-    function showCsvSection() {
-        midiHelp.dataset.mode = 'csv';
-        midiHelp.classList.add('show');
-    }
-    function hideMidiHelp() { midiHelp.classList.remove('show'); }
-    midiEnableBtn.addEventListener('mouseenter', showMidiSection);
-    midiEnableBtn.addEventListener('mouseleave', hideMidiHelp);
-    midiEnableBtn.addEventListener('focus', showMidiSection);
-    midiEnableBtn.addEventListener('blur', hideMidiHelp);
-    midiPortSelect.addEventListener('mouseenter', showMidiSection);
-    midiPortSelect.addEventListener('mouseleave', hideMidiHelp);
-    midiPortSelect.addEventListener('focus', showMidiSection);
-    midiPortSelect.addEventListener('blur', hideMidiHelp);
-    exportBtn.addEventListener('mouseenter', showMidiSection);
-    exportBtn.addEventListener('mouseleave', hideMidiHelp);
-    exportBtn.addEventListener('focus', showMidiSection);
-    exportBtn.addEventListener('blur', hideMidiHelp);
-    csvBtn.addEventListener('mouseenter', showCsvSection);
-    csvBtn.addEventListener('mouseleave', hideMidiHelp);
-    csvBtn.addEventListener('focus', showCsvSection);
-    csvBtn.addEventListener('blur', hideMidiHelp);
-    midiHelp.addEventListener('mouseenter', function() { midiHelp.classList.add('show'); });
-    midiHelp.addEventListener('mouseleave', hideMidiHelp);
-
-    initMidi();
-
-    // ----- MIDI file export (snapshot of current grid as a 96 BPM .mid) -----
-
-    function vlq(value) {
-        if (value <= 0) return [0];
-        var bytes = [value & 0x7F];
-        value >>>= 7;
-        while (value > 0) { bytes.unshift((value & 0x7F) | 0x80); value >>>= 7; }
-        return bytes;
-    }
-
-    function exportMidi() {
-        var notes = gridToNotes();
-        if (notes.length === 0) {
-            setMidiHelp('<span class="acc">No notes to export.</span> Draw something on the canvas first — the grid is empty (or everything is below the water threshold).', true);
-            return;
-        }
-
-        // tempo: 60_000_000 µs / 96 BPM = 625000 µs per quarter
-        var usPerQ = Math.round(60000000 / MIDI_BPM);
-
-        // Build raw events {tick, bytes}
-        var events = [];
-        // tempo + track name
-        events.push({ tick: 0, bytes: [0xFF, 0x51, 0x03,
-            (usPerQ >> 16) & 0xFF, (usPerQ >> 8) & 0xFF, usPerQ & 0xFF] });
-        var name = 'Democracy in Music - Miro';
-        var nameBytes = [];
-        for (var c = 0; c < name.length; c++) nameBytes.push(name.charCodeAt(c) & 0x7F);
-        events.push({ tick: 0, bytes: [0xFF, 0x03].concat(vlq(nameBytes.length)).concat(nameBytes) });
-
-        notes.forEach(function(n) {
-            var onTick = n.col * MIDI_TICKS_PER_COL;
-            var offTick = onTick + MIDI_TICKS_PER_COL;
-            events.push({ tick: onTick, bytes: [0x90 | MIDI_CHANNEL, n.midiNote, n.velocity] });
-            events.push({ tick: offTick, bytes: [0x80 | MIDI_CHANNEL, n.midiNote, 0] });
-        });
-
-        // Stable sort: at the same tick, noteOff before noteOn (so re-attacks of same pitch sit cleanly)
-        events.forEach(function(e, i) { e._i = i; });
-        function priority(bytes) {
-            var status = bytes[0] & 0xF0;
-            if (status === 0x80) return 0;
-            if (status === 0x90) return 2;
-            return 1;
-        }
-        events.sort(function(a, b) {
-            if (a.tick !== b.tick) return a.tick - b.tick;
-            var pa = priority(a.bytes), pb = priority(b.bytes);
-            if (pa !== pb) return pa - pb;
-            return a._i - b._i;
-        });
-
-        var lastTick = events[events.length - 1].tick;
-        events.push({ tick: lastTick, bytes: [0xFF, 0x2F, 0x00] });
-
-        var track = [];
-        var prev = 0;
-        events.forEach(function(ev) {
-            var d = ev.tick - prev;
-            track = track.concat(vlq(d)).concat(ev.bytes);
-            prev = ev.tick;
-        });
-
-        var header = [
-            0x4D, 0x54, 0x68, 0x64, 0, 0, 0, 6,
-            0, 0, 0, 1, (MIDI_TPQ >> 8) & 0xFF, MIDI_TPQ & 0xFF
-        ];
-        var trkLen = track.length;
-        var trackHdr = [0x4D, 0x54, 0x72, 0x6B,
-            (trkLen >> 24) & 0xFF, (trkLen >> 16) & 0xFF,
-            (trkLen >> 8) & 0xFF, trkLen & 0xFF];
-        var bytes = new Uint8Array(header.concat(trackHdr).concat(track));
-
-        var d = new Date();
-        function pz(n) { return ('0' + n).slice(-2); }
-        var stamp = d.getFullYear() + pz(d.getMonth() + 1) + pz(d.getDate())
-                  + '-' + pz(d.getHours()) + pz(d.getMinutes());
-        var fname = 'democracy-miro-' + stamp + '.mid';
-
-        var blob = new Blob([bytes], { type: 'audio/midi' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = fname;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-    }
-
-    exportBtn.addEventListener('click', exportMidi);
-
-    // ===== CSV: voter tap-event export =====
-
-    function csvEscape(v) {
-        if (v == null) return '';
-        var s = String(v);
-        if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0) {
-            return '"' + s.replace(/"/g, '""') + '"';
-        }
-        return s;
-    }
-    function csvRow(arr) { return arr.map(csvEscape).join(',') + '\n'; }
-
-    function exportVotersCsv() {
-        if (!voteCenters.length) {
-            setMidiHelp('<span class="acc">No taps recorded.</span> Touch or drag on the composition canvas before exporting CSV.', true);
-            return;
-        }
-        var d = new Date();
-        function pz(n) { return ('0' + n).slice(-2); }
-        var stamp = d.getFullYear() + pz(d.getMonth()+1) + pz(d.getDate())
-                  + '-' + pz(d.getHours()) + pz(d.getMinutes());
-
-        var out = '';
-        out += '# Democracy in Music - Miro\n';
-        out += '# Exported: ' + d.toISOString() + '\n';
-        out += '# Source: single-player tap-event log (one local voter)\n';
-        out += '# Grid dimensions: ' + GRID_COLS + ' cols x ' + GRID_ROWS + ' rows\n';
-        out += '# Pitch mapping: row 0 = highest pitch (A5), row ' + (GRID_ROWS-1) + ' = lowest (A2), via A-minor pentatonic + octaves.\n';
-        out += '# Total taps: ' + voteCenters.length + '\n';
-        out += '# Networked-session exports use the same schema with a real voter_id per participant.\n';
-        out += csvRow(['tap_index', 'col', 'row', 'voter_id']);
-
-        for (var i = 0; i < voteCenters.length; i++) {
-            var packed = voteCenters[i];
-            var col = Math.floor(packed / GRID_ROWS);
-            var row = packed % GRID_ROWS;
-            out += csvRow([i, col, row, 0]);
-        }
-
-        var blob = new Blob([out], { type: 'text/csv' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = 'democracy-miro-' + stamp + '-voters.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-    }
-
-    csvBtn.addEventListener('click', exportVotersCsv);
-
-
     function ensureAudio(cb) {
         if (!audioCtx) {
             try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
@@ -2466,8 +1855,6 @@
             }
 
             scanAnimStart = performance.now() + 150;
-            // reset live MIDI state so the first column-cross fires cleanly
-            midiHeld = []; midiLastCol = -1;
             tickScan();
         });
     }
@@ -2485,13 +1872,11 @@
             tapeRec.classList.remove('on');
             scopeLive.classList.remove('on');
             tapeRecLabel.textContent = 'stand by';
-            midiAllNotesOff();
             render2D(); renderThree(); drawTape();
             animFrame = null;
             return;
         }
         scanProgress = Math.max(0, Math.min(1, p));
-        midiUpdateScan(scanProgress);
         render2D();
         renderThree();
         drawTape();
@@ -2514,7 +1899,6 @@
         tapeRec.classList.remove('on');
         scopeLive.classList.remove('on');
         tapeRecLabel.textContent = 'stand by';
-        midiAllNotesOff();
         render2D(); renderThree(); drawTape();
     }
 
@@ -2525,7 +1909,6 @@
         grid.fill(0);
         for (var i = 0; i < colorSeeds.length; i++) colorSeeds[i] = Math.random();
         maxIntensity = 0; voteCount = 0;
-        voteCenters.length = 0;
         canvasWrap.classList.remove('has-marks');
         lcdVotes.textContent = '000';
         lcdAbove.textContent = '000';
@@ -2624,6 +2007,10 @@
 
     startBtn.addEventListener('click', function() {
         startOverlay.style.display = 'none';
+        if (typeof THREE === 'undefined') {
+            threeHost.innerHTML = '<div style="color:#50C8E6;text-align:center;padding:80px 16px;font-family:VT323,monospace;font-size:14px;">3D library failed to load \u2014 refresh to try again</div>';
+            return;
+        }
         // build three.js after overlay dismissed (so the canvas has correct size)
         // requestAnimationFrame ensures layout is committed before we measure
         requestAnimationFrame(function() {
@@ -2636,13 +2023,11 @@
 
 
     // ============== MODULE DRAG ==============
-    // header is the drag handle; modules absolute-positioned within rack.
-    // Suppressed on mobile where the rack collapses to a vertical stack.
+    // header is the drag handle; modules absolute-positioned within rack
     var dragState = null;
     var rackElDrag = document.getElementById('rack');
     document.querySelectorAll('.module-header').forEach(function(head) {
         head.addEventListener('pointerdown', function(e) {
-            if (window.innerWidth <= 800) return;  // mobile: no dragging
             var moduleEl = head.closest('.module');
             if (!moduleEl) return;
             var x = parseFloat(moduleEl.dataset.x) || 0;

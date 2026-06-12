@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>DA·SYSTEM — Assembly · Democracy in Music</title>
+    <meta property="og:title" content="Assembly · Democracy in Music">
+    <meta property="og:description" content="Five layers, four variations each. Like an 18th-century dice game, but the audience votes instead of rolling dice.">
+    <meta property="og:image" content="https://democracyinmusic.com/ogimage.png">
+    <meta property="og:url" content="https://democracyinmusic.com/assembly.html">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2315140F'/%3E%3Ccircle cx='9.5' cy='10' r='5' fill='%23F7901E'/%3E%3Ccircle cx='22' cy='9' r='4' fill='%23F0C840'/%3E%3Ccircle cx='15.5' cy='19' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23.5' r='3' fill='%23D43030'/%3E%3Ccircle cx='24' cy='22.5' r='3.2' fill='%234FB85F'/%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -244,8 +249,8 @@
             padding-bottom: 8px;
         }
         .rack {
-            width: 1100px;
-            height: 990px;
+            width: 1240px;
+            height: 940px;
             display: block;
             position: relative;
             flex-shrink: 0;
@@ -981,92 +986,6 @@
         .score-footer .seg { display: flex; align-items: center; gap: 6px; }
         .score-footer .seg .acc { color: var(--ink); font-weight: 700; }
 
-        /* ===== DATA STRIP =====
-           Voter-data export. Same visual pattern as the MIDI strip in the music
-           prototypes; in Assembly there's no MIDI yet, just a CSV download. */
-        .io-btn {
-            background: var(--bbg-amber);
-            border: none;
-            font-family: 'Hanken Grotesk', sans-serif;
-            font-size: 9px;
-            font-weight: 800;
-            letter-spacing: 1.4px;
-            padding: 7px 11px 6px;
-            border-radius: 3px;
-            cursor: pointer;
-            color: #000;
-            box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.45),
-                inset 0 -2px 0 rgba(0,0,0,0.18),
-                0 1px 2px rgba(0,0,0,0.18);
-            text-transform: uppercase;
-            transition: all 0.1s;
-            white-space: nowrap;
-        }
-        .io-btn:hover:not(:disabled) { filter: brightness(1.06); }
-        .io-btn:active:not(:disabled) { box-shadow: inset 0 1px 3px rgba(0,0,0,0.32); }
-        .io-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-        .csv-btn { background: var(--bbg-yellow); color: var(--ink); }
-
-        .data-strip {
-            position: relative;
-            margin-top: 10px;
-            padding: 12px 0 10px;
-            border-top: 1px dashed rgba(0,0,0,0.18);
-        }
-        .data-controls {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .data-help {
-            position: absolute;
-            top: calc(100% - 2px);
-            left: 0; right: 0;
-            background: #F2EBD6;
-            border: 1px solid rgba(0,0,0,0.14);
-            border-radius: 0 0 6px 6px;
-            padding: 11px 16px 13px;
-            box-shadow: 0 10px 22px rgba(0,0,0,0.14);
-            z-index: 10;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 9.5px;
-            letter-spacing: 0.6px;
-            color: var(--ink-mid);
-            text-transform: uppercase;
-            line-height: 1.7;
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(-4px);
-            transition: opacity 0.18s ease, transform 0.18s ease;
-        }
-        .data-help.show, .data-help.error {
-            opacity: 1; pointer-events: auto; transform: translateY(0);
-        }
-        .data-help .acc { color: var(--ink); font-weight: 700; }
-        .data-help.error {
-            border-color: rgba(212,48,48,0.45);
-            color: var(--bbg-red);
-        }
-        .data-help.error .acc { color: var(--bbg-red); }
-
-        @media (hover: none) {
-            .data-help {
-                position: static;
-                opacity: 1; pointer-events: auto; transform: none;
-                background: transparent;
-                border: none;
-                border-top: 1px dashed rgba(0,0,0,0.18);
-                border-radius: 0;
-                box-shadow: none;
-                margin-top: 10px;
-                padding: 10px 0 0;
-            }
-            .data-help.error { border-top-color: rgba(212,48,48,0.45); }
-        }
-
         /* legend dots (per-layer color key, shown on score footer) */
         .layer-legend {
             display: flex;
@@ -1284,7 +1203,7 @@
     <!-- ============================================== -->
     <!--   DA·01 · ASSEMBLY  (instrument)               -->
     <!-- ============================================== -->
-    <section class="module instrument" id="dp01" data-x="190" data-y="20" style="transform: translate(190px, 20px);" data-layer="0">
+    <section class="module instrument" id="dp01" data-x="260" data-y="20" style="transform: translate(260px, 20px);" data-layer="0">
         <header class="module-header">
             <span class="model">da·01</span>
             <span class="model-name">democratic assembly</span>
@@ -1345,7 +1264,7 @@
     <!-- ============================================== -->
     <!--   DA·02 · TALLY  (live crowd vote scope)       -->
     <!-- ============================================== -->
-    <section class="module display tally" id="dp02" data-x="10" data-y="510" style="transform: translate(10px, 510px);">
+    <section class="module display tally" id="dp02" data-x="60" data-y="510" style="transform: translate(60px, 510px);">
         <header class="module-header">
             <span class="model">da·02</span>
             <span class="model-name">tally</span>
@@ -1378,7 +1297,7 @@
     <!-- ============================================== -->
     <!--   DA·03 · SCORE  (accumulated composition)     -->
     <!-- ============================================== -->
-    <section class="module display score-mod" id="dp03" data-x="550" data-y="510" style="transform: translate(550px, 510px);">
+    <section class="module display score-mod" id="dp03" data-x="640" data-y="510" style="transform: translate(640px, 510px);">
         <header class="module-header">
             <span class="model">da·03</span>
             <span class="model-name">score</span>
@@ -1403,15 +1322,6 @@
                     <canvas id="scoreCanvas"></canvas>
                     <div class="screen-label" style="top:8px; left:10px;">SCORE · ROLL</div>
                     <div class="screen-label" style="top:8px; right:10px;" id="scorePos">00:00</div>
-                </div>
-            </div>
-
-            <div class="data-strip">
-                <div class="data-controls">
-                    <button class="io-btn csv-btn" id="csvBtn">↓ CSV</button>
-                </div>
-                <div class="data-help" id="dataHelp">
-                    <span class="acc">Voter data export.</span> Download the current Assembly session as CSV — per-layer vote counts across all four variations, your pick, and the winner. <span class="acc">Note:</span> single-player crowd is simulated (24 agents per layer); networked-session exports will replace these with real participants on the same schema.
                 </div>
             </div>
 
@@ -1463,7 +1373,6 @@
     var userChoices = [];         // all user choices (per layer)
     var winners = [];             // 1-indexed winner per layer (0 = undecided)
     var crowdVotes = null;        // current layer's [v0,v1,v2,v3]
-    var voteHistory = [];         // retained per-layer crowdVotes after finalization (for data export)
     var revealAnim = 0;           // 0..1 reveal progress for tally
     var revealStartTs = 0;
     var revealDoneTs = 0;
@@ -1669,7 +1578,6 @@
         }
         votes[userChoice]++;
         crowdVotes = votes;
-        voteHistory[currentLayer] = votes.slice(); // retain for CSV export
 
         // find winner
         var maxV = 0, winIdx = 0;
@@ -1771,7 +1679,6 @@
         userChoices = [];
         winners = [];
         crowdVotes = null;
-        voteHistory = [];
         activeVariation = [0, 0, 0, 0, 0];
         scoreDecidedEl.textContent = '0';
         scoreLive.classList.remove('on');
@@ -1795,96 +1702,6 @@
         }
     });
     clearBtn.addEventListener('click', resetAll);
-
-
-    // ============== DATA EXPORT (CSV) ==============
-    // Assembly's voter model is currently aggregate-only: per-layer crowd vote
-    // counts plus the user's pick and the winner. When the networked version
-    // lands, the schema stays the same but rows gain per-participant detail.
-
-    var csvBtn = document.getElementById('csvBtn');
-    var dataHelp = document.getElementById('dataHelp');
-
-    function setDataHelp(html, isError) {
-        dataHelp.innerHTML = html;
-        dataHelp.classList.toggle('error', !!isError);
-    }
-    function showDataHelp() { dataHelp.classList.add('show'); }
-    function hideDataHelp() { dataHelp.classList.remove('show'); }
-    csvBtn.addEventListener('mouseenter', showDataHelp);
-    csvBtn.addEventListener('mouseleave', hideDataHelp);
-    csvBtn.addEventListener('focus', showDataHelp);
-    csvBtn.addEventListener('blur', hideDataHelp);
-    dataHelp.addEventListener('mouseenter', showDataHelp);
-    dataHelp.addEventListener('mouseleave', hideDataHelp);
-
-    function csvEscape(v) {
-        if (v == null) return '';
-        var s = String(v);
-        if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0) {
-            return '"' + s.replace(/"/g, '""') + '"';
-        }
-        return s;
-    }
-    function csvRow(arr) { return arr.map(csvEscape).join(',') + '\n'; }
-
-    function exportVotersCsv() {
-        // Build header comment + column row + data rows. Comments use `#`,
-        // which is conventional in scientific CSVs; tools like pandas can skip
-        // them with `comment='#'`. Excel will treat them as a stray text row,
-        // which is harmless for a manual look but flag-able if you import.
-        var d = new Date();
-        function pz(n) { return ('0' + n).slice(-2); }
-        var stamp = d.getFullYear() + pz(d.getMonth()+1) + pz(d.getDate())
-                  + '-' + pz(d.getHours()) + pz(d.getMinutes());
-
-        var anyDecided = false;
-        for (var li = 0; li < LAYERS.length; li++) if (winners[li]) { anyDecided = true; break; }
-        if (!anyDecided) {
-            setDataHelp('<span class="acc">No votes cast yet.</span> Make at least one decision before exporting — the file would otherwise be empty.', true);
-            return;
-        }
-
-        var out = '';
-        out += '# Democracy in Music - Assembly\n';
-        out += '# Exported: ' + d.toISOString() + '\n';
-        out += '# Source: simulated voter agents (single-player preview)\n';
-        out += '# Crowd size per layer: ' + CROWD_SIZE + ' (1 user + ' + (CROWD_SIZE-1) + ' simulated)\n';
-        out += '# Schema: one row per (layer, variation). vote_count includes the user\'s vote if they picked this variation.\n';
-        out += csvRow(['layer_index', 'layer_name', 'variation_index', 'variation_name', 'vote_count', 'was_user_pick', 'was_winner']);
-
-        for (var li = 0; li < LAYERS.length; li++) {
-            var layer = LAYERS[li];
-            var winIdx = winners[li] ? winners[li] - 1 : -1;
-            var userIdx = (typeof userChoices[li] === 'number') ? userChoices[li] : -1;
-            // Only export decided layers
-            if (winIdx < 0) continue;
-            var tally = voteHistory[li] || [0, 0, 0, 0];
-            for (var vi = 0; vi < layer.variations.length; vi++) {
-                out += csvRow([
-                    li,
-                    layer.name,
-                    vi,
-                    layer.variations[vi],
-                    tally[vi],
-                    (vi === userIdx) ? 1 : 0,
-                    (vi === winIdx) ? 1 : 0,
-                ]);
-            }
-        }
-
-        var blob = new Blob([out], { type: 'text/csv' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = 'democracy-assembly-' + stamp + '-voters.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-    }
-
-    csvBtn.addEventListener('click', exportVotersCsv);
 
 
     // ============== CANVAS HELPERS ==============

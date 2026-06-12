@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>DP·SYSTEM — Piano · Democracy in Music</title>
+    <meta property="og:title" content="Piano · Democracy in Music">
+    <meta property="og:description" content="A digital piano that only works with two or more players. Everyone picks a note; you hear the most popular choice, or a chord of the top votes.">
+    <meta property="og:image" content="https://democracyinmusic.com/ogimage.png">
+    <meta property="og:url" content="https://democracyinmusic.com/piano.html">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2315140F'/%3E%3Ccircle cx='9.5' cy='10' r='5' fill='%23F7901E'/%3E%3Ccircle cx='22' cy='9' r='4' fill='%23F0C840'/%3E%3Ccircle cx='15.5' cy='19' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23.5' r='3' fill='%23D43030'/%3E%3Ccircle cx='24' cy='22.5' r='3.2' fill='%234FB85F'/%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -246,7 +251,7 @@
         }
         .rack {
             width: 1240px;
-            height: 960px;
+            height: 940px;
             display: block;
             position: relative;
             flex-shrink: 0;
@@ -723,32 +728,6 @@
         /* STOP & CLEAR = red CANCEL keys */
         #stopBtn, #clearBtn { background: var(--bbg-red); color: #fff; }
         #stopBtn .led, #clearBtn .led { background: rgba(255,255,255,0.35); }
-
-        /* small action button used inside display modules (e.g. MIDI export on tape) */
-        .io-btn {
-            background: var(--bbg-amber);
-            border: none;
-            font-family: 'Hanken Grotesk', sans-serif;
-            font-size: 9px;
-            font-weight: 800;
-            letter-spacing: 1.4px;
-            padding: 7px 11px 6px;
-            border-radius: 3px;
-            cursor: pointer;
-            color: #000;
-            box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.45),
-                inset 0 -2px 0 rgba(0,0,0,0.18),
-                0 1px 2px rgba(0,0,0,0.18);
-            text-transform: uppercase;
-            transition: all 0.1s;
-            white-space: nowrap;
-        }
-        .io-btn:hover:not(:disabled) { filter: brightness(1.06); }
-        .io-btn:active:not(:disabled) {
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.32);
-        }
-        .io-btn:disabled { opacity: 0.35; cursor: not-allowed; }
         /* live state: white LED with glow (works on green or red) */
         .trans-btn.live .led {
             background: #FFFFFF;
@@ -896,125 +875,6 @@
             background: var(--rec-phos);
             opacity: 1;
             box-shadow: 0 0 5px var(--rec-phos);
-        }
-
-        /* MIDI port select */
-        .midi-select {
-            background: var(--cream-deep);
-            border: 1px solid rgba(0,0,0,0.18);
-            border-radius: 3px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 0.4px;
-            color: var(--ink);
-            padding: 5px 8px;
-            cursor: pointer;
-            min-width: 220px;
-            max-width: 320px;
-        }
-        .midi-select:focus { outline: 1px solid var(--bbg-amber); outline-offset: 1px; }
-        .midi-select:disabled { opacity: 0.45; cursor: not-allowed; }
-
-        .midi-help {
-            position: absolute;
-            top: calc(100% - 2px);
-            left: 0;
-            right: 0;
-            background: #F2EBD6;
-            border: 1px solid rgba(0,0,0,0.14);
-            border-radius: 0 0 6px 6px;
-            padding: 11px 16px 13px;
-            box-shadow: 0 10px 22px rgba(0,0,0,0.14);
-            z-index: 10;
-
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 9.5px;
-            letter-spacing: 0.6px;
-            color: var(--ink-mid);
-            text-transform: uppercase;
-            line-height: 1.7;
-
-            /* hidden by default; revealed on hover/focus of ENABLE or when in error state */
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(-4px);
-            transition: opacity 0.18s ease, transform 0.18s ease;
-        }
-        .midi-help.show, .midi-help.error {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateY(0);
-        }
-        .midi-help .acc { color: var(--ink); font-weight: 700; }
-        .midi-help.error {
-            border-color: rgba(212,48,48,0.45);
-            color: var(--bbg-red);
-        }
-        .midi-help.error .acc { color: var(--bbg-red); }
-
-        /* Two-block tooltip: the strip's help text splits into a MIDI block and
-           a CSV block. On desktop, hovering a button reveals only that button's
-           block (via data-mode on the help element). On mobile, both stack. */
-        .midi-help-block { display: block; }
-        @media (hover: hover) {
-            .midi-help[data-mode="midi"] .csv-block { display: none; }
-            .midi-help[data-mode="csv"] .midi-block { display: none; }
-        }
-        @media (hover: none) {
-            .midi-help-block + .midi-help-block {
-                margin-top: 11px;
-                padding-top: 11px;
-                border-top: 1px dashed rgba(0,0,0,0.14);
-            }
-        }
-
-        /* MIDI download button — blue, distinct from ENABLE's amber */
-        #exportBtn { background: var(--bbg-cyan); color: var(--ink); }
-        #csvBtn { background: var(--bbg-yellow); color: var(--ink); }
-
-        /* MIDI strip inside DP-03 — port controls, download button, status help */
-        .midi-strip {
-            position: relative;
-            margin-top: 14px;
-            padding: 12px 0 10px;
-            border-top: 1px dashed rgba(0,0,0,0.18);
-        }
-        .midi-controls {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        /* MIDI strip — touch/mobile handling.
-           Hover doesn't fire on touch devices, so the tooltip is converted to
-           an inline block that's always visible. Errors still flag in red. */
-        @media (hover: none) {
-            .midi-help {
-                position: static;
-                opacity: 1;
-                pointer-events: auto;
-                transform: none;
-                background: transparent;
-                border: none;
-                border-top: 1px dashed rgba(0,0,0,0.18);
-                border-radius: 0;
-                box-shadow: none;
-                margin-top: 10px;
-                padding: 10px 0 0;
-            }
-            .midi-help.error {
-                border-top-color: rgba(212,48,48,0.45);
-            }
-        }
-        @media (max-width: 800px) {
-            /* let the dropdown shrink to fit narrow viewports and absorb available width */
-            .midi-select {
-                min-width: 0;
-                flex: 1 1 160px;
-                max-width: 100%;
-            }
-            .midi-controls { gap: 10px; }
         }
 
         /* the dark CRT-style screen */
@@ -1248,7 +1108,6 @@
             <div class="ctrl"><span class="k">Voters</span><span>Crowd size, 3 to 24.</span></div>
             <div class="ctrl"><span class="k">Voices</span><span>How many sustained voices the synth holds.</span></div>
             <div class="ctrl"><span class="k">Tempo</span><span>For visual feedback only: the speed at which votes settle.</span></div>
-            <div class="ctrl"><span class="k">MIDI</span><span>On the tape module: <b>↓ MIDI</b> downloads the recorded tape as a standard MIDI file — one round per beat at the chosen tempo. <b>↗ Enable</b> streams every vote and tape-playback note in real time to a virtual MIDI port (IAC Driver on Mac, loopMIDI on Windows), so Piano feeds directly into Live, Logic, or any DAW.</span></div>
 
             <h3>What this demonstrates</h3>
             <p>The simplest case in the project: one decision (which note to play) shared among many. Mode voting rewards distinct preferences and produces stranger collective harmonies: clusters of taste, not averages of them. With more voters, the result drifts further from your individual choice. The same patterns play out at every scale.</p>
@@ -1261,7 +1120,7 @@
     <div class="start-card">
         <div class="h">DP·SYSTEM</div>
         <div class="s">a democratic synth · model 01</div>
-        <p>The instrument plays. The scope shows the vote. The tape records the score — and sends it out as MIDI to your DAW. Three discrete modules, patched together.</p>
+        <p>The instrument plays. The scope shows the vote. The tape records the score. Three discrete modules, patched together.</p>
         <button id="startBtn">power on</button>
     </div>
 </div>
@@ -1333,7 +1192,7 @@
                 <button class="trans-btn alarm" id="clearBtn"><span class="led"></span>CLEAR</button>
             </div>
 
-            <!-- output jacks (scope + tape pair, centered at the bottom) -->
+            <!-- output jacks -->
             <div class="output-jacks" id="patchOuts">
                 <div class="patch-jack out lit" data-id="scope-out">
                     <div class="socket"></div>
@@ -1412,23 +1271,6 @@
                 </div>
             </div>
 
-            <div class="midi-strip">
-                <div class="midi-controls">
-                    <button class="io-btn" id="midiEnableBtn">↗ ENABLE</button>
-                    <select id="midiPortSelect" class="midi-select" style="display:none;"></select>
-                    <button class="io-btn" id="exportBtn">↓ MIDI</button>
-                    <button class="io-btn" id="csvBtn">↓ CSV</button>
-                </div>
-                <div class="midi-help" id="midiHelp" data-mode="midi">
-                    <div class="midi-help-block midi-block">
-                        <span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. Live votes and tape playback both stream out.
-                    </div>
-                    <div class="midi-help-block csv-block">
-                        <span class="acc">Voter data export.</span> Per-round, per-voter pitch choices — every cascade-revealed vote captured, with the mode at the time and the winning pitch. <span class="acc">Note:</span> single-player crowd is simulated; networked sessions use the same schema with real participants.
-                    </div>
-                </div>
-            </div>
-
             <div class="tape-footer">
                 <div class="seg">click on roll · <span class="acc">↔</span> set playback start</div>
                 <span class="voice-pill" id="voicePill">VOICES · 1</span>
@@ -1498,7 +1340,6 @@
     var playBtn = document.getElementById('playBtn');
     var stopBtn = document.getElementById('stopBtn');
     var clearBtn = document.getElementById('clearBtn');
-    var exportBtn = document.getElementById('exportBtn');
     var scopeCanvas = document.getElementById('scopeCanvas');
     var tapeCanvas = document.getElementById('tapeCanvas');
     var startOverlay = document.getElementById('startOverlay');
@@ -1520,11 +1361,6 @@
     var valVoters = document.getElementById('valVoters');
     var valVoices = document.getElementById('valVoices');
     var valTempo = document.getElementById('valTempo');
-
-    var midiEnableBtn = document.getElementById('midiEnableBtn');
-    var midiPortSelect = document.getElementById('midiPortSelect');
-    var midiHelp = document.getElementById('midiHelp');
-    var csvBtn = document.getElementById('csvBtn');
 
     // ============== UTIL ==============
     function pad3(n) { return ('000' + n).slice(-3); }
@@ -1860,8 +1696,7 @@
                 mode: demoMode,
                 voters: numVoters,
                 voicesAtTime: numVoices,
-                result: result,
-                allVotes: allVotes.slice() // retain per-voter pitch choices for CSV export
+                result: result
             });
             tapeRecCount.textContent = pad3(roundLog.length);
 
@@ -1873,9 +1708,6 @@
                     playChord(freqs, 0.95);
                 }
             });
-
-            // MIDI live-out — fires the democratic result, not the user's key press
-            sendMidiNotes(result.voices, 900);
 
             result.voices.forEach(function(i) { if (keyEls[i]) keyEls[i].classList.add('result-flash'); });
             setTimeout(function() {
@@ -1897,7 +1729,6 @@
 
             statusStrip.innerHTML = '<span class="acc">RD ' + pad3(roundLog.length) + '</span> · play another · or PLAY';
             playBtn.disabled = false;
-            exportBtn.disabled = false;
         });
     }
 
@@ -2199,8 +2030,6 @@
                             ? [rnd.result.freq]
                             : rec.voices.map(function(i) { return KEY_DATA[i].freq; });
                         playChord(freqs, beatMs / 1000 * 0.95);
-                        // MIDI live-out for playback
-                        sendMidiNotes(rec.voices, beatMs * 0.95);
                     }, when));
                 })(i);
             }
@@ -2226,14 +2055,12 @@
         playBtn.classList.remove('live');
         playBtn.disabled = roundLog.length === 0;
         stopBtn.disabled = true;
-        exportBtn.disabled = roundLog.length === 0;
         tapeRec.classList.remove('on');
         tapeRecLabel.textContent = 'stand by';
         statusStrip.innerHTML = '<span class="acc">RD ' + pad3(roundLog.length) + '</span> · ready';
         playheadFrac = -1;
         tapePos.textContent = '00:00';
         drawTape();
-        midiAllNotesOff();
     }
 
     function formatTime(ms) {
@@ -2243,344 +2070,8 @@
         return ('0' + mm).slice(-2) + ':' + ('0' + ss).slice(-2);
     }
 
-    // ============== MIDI EXPORT ==============
-    // Writes a Standard MIDI File (format 0) from roundLog.
-    // One round = one quarter note at the current tempo (knob value).
-    // Mode mode exports the chord of top-N voices (N = current numVoices),
-    // mirroring playback.
-    function vlq(value) {
-        if (value <= 0) return [0];
-        var bytes = [value & 0x7F];
-        value >>>= 7;
-        while (value > 0) {
-            bytes.unshift((value & 0x7F) | 0x80);
-            value >>>= 7;
-        }
-        return bytes;
-    }
-
-    function exportMidi() {
-        if (!roundLog.length) return;
-
-        var TPQ = 480;                       // ticks per quarter
-        var TICKS_PER_ROUND = TPQ;           // one quarter per round
-        var NOTE_TICKS = TPQ - 4;            // tiny gap before retrigger
-        var VELOCITY = 100;
-        var CHANNEL = 0;
-        var usPerQ = Math.round(60000000 / bpm);
-
-        // Build (tick, bytes) events
-        var events = [];
-        // Tempo
-        events.push({ tick: 0, bytes: [0xFF, 0x51, 0x03,
-            (usPerQ >> 16) & 0xFF, (usPerQ >> 8) & 0xFF, usPerQ & 0xFF] });
-        // Track name (ASCII only for DAW compatibility)
-        var name = 'Democracy in Music - Piano';
-        var nameBytes = [];
-        for (var c = 0; c < name.length; c++) nameBytes.push(name.charCodeAt(c) & 0x7F);
-        events.push({ tick: 0, bytes: [0xFF, 0x03].concat(vlq(nameBytes.length)).concat(nameBytes) });
-
-        // Notes — mirror playback
-        roundLog.forEach(function(rnd, i) {
-            var rec = recomputeVoices(rnd, numVoices);
-            var voices = rec.voices && rec.voices.length ? rec.voices : [rec.nearestIdx];
-            var startTick = i * TICKS_PER_ROUND;
-            var endTick = startTick + NOTE_TICKS;
-            voices.forEach(function(idx) {
-                var midiNote = idx + 48;  // KEY_DATA[0] = C3 = MIDI 48
-                events.push({ tick: startTick, bytes: [0x90 | CHANNEL, midiNote, VELOCITY] });
-                events.push({ tick: endTick,   bytes: [0x80 | CHANNEL, midiNote, 0] });
-            });
-        });
-
-        // Stable sort by tick (note-offs before note-ons at same tick when retriggering)
-        events.forEach(function(e, i) { e._i = i; });
-        events.sort(function(a, b) {
-            if (a.tick !== b.tick) return a.tick - b.tick;
-            var aOff = (a.bytes[0] & 0xF0) === 0x80;
-            var bOff = (b.bytes[0] & 0xF0) === 0x80;
-            if (aOff !== bOff) return aOff ? -1 : 1;
-            return a._i - b._i;
-        });
-
-        // End of track
-        var lastTick = events[events.length - 1].tick;
-        events.push({ tick: lastTick, bytes: [0xFF, 0x2F, 0x00] });
-
-        // Delta-time stream
-        var track = [];
-        var prev = 0;
-        events.forEach(function(ev) {
-            var d = ev.tick - prev;
-            track = track.concat(vlq(d)).concat(ev.bytes);
-            prev = ev.tick;
-        });
-
-        // Header chunk + track chunk
-        var header = [
-            0x4D, 0x54, 0x68, 0x64,       // "MThd"
-            0x00, 0x00, 0x00, 0x06,
-            0x00, 0x00,                   // format 0
-            0x00, 0x01,                   // 1 track
-            (TPQ >> 8) & 0xFF, TPQ & 0xFF
-        ];
-        var trkLen = track.length;
-        var trackHdr = [
-            0x4D, 0x54, 0x72, 0x6B,       // "MTrk"
-            (trkLen >> 24) & 0xFF, (trkLen >> 16) & 0xFF,
-            (trkLen >> 8) & 0xFF, trkLen & 0xFF
-        ];
-        var all = header.concat(trackHdr).concat(track);
-        var bytes = new Uint8Array(all);
-
-        // Filename: democracy-piano-YYYYMMDD-HHMM-MODE-BPM.mid
-        var d = new Date();
-        function pz(n) { return ('0' + n).slice(-2); }
-        var stamp = d.getFullYear() + pz(d.getMonth() + 1) + pz(d.getDate())
-                  + '-' + pz(d.getHours()) + pz(d.getMinutes());
-        var fname = 'democracy-piano-' + stamp + '-' + demoMode + '-' + bpm + 'bpm.mid';
-
-        // Download
-        var blob = new Blob([bytes], { type: 'audio/midi' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = fname;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-
-        statusStrip.innerHTML = '<span class="acc">EXPORTED</span> · ' + pad3(roundLog.length) + ' rds · ' + bpm + ' bpm';
-    }
-
-    // ============== MIDI LIVE OUT (Web MIDI API) ==============
-    // Streams the result of each vote (live) and each tape-playback step as
-    // MIDI noteOn/noteOff to a user-selected output port. Only the democratic
-    // result goes out — the user's individual key press does not. Single channel.
-    var midiAccess = null;
-    var midiOutput = null;
-    var MIDI_CHANNEL = 0;
-    var MIDI_VELOCITY = 100;
-    var MIDI_HELP_DEFAULT = '<span class="acc">Setup:</span> For live MIDI output, on Mac, enable IAC Driver in Audio MIDI Setup. On Windows, install loopMIDI (free). Then click <span class="acc">Enable</span>, pick the virtual port, and listen to it as MIDI input on a track in your DAW. Live votes and tape playback both stream out.';
-    var CSV_HELP_TEXT = '<span class="acc">Voter data export.</span> Per-round, per-voter pitch choices — every cascade-revealed vote captured, with the mode at the time and the winning pitch. <span class="acc">Note:</span> single-player crowd is simulated; networked sessions use the same schema with real participants.';
-
-    function renderMidiHelp(midiHtml, isError) {
-        midiHelp.innerHTML =
-            '<div class="midi-help-block midi-block">' + midiHtml + '</div>' +
-            '<div class="midi-help-block csv-block">' + CSV_HELP_TEXT + '</div>';
-        midiHelp.classList.toggle('error', !!isError);
-    }
-    function setMidiHelp(html, isError) { renderMidiHelp(html, isError); }
-
-    function refreshMidiPorts() {
-        if (!midiAccess) return;
-        var prevId = midiOutput ? midiOutput.id : '';
-        midiPortSelect.innerHTML = '';
-        var noneOpt = document.createElement('option');
-        noneOpt.value = '';
-        noneOpt.textContent = '— none —';
-        midiPortSelect.appendChild(noneOpt);
-        var count = 0;
-        midiAccess.outputs.forEach(function(out) {
-            var opt = document.createElement('option');
-            opt.value = out.id;
-            opt.textContent = out.name + (out.manufacturer ? ' · ' + out.manufacturer : '');
-            if (out.id === prevId) opt.selected = true;
-            midiPortSelect.appendChild(opt);
-            count++;
-        });
-        // re-bind midiOutput in case the port object was replaced
-        if (prevId) midiOutput = midiAccess.outputs.get(prevId) || null;
-        if (count === 0) {
-            setMidiHelp('<span class="acc">No MIDI ports found.</span> Enable IAC Driver (Mac · Audio MIDI Setup) or install loopMIDI (Windows). New ports appear here automatically. Or use the <span class="acc">↓ MIDI</span> button to download the tape as a file.', true);
-        } else if (!midiOutput) {
-            setMidiHelp('<span class="acc">' + count + ' port' + (count > 1 ? 's' : '') + ' available.</span> Select one above to start streaming. In your DAW, set this port as the MIDI input on a track and arm record.', false);
-        }
-    }
-
-    function selectPort(id) {
-        if (!midiAccess) return;
-        midiOutput = id ? midiAccess.outputs.get(id) : null;
-        if (midiOutput) {
-            setMidiHelp('<span class="acc">Streaming to ' + midiOutput.name + '.</span> Open Live, Logic or any DAW, route this port to a MIDI track, and arm record. Live votes and tape playback both come through.', false);
-        } else {
-            setMidiHelp(MIDI_HELP_DEFAULT, false);
-        }
-    }
-
-    function sendMidiNotes(indices, durationMs) {
-        if (!midiOutput || !indices || !indices.length) return;
-        var ch = MIDI_CHANNEL;
-        indices.forEach(function(idx) {
-            var note = idx + 48; // KEY_DATA[0] = C3 = MIDI 48
-            try {
-                midiOutput.send([0x90 | ch, note, MIDI_VELOCITY]);
-                setTimeout(function() {
-                    try {
-                        if (midiOutput) midiOutput.send([0x80 | ch, note, 0]);
-                    } catch (e) {}
-                }, Math.max(40, durationMs));
-            } catch (e) {}
-        });
-    }
-
-    function midiAllNotesOff() {
-        if (!midiOutput) return;
-        try {
-            // All Notes Off (CC 123) + All Sound Off (CC 120) for safety
-            midiOutput.send([0xB0 | MIDI_CHANNEL, 123, 0]);
-            midiOutput.send([0xB0 | MIDI_CHANNEL, 120, 0]);
-        } catch (e) {}
-    }
-
-    function initMidi() {
-        if (!navigator.requestMIDIAccess) {
-            midiEnableBtn.disabled = true;
-            midiEnableBtn.textContent = 'UNSUPPORTED';
-            setMidiHelp('<span class="acc">Browser unsupported.</span> Live MIDI needs Chrome, Edge, or a recent Safari. The <span class="acc">↓ MIDI</span> download button works in any browser.', true);
-            return;
-        }
-        setMidiHelp(MIDI_HELP_DEFAULT, false);
-    }
-
-    midiEnableBtn.addEventListener('click', function() {
-        if (!navigator.requestMIDIAccess) return;
-        midiEnableBtn.disabled = true;
-        midiEnableBtn.textContent = '... requesting';
-        navigator.requestMIDIAccess({ sysex: false }).then(function(access) {
-            midiAccess = access;
-            access.onstatechange = refreshMidiPorts;
-            midiEnableBtn.style.display = 'none';
-            midiPortSelect.style.display = '';
-            refreshMidiPorts();
-        }, function(err) {
-            midiEnableBtn.disabled = false;
-            midiEnableBtn.textContent = '↗ ENABLE';
-            setMidiHelp('<span class="acc">Permission denied.</span> Refresh the page and allow MIDI access when prompted. The <span class="acc">↓ MIDI</span> download button works without permission.', true);
-        });
-    });
-
-    // Per-button hover tooltips: hovering ENABLE / port / ↓ MIDI reveals the
-    // MIDI setup block; hovering ↓ CSV reveals the voter-data block. On mobile
-    // both blocks stack inline (handled in CSS), so this mode toggle only
-    // applies on hover-capable devices.
-    function showMidiSection() {
-        midiHelp.dataset.mode = 'midi';
-        midiHelp.classList.add('show');
-    }
-    function showCsvSection() {
-        midiHelp.dataset.mode = 'csv';
-        midiHelp.classList.add('show');
-    }
-    function hideMidiHelp() { midiHelp.classList.remove('show'); }
-    midiEnableBtn.addEventListener('mouseenter', showMidiSection);
-    midiEnableBtn.addEventListener('mouseleave', hideMidiHelp);
-    midiEnableBtn.addEventListener('focus', showMidiSection);
-    midiEnableBtn.addEventListener('blur', hideMidiHelp);
-    midiPortSelect.addEventListener('mouseenter', showMidiSection);
-    midiPortSelect.addEventListener('mouseleave', hideMidiHelp);
-    midiPortSelect.addEventListener('focus', showMidiSection);
-    midiPortSelect.addEventListener('blur', hideMidiHelp);
-    exportBtn.addEventListener('mouseenter', showMidiSection);
-    exportBtn.addEventListener('mouseleave', hideMidiHelp);
-    exportBtn.addEventListener('focus', showMidiSection);
-    exportBtn.addEventListener('blur', hideMidiHelp);
-    csvBtn.addEventListener('mouseenter', showCsvSection);
-    csvBtn.addEventListener('mouseleave', hideMidiHelp);
-    csvBtn.addEventListener('focus', showCsvSection);
-    csvBtn.addEventListener('blur', hideMidiHelp);
-    // Hovering the tooltip itself keeps it visible in whatever mode is active
-    midiHelp.addEventListener('mouseenter', function() { midiHelp.classList.add('show'); });
-    midiHelp.addEventListener('mouseleave', hideMidiHelp);
-
-    midiPortSelect.addEventListener('change', function() {
-        selectPort(midiPortSelect.value);
-    });
-
-    initMidi();
-
     playBtn.addEventListener('click', startPlayback);
     stopBtn.addEventListener('click', stopPlayback);
-    exportBtn.addEventListener('click', exportMidi);
-
-    // ===== CSV: voter data export =====
-
-    function csvEscape(v) {
-        if (v == null) return '';
-        var s = String(v);
-        if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0) {
-            return '"' + s.replace(/"/g, '""') + '"';
-        }
-        return s;
-    }
-    function csvRow(arr) { return arr.map(csvEscape).join(',') + '\n'; }
-
-    function exportVotersCsv() {
-        if (!roundLog.length) {
-            setMidiHelp('<span class="acc">No rounds recorded.</span> Play at least one round before exporting CSV.', true);
-            return;
-        }
-
-        var d = new Date();
-        function pz(n) { return ('0' + n).slice(-2); }
-        var stamp = d.getFullYear() + pz(d.getMonth()+1) + pz(d.getDate())
-                  + '-' + pz(d.getHours()) + pz(d.getMinutes());
-
-        var out = '';
-        out += '# Democracy in Music - Piano\n';
-        out += '# Exported: ' + d.toISOString() + '\n';
-        out += '# Source: simulated voter agents (single-player preview)\n';
-        out += '# Rows: one per (round, voter). The user is the highest voter_id in each round.\n';
-        out += '# Networked-session exports use the same schema with real participants.\n';
-        out += csvRow([
-            'round', 'voter_id', 'is_user',
-            'voted_pitch_index', 'voted_pitch_name',
-            'mode_at_round', 'voters_at_round', 'voices_at_round',
-            'winner_index', 'winner_name'
-        ]);
-
-        for (var ri = 0; ri < roundLog.length; ri++) {
-            var rnd = roundLog[ri];
-            var av = rnd.allVotes || [];
-            // user is always the last entry (per runCascade's allVotes.push(userIdx))
-            var userVoterId = av.length - 1;
-            // winner: for mean mode use nearestIdx; for mode/chord use first voice
-            var winIdx = (rnd.mode === 'mean')
-                ? rnd.result.nearestIdx
-                : (rnd.result.voices && rnd.result.voices.length ? rnd.result.voices[0] : -1);
-            var winName = (winIdx >= 0 && typeof noteLabel === 'function') ? noteLabel(winIdx) : '';
-
-            for (var v = 0; v < av.length; v++) {
-                var pitchIdx = av[v];
-                var pitchName = (typeof noteLabel === 'function') ? noteLabel(pitchIdx) : pitchIdx;
-                out += csvRow([
-                    ri + 1,
-                    v,
-                    (v === userVoterId) ? 1 : 0,
-                    pitchIdx,
-                    pitchName,
-                    rnd.mode,
-                    rnd.voters,
-                    rnd.voicesAtTime,
-                    winIdx,
-                    winName,
-                ]);
-            }
-        }
-
-        var blob = new Blob([out], { type: 'text/csv' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = 'democracy-piano-' + stamp + '-voters.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-    }
-
-    csvBtn.addEventListener('click', exportVotersCsv);
 
     clearBtn.addEventListener('click', function() {
         if (voting) return;
@@ -2597,7 +2088,6 @@
         statusStrip.innerHTML = '<span class="acc">CLEAR</span> · choose a note to begin';
         playBtn.disabled = true;
         stopBtn.disabled = true;
-        exportBtn.disabled = true;
         lastScopeState = null;
         drawTape();
         drawScopeIdle();
@@ -2746,7 +2236,6 @@
 
     playBtn.disabled = true;
     stopBtn.disabled = true;
-    exportBtn.disabled = true;
 
     startBtn.addEventListener('click', function() {
         ensureAudio(function() {

@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>CH·SYSTEM — Choreography · Democracy in Music</title>
+    <meta property="og:title" content="Choreography · Democracy in Music">
+    <meta property="og:description" content="The body as a musical instrument. Six dancers, each with their own tempo; when they fall in step the music finds a pattern.">
+    <meta property="og:image" content="https://democracyinmusic.com/ogimage.png">
+    <meta property="og:url" content="https://democracyinmusic.com/choreography.html">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2315140F'/%3E%3Ccircle cx='9.5' cy='10' r='5' fill='%23F7901E'/%3E%3Ccircle cx='22' cy='9' r='4' fill='%23F0C840'/%3E%3Ccircle cx='15.5' cy='19' r='4.5' fill='%23a78bfa'/%3E%3Ccircle cx='8' cy='23.5' r='3' fill='%23D43030'/%3E%3Ccircle cx='24' cy='22.5' r='3.2' fill='%234FB85F'/%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -249,7 +254,7 @@
             padding-bottom: 8px;
         }
         .rack {
-            width: 1100px;
+            width: 1240px;
             height: 1080px;
             display: block;
             position: relative;
@@ -969,7 +974,7 @@
     <svg class="cable-overlay" id="cableOverlay"></svg>
 
     <!-- CH·01 INSTRUMENT -->
-    <section class="module instrument" id="ch01" data-x="180" data-y="20" style="transform: translate(180px, 20px);">
+    <section class="module instrument" id="ch01" data-x="250" data-y="20" style="transform: translate(250px, 20px);">
         <header class="module-header">
             <span class="model">ch·01</span>
             <span class="model-name">choreography</span>
@@ -1046,7 +1051,7 @@
     </section>
 
     <!-- CH·02 SCOPE -->
-    <section class="module display scope" id="ch02" data-x="10" data-y="720" style="transform: translate(10px, 720px);">
+    <section class="module display scope" id="ch02" data-x="60" data-y="720" style="transform: translate(60px, 720px);">
         <header class="module-header">
             <span class="model">ch·02</span>
             <span class="model-name">scope</span>
@@ -1076,7 +1081,7 @@
     </section>
 
     <!-- CH·03 TAPE -->
-    <section class="module display tape" id="ch03" data-x="550" data-y="720" style="transform: translate(550px, 720px);">
+    <section class="module display tape" id="ch03" data-x="640" data-y="720" style="transform: translate(640px, 720px);">
         <header class="module-header">
             <span class="model">ch·03</span>
             <span class="model-name">tape</span>
@@ -1304,8 +1309,8 @@
             // restart audio if playing (different graph for partials)
             if (isPlaying) {
                 if (audioCtx) audioCtx.close().catch(function(){});
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                audioCtx.resume().then(buildAudioGraph_inResume).catch(buildAudioGraph_inResume);
+                buildAudio();
+                audioCtx.resume();
             }
             // clear tape
             clearTape();
@@ -1661,10 +1666,8 @@
     }
 
     // ============== AUDIO ==============
-    // iOS-safe MIRO pattern: the AudioContext is created in the user-gesture
-    // click handler, then resume() is called, and ALL audio nodes are built
-    // inside the resume().then() callback — never before.
-    function buildAudioGraph_inResume() {
+    function buildAudio() {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         var ac = audioCtx;
 
         compressor = ac.createDynamicsCompressor();
@@ -2153,9 +2156,8 @@
     playBtn.addEventListener('click', function() {
         if (isPlaying) return;
         if (audioCtx) audioCtx.close().catch(function(){});
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        buildAudio();
         var begin = function() {
-            buildAudioGraph_inResume();
             isPlaying = true;
             playBtn.classList.add('live');
             tapeRec.classList.add('on');
@@ -2163,7 +2165,8 @@
             // reset note step trackers to avoid retroactive spam
             dancers.forEach(function(d) { d.lastArpStep = -1; d.lastPhaseStep = -1; });
         };
-        audioCtx.resume().then(begin).catch(begin);
+        if (audioCtx.state === 'suspended') audioCtx.resume().then(begin);
+        else begin();
     });
     stopBtn.addEventListener('click', function() {
         if (!isPlaying) return;
