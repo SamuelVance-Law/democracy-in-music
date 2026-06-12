@@ -275,10 +275,10 @@
         .card-container + .chapter-break { padding-top: 32px; }
         .prototype-embed {
             position: relative;
-            --embed-width: min(1140px, calc(100vw - 32px));
+            --embed-width: min(1280px, calc(100vw - 32px));
             width: var(--embed-width);
-            /* All six prototype racks are 1100px wide, so a 1140px embed sits
-               them with comfortable margin. Uses negative margins (not transform)
+            /* All six prototype racks are 1240px wide, so a 1280px embed clears
+               them on wide desktops. Uses negative margins (not transform)
                so .reveal's translateY isn't overridden. */
             margin-left: calc((100% - var(--embed-width)) / 2);
             margin-right: calc((100% - var(--embed-width)) / 2);
@@ -325,8 +325,8 @@
         .colophon a:hover { color: var(--text-mid); }
         .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
-        @media (max-width: 740px) { .prototype-embed { --embed-width: min(1140px, calc(100vw - 16px)); } }
-        @media (max-width: 600px) { html { font-size: 17px; } .prototype-frame iframe { min-height: 1100px; }  .chapter-break h2 { font-size: 1.4rem; } .figure-pair { grid-template-columns: 1fr; } .prototype-embed { --embed-width: min(1140px, calc(100vw - 8px)); } .card-container svg { max-width: 260px; } }
+        @media (max-width: 740px) { .prototype-embed { --embed-width: min(1280px, calc(100vw - 16px)); } }
+        @media (max-width: 600px) { html { font-size: 17px; } .prototype-frame iframe { min-height: 1100px; }  .chapter-break h2 { font-size: 1.4rem; } .figure-pair { grid-template-columns: 1fr; } .prototype-embed { --embed-width: min(1280px, calc(100vw - 8px)); } .card-container svg { max-width: 260px; } }
     </style>
 </head>
 <body>
