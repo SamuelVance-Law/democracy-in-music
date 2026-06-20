@@ -951,6 +951,27 @@
 
         @media (max-width: 800px) {
             body { padding: 18px 8px 36px; }
+            /* stack the rack vertically; disable drag on mobile */
+            .rack-shell {
+                overflow-x: visible;
+                padding: 0 4px 8px 4px;
+            }
+            .rack {
+                width: 100%;
+                height: auto;
+                min-height: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+            }
+            .module {
+                position: relative !important;
+                transform: none !important;
+                width: auto !important;
+                max-width: 100%;
+            }
+            .module-header,
+            .module-header:active { cursor: default; }
             .module-header { padding: 12px 18px 8px 18px; }
             .instrument .chassis,
             .display .chassis { padding: 14px 18px; }
