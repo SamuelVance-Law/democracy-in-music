@@ -170,6 +170,8 @@
             color: var(--ink, #1C1917);
             text-transform: uppercase;
         }
+        .cover-bottom a.url { text-decoration: none; transition: opacity 0.2s; }
+        .cover-bottom a.url:hover { opacity: 0.55; }
 
         .scroll-cue {
             margin-top: clamp(48px, 7vw, 72px);
@@ -323,6 +325,7 @@
         .colophon { text-align: center; padding: 40px 28px 80px; font-size: 0.7rem; letter-spacing: 0.2em; color: var(--text-dim); }
         .colophon a { color: var(--text-dim); text-decoration: none; border-bottom: 1px solid var(--rule-light); transition: color 0.2s; }
         .colophon a:hover { color: var(--text-mid); }
+        .colophon-links { margin-top: 14px; display: flex; flex-wrap: wrap; justify-content: center; gap: 9px 22px; letter-spacing: 0.08em; }
         .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
         @media (max-width: 740px) { .prototype-embed { --embed-width: min(1280px, calc(100vw - 16px)); } }
@@ -364,7 +367,7 @@
         </h1>
         <div class="cover-bottom">
             <span class="os">OPEN SOURCE &middot; FREE</span>
-            <span class="url">DEMOCRACYINMUSIC.COM</span>
+            <a class="url" href="index.html">DEMOCRACYINMUSIC.COM</a>
         </div>
     </div>
     <span class="scroll-cue">▼ Scroll</span>
@@ -567,7 +570,12 @@
 
 <div class="colophon">
     <p>Democracy in Music is open source.</p>
-    <p style="margin-top:8px"><a href="https://github.com/SamuelVance-Law/democracy-in-music">GitHub</a></p>
+    <p class="colophon-links">
+        <a href="https://democracyinmusic.com">democracyinmusic.com</a>
+        <a href="https://samvancelaw.com">samvancelaw.com</a>
+        <a href="mailto:samuelvancelaw@gmail.com">samuelvancelaw@gmail.com</a>
+        <a href="https://github.com/SamuelVance-Law/democracy-in-music">GitHub</a>
+    </p>
 </div>
 
 <script>
