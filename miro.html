@@ -35,11 +35,11 @@
             --rec-bg:       #1A1206;
             --rec-phos:     #F0C040;
 
-            --te-orange:    #FF5A1F;
-            --te-yellow:    #F5D026;
-            --te-blue:      #3D7DCC;
-            --te-green:     #5FAF52;
-            --te-red:       #D4322A;
+            --te-orange:    #F7901E;
+            --te-yellow:    #F0C840;
+            --te-blue:      #50C8E6;
+            --te-green:     #4FB85F;
+            --te-red:       #D43030;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -951,28 +951,6 @@
 
         @media (max-width: 800px) {
             body { padding: 18px 8px 36px; }
-            /* stack the rack vertically; disable drag on mobile */
-            .rack-shell {
-                overflow-x: visible;
-                padding: 0 4px 8px 4px;
-            }
-            .rack {
-                width: 100%;
-                height: auto;
-                min-height: 0;
-                display: flex;
-                flex-direction: column;
-                gap: 18px;
-            }
-            .module {
-                position: relative !important;
-                transform: none !important;
-                width: auto !important;
-                max-width: 100%;
-            }
-            .module-header,
-            .module-header:active { cursor: default; }
-            .cable-overlay { display: none; }
             .module-header { padding: 12px 18px 8px 18px; }
             .instrument .chassis,
             .display .chassis { padding: 14px 18px; }
